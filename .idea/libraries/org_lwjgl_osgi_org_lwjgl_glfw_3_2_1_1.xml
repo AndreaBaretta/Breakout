@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.lwjgl.osgi:org.lwjgl.glfw:3.2.1.1" type="repository">
+    <properties maven-id="org.lwjgl.osgi:org.lwjgl.glfw:3.2.1.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.glfw/3.2.1.1/org.lwjgl.glfw-3.2.1.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.lwjgl/3.2.1.1/org.lwjgl.lwjgl-3.2.1.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

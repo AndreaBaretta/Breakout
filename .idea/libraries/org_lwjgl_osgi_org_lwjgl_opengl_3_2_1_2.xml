@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="org.lwjgl.osgi:org.lwjgl.opengl:3.2.1.2" type="repository">
+    <properties maven-id="org.lwjgl.osgi:org.lwjgl.opengl:3.2.1.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.opengl/3.2.1.2/org.lwjgl.opengl-3.2.1.2.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.lwjgl/3.2.1.2/org.lwjgl.lwjgl-3.2.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
