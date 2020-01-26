@@ -10,7 +10,6 @@ public class VectorXYAlpha {
 
     public final double sin;
     public final double cos;
-    public final double D;
 
     public VectorXYAlpha(final double x, final double y, final double phi) {
         this.x = x;
@@ -18,7 +17,6 @@ public class VectorXYAlpha {
         this.phi = phi;
         sin = Math.sin(phi);
         cos = Math.cos(phi);
-        D = Math.hypot(x, y);
     }
 
     public static VectorXYAlpha AddVector(final VectorXYAlpha v1, final VectorXYAlpha v2) {

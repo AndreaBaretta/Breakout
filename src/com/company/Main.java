@@ -1,5 +1,6 @@
 package com.company;
 
+import com.company.quixilver8404.skystone.opmode.test.FoxtrotTest;
 import com.company.simulator.*;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
@@ -18,41 +19,61 @@ public class Main {
 
     public static void run(final MecanumKinematics kinematics) {
         System.out.println("Hello LWJGL " + Version.getVersion() + "!");
-        Display window1 = new Display(1000, 1000);
-        window1.init();
+//        window1.init();
 
         int count = 0;
 
-        long t1 = System.currentTimeMillis();
-        long t2 = System.currentTimeMillis();
+        long t_new = System.nanoTime();
+        long t_old = t_new;
+        final FoxtrotTest foxtrotTest = new FoxtrotTest();
+        double[] power = new double[]{1,1,1,1};
 
-        while(window1.isRunning()) {
-            final double dt = t2-t1;
-            t1 = System.currentTimeMillis();
-            kinematics.updatePresetFrequency(new double[]{1,-2,3,-4});
+        //for (int i = 0; i < 1000; i++) {
+        while(/*window1.isRunning()*/ true) {
+            t_new = System.nanoTime();
+            final double dt = (t_new - t_old)/1e9d;
+            t_old = t_new;
+
+            assert dt > 0.0d;
+            System.out.println("dt = " + dt);
+//            t1 = System.currentTimeMillis();
+//            try {
+//                foxtrotTest.runOpMode(kinematics);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            kinematics.updatePresetFrequency(power);
+            kinematics.update(power, dt);
+            count++;
+            System.out.println("count = " + count);
+//            if (count == 100) {
+//                power = new double[]{0,0,0,0};
+//            }
 //            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 //            GLFW.glfwSwapBuffers(window1.window);
+//            try {
+//                foxtrotTest.runOpMode();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
-            window1.setBackground(new double[] {1,1,1});
+//            window1.setBackground(new double[] {1,1,1});
 
 //            window1.drawPolygon(new double[][] {
 //                    {0+count,0},{100+count,0},{100+count,100},{0+count,100} }, new double[] {255,0,0});
 //
 //            window1.drawCircle(-100,-100, 50, 100, new double[] {0,255,0});
             final VectorXYAlpha pos = kinematics.getFieldPos();
-            System.out.println("Position: " + pos.toString());
-            window1.drawRobot(pos.x,pos.y, pos.phi, kinematics.width, kinematics.length, 10);
-            window1.update();
-            count = 1+count;
-            if (count==100) {
-//                window1.terminate();
-//                break;
-            }
-            t2 = System.currentTimeMillis();
+            final VectorXYAlpha vel = kinematics.getFieldVel();
+//            window1.drawRobot(pos.x,pos.y, pos.phi, kinematics.width, kinematics.length, 100);
+//            window1.update();
+
 
         }
 
-        window1.terminate();
+
+
+//        window1.terminate();
     }
 
     public static void main(String[] args) {
@@ -83,18 +104,24 @@ public class Main {
                 {Math.sin(phi), Math.cos(phi)}
         };
         final MecanumWheel wheel = new MecanumWheel(motor.clone(), 0.1, 1, 1, phi, m, u_Pi[0]);
+        final double r = 37.5d/1000d;
+        final double X = 0.4572/2d;
+        final double Y = 0.4572/2d;
         final MecanumWheel[] wheels = new MecanumWheel[] {
-                new MecanumWheel(motor.clone(), 0.1, 2, 2, -phi, m, u_Pi[0]),
-                new MecanumWheel(motor.clone(), 0.1, -2, 2, phi, m, u_Pi[1]),
-                new MecanumWheel(motor.clone(), 0.1, -2, -2, -phi, m, u_Pi[2]),
-                new MecanumWheel(motor.clone(), 0.1, 2, -2, phi, m, u_Pi[3])
+                new MecanumWheel(motor.clone(), r, X, Y, -phi, m, u_Pi[0]),
+                new MecanumWheel(motor.clone(), r, -X, Y, phi, m, u_Pi[1]),
+                new MecanumWheel(motor.clone(), r, -X, -Y, -phi, m, u_Pi[2]),
+                new MecanumWheel(motor.clone(), r, X, -Y, phi, m, u_Pi[3])
         };
 
-        final MecanumKinematics kinematics = new MecanumKinematics(wheels, 500, m, 4, 4, new VectorXYAlpha(0,0,0), new VectorXYAlpha(0,0,0));
+        Display window1 = new Display(1000, 1000);
+        window1.init();
+
+        final MecanumKinematics kinematics = new MecanumKinematics(wheels, 50, m, X*2d, Y*2d, new VectorXYAlpha(0,0,0), new VectorXYAlpha(0,0,0), window1);
 //        double curSpeed = 31.4;
         int count = 0;
 
-        while (true) {
+        //while (true) {
             run(kinematics);
 //            kinematics.updatePresetFrequency(new double[] {0,0,0,0});
 //            break;
@@ -127,7 +154,7 @@ public class Main {
 
 //            drive.iteratePresetFrequency();
 
-        }
+        //}
     }
 
 }

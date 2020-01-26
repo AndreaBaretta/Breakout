@@ -4,8 +4,10 @@ public class Motor {
     public final double maxTorque;
     public final double maxOmega;
     protected final LowPassFilter lowPassFilter;
+    protected double wheelVelocityFraction;
     protected double currentPower;
     protected double torque;
+    protected double torqueFraction;
 
     /**
      *This class creates a motor object.
@@ -16,6 +18,7 @@ public class Motor {
         this.maxTorque = maxTorque;
         this.maxOmega = maxRotationalSpeed;
         this.lowPassFilter = lowPassFilter;
+        this.wheelVelocityFraction = 0;
         currentPower = 0;
         torque = 0;
     }
@@ -28,7 +31,9 @@ public class Motor {
      * */
     public void update(final double newPowerSetting, final double wheelVelocity, final double dt) {
         currentPower = -lowPassFilter.iterate(dt, newPowerSetting);
-        torque = maxTorque * (currentPower - wheelVelocity/maxOmega);
+        wheelVelocityFraction = wheelVelocity/maxOmega;
+        torqueFraction = (currentPower - wheelVelocityFraction);
+        torque = maxTorque * torqueFraction;
     }
 
     /**
@@ -66,7 +71,7 @@ public class Motor {
             dxdt = -pole*x + u;
             dx = dxdt*dt;
             x += dx;
-            return pole*x;
+            return -pole*x;
         }
 
         /**

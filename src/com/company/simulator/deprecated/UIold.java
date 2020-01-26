@@ -1,4 +1,4 @@
-package com.company.simulator;
+package com.company.simulator.deprecated;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

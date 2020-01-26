@@ -1,4 +1,4 @@
-package com.company.simulator;
+package com.company.simulator.deprecated;
 
 public class MotorOld {
     protected final double mu_fs;

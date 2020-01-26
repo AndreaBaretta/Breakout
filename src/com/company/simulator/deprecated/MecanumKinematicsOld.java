@@ -1,5 +1,7 @@
-package com.company.simulator;
+package com.company.simulator.deprecated;
 
+import com.company.simulator.VectorXYAlpha;
+import com.company.simulator.deprecated.CoordinateTransformationsOld;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class MecanumKinematicsOld {
@@ -36,7 +38,8 @@ public class MecanumKinematicsOld {
         X_i = new double[] {setup[0].x, setup[1].x, setup[2].x, setup[3].x};
         Y_i = new double[] {setup[0].y, setup[1].y, setup[2].y, setup[3].y};
         phi_i = new double[] {setup[0].phi, setup[1].phi, setup[2].phi, setup[3].phi};
-        D_i = new double[] {setup[0].D, setup[1].D, setup[2].D, setup[3].D};
+//        D_i = new double[] {setup[0].D, setup[1].D, setup[2].D, setup[3].D};
+        D_i = null;
         u_Pi = new double[][] {
                 {-Math.sin(phi_i[0]), Math.cos(phi_i[0])},
                 {Math.sin(phi_i[1]), Math.cos(phi_i[1])},

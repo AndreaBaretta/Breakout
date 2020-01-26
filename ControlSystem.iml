@@ -12,5 +12,6 @@
     <orderEntry type="library" name="org.lwjgl.osgi:org.lwjgl.opengl:3.2.1.2" level="project" />
     <orderEntry type="library" name="org.lwjgl:lwjgl-glfw:3.2.1" level="project" />
     <orderEntry type="library" name="org.lwjgl:lwjgl-opengl:3.2.1" level="project" />
+    <orderEntry type="library" name="com.google.code.gson:gson:2.8.6" level="project" />
   </component>
 </module>

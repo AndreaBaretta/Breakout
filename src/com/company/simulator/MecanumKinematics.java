@@ -1,7 +1,8 @@
 package com.company.simulator;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ public class MecanumKinematics {
     public final double I;
     protected double[] fieldVel;
     protected double[] fieldPos;
+    protected final Display ui;
 
     /**
      * Constructs the physics of the system.
@@ -24,8 +26,9 @@ public class MecanumKinematics {
      * @param length - The length of the robot in meters.
      * @param startVelocity - The beginning velocity of the robot in meters per second and radians per second.
      * @param startPosition - The beginning position of the robot in meters and radians.
+     * @param ui - The Display object that will draw the simulation.
      * */
-    public MecanumKinematics(final MecanumWheel[] wheels, final double frequency, final double mass, final double width, final double length, final VectorXYAlpha startVelocity, final VectorXYAlpha startPosition) {
+    public MecanumKinematics(final MecanumWheel[] wheels, final double frequency, final double mass, final double width, final double length, final VectorXYAlpha startVelocity, final VectorXYAlpha startPosition, final Display ui) {
         this.wheels = wheels;
         this.dt = 1/frequency;
         this.mass = mass;
@@ -34,6 +37,8 @@ public class MecanumKinematics {
         I = findMomentOfInertia(width, length, mass);
         fieldVel = startVelocity.toArray();
         fieldPos = startPosition.toArray();
+        this.ui = ui;
+//        ui.init();
     }
 
     /**
@@ -58,32 +63,6 @@ public class MecanumKinematics {
      * @param newPowerSetting - The new power setting of the wheels, ranging from -1 to 1.
      * @param delta_t - The difference in time.
      * */
-//    public void update(final double[] newPowerSetting, final double delta_t) {
-//        if (newPowerSetting.length != wheels.length) {
-//            throw new IndexOutOfBoundsException("The number of power settings is not equivalent to that of wheels.");
-//        }
-//        double[] acceleration = new double[]{0,0,0};
-//        final double[] relativeVel = CoordinateTransformations.toRelativeCoordinates(new ArrayRealVector(new double[]{fieldVel[0], fieldVel[1]}), fieldPos[2]).toArray();
-//        for (int i = 0; i < newPowerSetting.length; i++) {
-//            final double[] v_D = new double[]{relativeVel[0]-fieldVel[2]*wheels[i].X, relativeVel[1]+fieldVel[2]*wheels[i].Y};
-//            System.out.println("Wheel velocity: " + Arrays.toString(v_D));
-//            System.out.println("V_robot: " + Arrays.toString(fieldVel));
-////            final double v_D_P = dot(v_D, wheels[i].getU_i(fieldPos[2]))/Math.cos(wheels[i].phi);
-//            final double[] u_X = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{1,0}), fieldPos[2]).toArray();
-//            final double[] u_Y = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{0,1}), fieldPos[2]).toArray();
-//            final double v_W = -dot(v_D, u_X)*wheels[i].tangent - dot(v_D, u_Y);
-//            System.out.println("v_W: " + -v_W);
-//            final double[] curForce = wheels[i].updateForce(newPowerSetting[i], -v_W, delta_t);
-//            final double[] fieldRelativeForce = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(curForce), fieldPos[2]).toArray();
-//            acceleration[0] += fieldRelativeForce[0]/mass;
-//            acceleration[1] += fieldRelativeForce[1]/mass;
-//            final double torque = wheels[i].X*curForce[1] - wheels[i].Y*curForce[0];
-//            acceleration[2] += torque/I;
-//        }
-//        fieldVel = vectorAddition(fieldVel, scalarMul(acceleration, delta_t));
-//        fieldPos = vectorAddition(fieldPos, scalarMul(fieldVel, delta_t));
-//    }
-
     public void update(final double[] newPowerSetting, final double delta_t) {
         if (newPowerSetting.length != wheels.length) {
             throw new IndexOutOfBoundsException("The number of power settings is not equivalent to that of wheels.");
@@ -92,18 +71,28 @@ public class MecanumKinematics {
         final double[] relativePos = CoordinateTransformations.toRelativeCoordinates(new ArrayRealVector(new double[]{fieldPos[0], fieldPos[1]}), fieldPos[2]).toArray();
         final double[] relativeVel = CoordinateTransformations.toRelativeVelocity(new ArrayRealVector(new double[]{relativePos[0], relativePos[1], fieldPos[2]}), new ArrayRealVector(fieldVel)).toArray();
         for (int i = 0; i < newPowerSetting.length; i++) {
-            final double[] v_D = new double[]{relativeVel[0]-fieldVel[2]*wheels[i].X, relativeVel[1]+fieldVel[2]*wheels[i].Y};
-            //System.out.println("V_robot: " + Arrays.toString(fieldVel));
-//            final double v_D_P = dot(v_D, wheels[i].getU_i(fieldPos[2]))/Math.cos(wheels[i].phi);
-            final double[] u_X = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{1,0}), fieldPos[2]).toArray();
-            final double[] u_Y = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{0,1}), fieldPos[2]).toArray();
+            final double[] v_D = new double[]{relativeVel[0]-fieldVel[2]*wheels[i].Y, relativeVel[1]+fieldVel[2]*wheels[i].X};
+            final double[] u_X = new double[]{1,0};
+            final double[] u_Y = new double[]{0,1};
             final double v_W = -dot(v_D, u_X)*wheels[i].tangent - dot(v_D, u_Y);
-            System.out.println("Wheel " + i + " alpha: " + fieldPos[2]  + " v_D: " + Arrays.toString(v_D) + " v_W: " + v_W + " v_DX: " + -dot(v_D, u_X) + " u_X: " + Arrays.toString(u_X) + " u_Y: " + Arrays.toString(u_Y));
+            final double[] curForce = wheels[i].updateForce(newPowerSetting[i], v_W, delta_t);
+            System.out.println("Velocity: " + Arrays.toString(fieldVel) + " Position" + Arrays.toString(fieldPos) + " v_W fct: " + wheels[i].motor.wheelVelocityFraction + " Power setpoint: " + newPowerSetting[i] + " Current Power: " + wheels[i].motor.currentPower + " Torque fct: " + wheels[i].motor.torqueFraction + " Force: " + Arrays.toString(curForce));
+            final double[] fieldRelativeForce = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(curForce), fieldPos[2]).toArray();
+            acceleration[0] += fieldRelativeForce[0]/mass;
+            acceleration[1] += fieldRelativeForce[1]/mass;
+            final double torque = wheels[i].X*curForce[1] - wheels[i].Y*curForce[0];
+            acceleration[2] += torque/I;
         }
         System.out.println();
-        fieldVel = new double[]{0,0,3.14};
+        fieldVel = vectorAddition(fieldVel, scalarMul(acceleration, delta_t));
         fieldPos = vectorAddition(fieldPos, scalarMul(fieldVel, delta_t));
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+//        GLFW.glfwSwapBuffers(ui.window);
+        ui.setBackground(new double[]{255,255,255});
+        ui.drawRobot(fieldPos[0], fieldPos[1], fieldPos[2],width, length, 100);
+        ui.update();
     }
+
 
     /**
      * Updates the system with the preset frequency.

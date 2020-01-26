@@ -1,4 +1,6 @@
-package com.company.simulator;
+package com.company.simulator.deprecated;
+
+import com.company.simulator.VectorXYAlpha;
 
 public class MecanumKinematicsOldOld {
     protected final VectorXYAlpha[] setup;
@@ -47,7 +49,7 @@ public class MecanumKinematicsOldOld {
         final VectorXYAlpha vel = d_XYAlpha_dt;
         for (int i = 0; i < setup.length; i++) {
             final VectorXYAlpha wheel_i = setup[i];
-            v_Di_P[i] = Math.pow(-1, i) * wheel_i.sin * (vel.x - vel.phi * wheel_i.D * wheel_i.sin) + wheel_i.cos * (vel.y + vel.phi * wheel_i.D * wheel_i.cos);
+//            v_Di_P[i] = Math.pow(-1, i) * wheel_i.sin * (vel.x - vel.phi * wheel_i.D * wheel_i.sin) + wheel_i.cos * (vel.y + vel.phi * wheel_i.D * wheel_i.cos);
         }
     }
 

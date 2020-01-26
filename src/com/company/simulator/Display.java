@@ -23,7 +23,6 @@ public class Display {
         this.height = height;
         pixel_to_percentage_x = 1d/((double)length/2d);
         pixel_to_percentage_y = 1d/((double)height/2d);
-        System.out.println(pixel_to_percentage_x);
     }
 
     public void init() {
@@ -64,8 +63,8 @@ public class Display {
     }
 
     public void setBackground(final double[] color) {
-        glColor3d(color[0], color[1], color[2]);
         glBegin(GL_QUADS);
+        glColor3d(color[0], color[1], color[2]);
         glVertex2d(-1,-1);
         glVertex2d(1,-1);
         glVertex2d(1,1);
@@ -89,8 +88,8 @@ public class Display {
     public void drawRobotPixels(final double x, final double y, final double theta, final double width, final double height) {
         final double w = width/2;
         final double h = height/2;
-        final double sin = Math.sin(theta);
-        final double cos = Math.cos(theta);
+//        final double sin = Math.sin(theta);
+//        final double cos = Math.cos(theta);
 //        drawPolygon(new double[][] {
 //                /*{x-Math.cos(width/2),y-Math.sin(width/2)}, {x+Math.cos(width/2),y-Math.sin(width/2)}, {x+Math.cos(width/2),y+Math.sin(width/2)}, {x-Math.cos(width/2),y+Math.sin(width/2)}*/
 //                {cos*-w + sin*-h + x, -sin*-w + cos*-h + y},
@@ -99,12 +98,19 @@ public class Display {
 //                {cos*-w + sin*h + x, -sin*-w + cos*h + y}
 //
 //        }, new double[]{0,0,255}, GL_POLYGON);
+        final double[][] transformation = new double[][]{
+                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{w, +h}), theta).toArray(),
+                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{-w, +h}), theta).toArray(),
+                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{-w, -h}), theta).toArray(),
+                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{w, -h}), theta).toArray()
+        };
         drawPolygon(new double[][]{
-                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{x+w, y+h}), theta).toArray(),
-                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{x-w, y+h}), theta).toArray(),
-                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{x-w, y-h}), theta).toArray(),
-                CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{x+w, y-h}), theta).toArray()
+                new double[] {x+transformation[0][0], y+transformation[0][1]},
+                new double[] {x+transformation[1][0], y+transformation[1][1]},
+                new double[] {x+transformation[2][0], y+transformation[2][1]},
+                new double[] {x+transformation[3][0], y+transformation[3][1]}
         },new double[]{0,0,255}, GL_POLYGON);
+//        drawPolygon();
         glBegin(GL_LINE_LOOP);
         glColor3d(255,0,0);
         glLineWidth(5);
@@ -117,11 +123,11 @@ public class Display {
 //        glLoadIdentity();
     }
 
-    public void drawRobot(final double x, final double y, final double theta, final double width, final double height, final double metersToPixels) {
-        final double x_px = x*metersToPixels;
-        final double y_px = y*metersToPixels;
-        final double width_px = width*metersToPixels;
-        final double height_px = height*metersToPixels;
+    public void drawRobot(final double x, final double y, final double theta, final double width, final double height, final double pxPerM) {
+        final double x_px = x*pxPerM;
+        final double y_px = y*pxPerM;
+        final double width_px = width*pxPerM;
+        final double height_px = height*pxPerM;
         drawRobotPixels(x_px, y_px, theta, width_px, height_px);
     }
 

@@ -40,11 +40,11 @@ public class MecanumWheel {
      * @param dt - Difference in time, in seconds.
      * */
     public double[] updateForce(final double newPowerSetting, final double wheelVelocity, final double dt) {
-        motor.update(newPowerSetting, -wheelVelocity/radius, dt);
+        motor.update(-newPowerSetting, wheelVelocity/radius, dt);
         final double torque = motor.torque;
-        final double F_y = -torque/radius;
-        final double F_x = tangent*F_y;
-        return new double[] {F_x,F_y};
+        final double F_Y = -torque/radius;
+        final double F_X = tangent*F_Y;
+        return new double[] {F_X,F_Y};
     }
 
     /**

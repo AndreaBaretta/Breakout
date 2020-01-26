@@ -1,4 +1,6 @@
-package com.company.simulator;
+package com.company.simulator.deprecated;
+
+import com.company.simulator.VectorXYAlpha;
 
 public class MecanumDriveTrainOld {
     final MecanumWheelOld[] mecanums;
