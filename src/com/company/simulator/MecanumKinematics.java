@@ -55,6 +55,7 @@ public class MecanumKinematics {
         final double d = l/2;
         final double I = sigma*((1d/3d)*Math.pow(b,3)*d + (1d/3d)*b*Math.pow(d,3) - (1d/3d)*Math.pow(a,3)*d - (1d/3d)*a*Math.pow(d,3)
                 -(1d/3d)*Math.pow(b,3)*c - (1d/3d)*b*Math.pow(c,3) + (1d/3d)*Math.pow(a,3)*c + (1d/3d)*a*Math.pow(c,3));
+        System.out.println("Inertia: " + I);
         return I;
     }
 

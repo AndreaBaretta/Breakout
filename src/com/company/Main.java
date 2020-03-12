@@ -26,7 +26,7 @@ public class Main {
         long t_new = System.nanoTime();
         long t_old = t_new;
         final FoxtrotTest foxtrotTest = new FoxtrotTest();
-        double[] power = new double[]{1,1,1,1};
+        double[] power = new double[]{-1,1,1,1};
 
         //for (int i = 0; i < 1000; i++) {
         while(/*window1.isRunning()*/ true) {
