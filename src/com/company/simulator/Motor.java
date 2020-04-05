@@ -30,7 +30,7 @@ public class Motor {
      * @param dt - Difference in time, in seconds.
      * */
     public void update(final double newPowerSetting, final double wheelVelocity, final double dt) {
-        currentPower = -lowPassFilter.iterate(dt, newPowerSetting);
+        currentPower = lowPassFilter.iterate(dt, newPowerSetting);
         wheelVelocityFraction = wheelVelocity/maxOmega;
         torqueFraction = (currentPower - wheelVelocityFraction);
         torque = maxTorque * torqueFraction;

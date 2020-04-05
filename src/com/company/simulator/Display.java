@@ -148,7 +148,7 @@ public class Display {
         glEnd();
     }
 
-    public void drawCircle(float x, float y, float r, int num_segments, final double[] color, final double metersToPixels) {
+    public void drawCircle(double x, double y, double r, int num_segments, final double[] color, final double metersToPixels) {
         final double x_px = x*metersToPixels;
         final double y_px = y*metersToPixels;
         final double r_px = r*metersToPixels;

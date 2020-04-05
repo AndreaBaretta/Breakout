@@ -6,34 +6,29 @@ public class VectorXYAlpha {
 
     public final double x;
     public final double y;
-    public final double phi;
+    public final double alpha;
 
-    public final double sin;
-    public final double cos;
-
-    public VectorXYAlpha(final double x, final double y, final double phi) {
+    public VectorXYAlpha(final double x, final double y, final double alpha) {
         this.x = x;
         this.y = y;
-        this.phi = phi;
-        sin = Math.sin(phi);
-        cos = Math.cos(phi);
+        this.alpha = alpha;
     }
 
     public static VectorXYAlpha AddVector(final VectorXYAlpha v1, final VectorXYAlpha v2) {
-        return new VectorXYAlpha(v1.x+v2.x, v1.y+v2.y, v1.phi +v2.phi);
+        return new VectorXYAlpha(v1.x+v2.x, v1.y+v2.y, v1.alpha +v2.alpha);
     }
 
     public static VectorXYAlpha SubtractVector(final VectorXYAlpha v1, final VectorXYAlpha v2) {
-        return new VectorXYAlpha(v1.x+v2.x, v1.y+v2.y, v1.phi +v2.phi);
+        return new VectorXYAlpha(v1.x+v2.x, v1.y+v2.y, v1.alpha +v2.alpha);
     }
 
-    public String toString() {return "[" + x + "," + y + "," + phi + "]";}
+    public String toString() {return "[" + x + "," + y + "," + alpha + "]";}
 
-    public double[] toArray() {return new double[] {x,y, phi}; }
+    public double[] toArray() {return new double[] {x,y, alpha}; }
 
     public ArrayRealVector toRealVector() {return new ArrayRealVector(toArray()); }
 
-    public VectorXYAlpha scalarMultiply(final double s) { return new VectorXYAlpha(x*s, y*s, phi *s); }
+    public VectorXYAlpha scalarMultiply(final double s) { return new VectorXYAlpha(x*s, y*s, alpha *s); }
 
     public static VectorXYAlpha fromArray(final double[] a) {
         if (a.length != 3) {

@@ -1,0 +1,33 @@
+Actual:
+[w''] = A * [w'] + B * u
+[w' ] =     [w ] 
+
+Desired:
+[W''] = A * [W'] + B * U
+[W' ]       [W ]
+
+            <=>
+
+[W'' + dw''] = A * [W' + dw'] + B * (U + du)
+[W'  + dw' ]       [W  + dw ]
+
+du = K * [dw']
+         [dw ]
+
+[W'' + dw''] = A * [W' + dw'] + B * (U + K * [dw'])
+[W'  + dw' ]       [W  + dw ]                [dw ]
+
+[W'' + dw''] = A * [W'] + A * [dw'] + B * U + B * K * [dw']
+[W'  + dw' ]       [W ]       [dw ]                   [dw ]
+
+[W''] + [dw''] = (A * [W'] + B * U) + A * [dw'] + B * K * [dw']
+[W' ]   [dw' ]        [W ]                [dw ]           [dw ]
+
+[W''] + [dw''] = [W''] + A * [dw'] + B * K * [dw']
+[W' ]   [dw' ]   [W' ]       [dw ]           [dw ]
+
+[dw''] = A * [dw'] + B * K * [dw']
+[dw' ]       [dw ]           [dw ]
+
+[dw''] = (A + B * K) * [dw']
+[dw' ]                 [dw ]

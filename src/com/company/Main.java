@@ -2,14 +2,9 @@ package com.company;
 
 import com.company.quixilver8404.skystone.opmode.test.FoxtrotTest;
 import com.company.simulator.*;
-import org.apache.commons.math3.linear.Array2DRowRealMatrix;
-import org.apache.commons.math3.linear.ArrayRealVector;
+import com.company.simulator.deprecated.FeedForwardTest;
 import org.lwjgl.*;
 import com.company.simulator.Motor.LowPassFilter;
-
-import java.util.Arrays;
-
-import static com.company.simulator.MecanumKinematics.*;
 
 public class Main {
 
@@ -63,8 +58,8 @@ public class Main {
 //                    {0+count,0},{100+count,0},{100+count,100},{0+count,100} }, new double[] {255,0,0});
 //
 //            window1.drawCircle(-100,-100, 50, 100, new double[] {0,255,0});
-            final VectorXYAlpha pos = kinematics.getFieldPos();
-            final VectorXYAlpha vel = kinematics.getFieldVel();
+            final Vector3 pos = kinematics.getFieldPos();
+            final Vector3 vel = kinematics.getFieldVel();
 //            window1.drawRobot(pos.x,pos.y, pos.phi, kinematics.width, kinematics.length, 100);
 //            window1.update();
 
@@ -77,84 +72,99 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        System.out.println();
-//        new HelloWorld().run();
-
-//        run();
-//        int power = 0;
-//        double vel = 0;
-//        final MotorOld motorOld = new MotorOld(1146, 724, 0);
-//        final MecanumWheelOld mecanumWheelOld = new MecanumWheelOld(10,10, Math.PI/4, motorOld, 1);
-//        final double wheelDiam = 75*Math.PI;
-//        final MecanumDriveTrainOld drive = new MecanumDriveTrainOld(new MecanumWheelOld[] {
-//                new MecanumWheelOld(100,100, Math.PI/4, motorOld.clone(), 1),
-//                new MecanumWheelOld(-100, 100, -Math.PI/4, motorOld.clone(), 1),
-//                new MecanumWheelOld(-100, -100, Math.PI/4, motorOld.clone(), 1),
-//                new MecanumWheelOld(100, -100, -Math.PI/4, motorOld.clone(), 1)
-//        }, 13.6, 1, 457.2, 457.2, 50);
+        System.out.println("Howdy world");
 
 
-        final Motor motor = new Motor(2.1, 31.4, new LowPassFilter(20, 0));
-        final double phi = Math.PI/4;
-        final double m = 20;
-        final double[][] u_Pi = new double[][] {
-                {-Math.sin(phi), Math.cos(phi)},
-                {Math.sin(phi), Math.cos(phi)},
-                {-Math.sin(phi), Math.cos(phi)},
-                {Math.sin(phi), Math.cos(phi)}
-        };
-        final MecanumWheel wheel = new MecanumWheel(motor.clone(), 0.1, 1, 1, phi, m, u_Pi[0]);
-        final double r = 37.5d/1000d;
-        final double X = 0.4572/2d;
-        final double Y = 0.4572/2d;
-        final MecanumWheel[] wheels = new MecanumWheel[] {
-                new MecanumWheel(motor.clone(), r, X, Y, -phi, m, u_Pi[0]),
-                new MecanumWheel(motor.clone(), r, -X, Y, phi, m, u_Pi[1]),
-                new MecanumWheel(motor.clone(), r, -X, -Y, -phi, m, u_Pi[2]),
-                new MecanumWheel(motor.clone(), r, X, -Y, phi, m, u_Pi[3])
-        };
+//        final Motor motor = new Motor(2.1, 31.4, new LowPassFilter(20, 0));
+//        final double phi = Math.PI/4;
+//        final double m = 20;
+//        final double[][] u_Pi = new double[][] {
+//                {-Math.sin(phi), Math.cos(phi)},
+//                {Math.sin(phi), Math.cos(phi)},
+//                {-Math.sin(phi), Math.cos(phi)},
+//                {Math.sin(phi), Math.cos(phi)}
+//        };
+//        final MecanumWheel wheel = new MecanumWheel(motor.clone(), 0.1, 1, 1, phi, m, u_Pi[0]);
+//        final double r = 37.5d/1000d;
+//        final double X = 0.4572/2d;
+//        final double Y = 0.4572/2d;
+//        final MecanumWheel[] wheels = new MecanumWheel[] {
+//                new MecanumWheel(motor.clone(), r, X, Y, -phi, m, u_Pi[0]),
+//                new MecanumWheel(motor.clone(), r, -X, Y, phi, m, u_Pi[1]),
+//                new MecanumWheel(motor.clone(), r, -X, -Y, -phi, m, u_Pi[2]),
+//                new MecanumWheel(motor.clone(), r, X, -Y, phi, m, u_Pi[3])
+//        };
 
         Display window1 = new Display(1000, 1000);
         window1.init();
 
-        final MecanumKinematics kinematics = new MecanumKinematics(wheels, 50, m, X*2d, Y*2d, new VectorXYAlpha(0,0,0), new VectorXYAlpha(0,0,0), window1);
-//        double curSpeed = 31.4;
-        int count = 0;
+        final double rX = 0.4572/2;
+        final double rY = 0.4572/2;
+        final double Tmax = 2.1;
+        final double omegamax = 31.4;
+        final double R = 17.5/1000;
+        final double J = 0.6967728;
+        final double m = 13.6;
+        final double[] rX_i = new double[]{rX, -rX, -rX, rX};
+        final double[] rY_i = new double[]{rY, -rY, -rY, rY};
 
-        //while (true) {
-            run(kinematics);
-//            kinematics.updatePresetFrequency(new double[] {0,0,0,0});
-//            break;
-//            kinematics.updatePresetFrequency(new double[]{1,-1,-1,1});
-//            System.out.println("Velocity: " + kinematics.getFieldVel());
-//            count++;
-//            if (count == 100) {
-//                break;
+
+        final MecanumKinematics kinematics = new MecanumKinematics(
+                50, m, 0.5, 0.5,
+
+                new Vector3(0,0,-3), new Vector3(0,0,3.1415),
+
+                window1,
+                J, rX, rY, Tmax, R, omegamax);
+
+        final PowerProfile powerProfile = new PowerProfile(m, R, J, omegamax, Tmax, rX, rY, false);
+        final Controller controller = new Controller(Controller.computeK(m, R, J, omegamax, Tmax, rX, rY));
+
+        final FeedForwardTest feedForwardTest = new FeedForwardTest();
+//        final long t0 = System.currentTimeMillis();
+        int counter = 0;
+        double t = 0;
+        final double dt = 0.005;
+        while (true) {
+//            run(kinematics);
+//            counter+=1;
+//            final long sys_t = System.currentTimeMillis();
+//            final double t = (sys_t-t0)/1000d;
+
+            final Vector3 pos = feedForwardTest.getPosition(t);
+            final Vector3 vel = feedForwardTest.getVelocity(t);
+            final Vector3 acc = feedForwardTest.getAcceleration(t);
+
+            final double[] correction = controller.correction(Vector3.subtractVector(kinematics.getFieldPos(), pos), Vector3.subtractVector(kinematics.getFieldVel(), vel), kinematics.getFieldPos().theta);
+            final double[] powerSettings = powerProfile.powerSetting(acc, vel, correction, kinematics.getFieldPos().theta);
+
+
+//            System.out.println("Pos: Desired: " + pos.toString() + " Actual: " + kinematics.getFieldPos().toString() + " delta: " + Vector3.subtractVector(pos, kinematics.getFieldPos()).toString());
+//            System.out.println("Vel: Desired: " + vel.toString() + " Actual: " + kinematics.getFieldVel().toString() + " delta: " + Vector3.subtractVector(vel, kinematics.getFieldVel()).toString());
+//            System.out.println("t = " + t);
+
+//            double[] finalPowerSetting = new double[4];
+//            for (int i = 0; i < 4; i++) {
+//               finalPowerSetting[i] = powerSettings[i] + correc-3*Math.pow(Math.cos(t),3) + 6*Math.cos(t)*Math.pow(Math.sin(t),2), -3*Math.pow(Math.sin(t),3) + 6*Math.sin(t)*Math.pow(Math.cos(t),2)tion[i];
 //            }
-//            for (final MecanumWheel temp : wheels) {
-//                System.out.println("Wheel force: " + Arrays.toString(temp.updateForce(1,0, 0.02)));
-//            }
+//            System.out.println(Arrays.toString(powerSettings));
+//            final double[] powerSettings = new double[] {1,-1,-1,1};
+
+//            kinematics.update(powerSettings, dt);
+            kinematics.update(powerSettings, dt);
+//            System.out.println("Desired pos: " + pos.toString() + " actual pos: " + kinematics.getFieldPos() +
+//                    " || Desired vel: " + vel.toString() + " actual vel: " + kinematics.getFieldVel() +
+//                    " || Desired acc: " + acc.toString() + " actual acc: " + kinematics.getFieldAcc() +
+//                    " || Power settings: " + Arrays.toString(powerSettings));
+            kinematics.ui.drawCircle(pos.x, pos.y, 0.05, 100, new double[]{255,0,0},100);
+            kinematics.ui.drawCircle(0, 0, 0.05, 100, new double[]{0,255,0},100);
 
 
+            kinematics.ui.update();
+            System.out.println();
 
-//            break;
-//            try {
-//                TimeUnit.MILLISECONDS.sleep((long) 5);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            motor.update(power, vel, 0.02);
-//            vel = motor.getWheelVelocity()*0.9;
-//            System.out.println("Power: " + power + "  Wheel velocity: " + motor.getWheelVelocity() + "  Chassis velocity: " + vel);
-//            if (power<100) {
-//                power += 1;
-//            }
-//            mecanumWheel.iterate(power, vel, 0.02);
-//            vel = mecanumWheel.getWheelVelocity();
+            t+=dt;
 
-//            drive.iteratePresetFrequency();
-
-        //}
+        }
     }
-
 }

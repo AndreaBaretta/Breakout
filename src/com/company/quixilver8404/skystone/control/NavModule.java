@@ -127,7 +127,7 @@ public class NavModule {
 
         xMM = kinematics.getFieldPos().x/1000d;
         yMM = kinematics.getFieldPos().y/1000d;
-        heading = new Angle(kinematics.getFieldPos().phi, Angle.Unit.RADIANS);
+        heading = new Angle(kinematics.getFieldPos().theta, Angle.Unit.RADIANS);
 
         // TODO uncomment once calculatePose() is working
 //        pose = calculatePose(pose, hwCollection);
