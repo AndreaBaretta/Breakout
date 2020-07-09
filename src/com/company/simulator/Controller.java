@@ -29,7 +29,7 @@ public class Controller {
         final double P_y = correctionArray[1];
         final double P_alpha = correctionArray[2];
 
-        System.out.println("delta P(x,y,alpha): " + Arrays.toString(correctionArray));
+//        System.out.println("delta P(x,y,alpha): " + Arrays.toString(correctionArray));
 
         return correctionArray;
 
@@ -69,8 +69,8 @@ public class Controller {
 //        final double kx = 5.30151*m*R/Tmax;
 //        final double kdx = 2;//-1.55889;
 //        final double kx = 40; //0.600837;
-        final double kdx = -1.55889;
-        final double kx = 0.600837;
+        final double kdx = -0.290078;
+        final double kx = 1.28751;
 
         final double kdy = kdx;
         final double ky = kx;
@@ -82,8 +82,8 @@ public class Controller {
 //        final double kalpha = 21.206/(Tmax4_div_JR*(rX + rY));
 //        final double kdalpha = 0.06; //-0.802787;
 //        final double kalpha = 2; //0.0673291;
-        final double kdalpha = -0.802787;
-        final double kalpha = 0.0673291;
+        final double kdalpha = -0.37554;
+        final double kalpha = 0.0293341;
 
 //        System.out.println("kdalpha: " + kdalpha);
 //        System.out.println("kalpha: " + kalpha);

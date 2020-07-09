@@ -13,16 +13,18 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Display {
     public long window;
-    public int length;
-    public int height;
-    public double pixel_to_percentage_x;
-    public double pixel_to_percentage_y;
+    public final int length;
+    public final int height;
+    public final double pixel_to_percentage_x;
+    public final double pixel_to_percentage_y;
+    public final int pxPerM;
 
-    public Display(int length, int height) {
+    public Display(int length, int height, int pxPerMeter) {
         this.length = length;
         this.height = height;
         pixel_to_percentage_x = 1d/((double)length/2d);
         pixel_to_percentage_y = 1d/((double)height/2d);
+        this.pxPerM = pxPerMeter;
     }
 
     public void init() {
@@ -73,8 +75,6 @@ public class Display {
     }
 
     public void drawPolygon(final double[][] points, final double[] color, final int setting) {
-//        GL11.glColor3d(color[0], color[1], color[2]);
-
         glBegin(setting);
 
         glColor3d(color[0], color[1], color[2]);
@@ -88,16 +88,6 @@ public class Display {
     public void drawRobotPixels(final double x, final double y, final double theta, final double width, final double height) {
         final double w = width/2;
         final double h = height/2;
-//        final double sin = Math.sin(theta);
-//        final double cos = Math.cos(theta);
-//        drawPolygon(new double[][] {
-//                /*{x-Math.cos(width/2),y-Math.sin(width/2)}, {x+Math.cos(width/2),y-Math.sin(width/2)}, {x+Math.cos(width/2),y+Math.sin(width/2)}, {x-Math.cos(width/2),y+Math.sin(width/2)}*/
-//                {cos*-w + sin*-h + x, -sin*-w + cos*-h + y},
-//                {cos*w + sin*-h + x, -sin*w + cos*-h + y},
-//                {cos*w + sin*h + x, -sin*w + cos*h + y},
-//                {cos*-w + sin*h + x, -sin*-w + cos*h + y}
-//
-//        }, new double[]{0,0,255}, GL_POLYGON);
         final double[][] transformation = new double[][]{
                 CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{w, +h}), theta).toArray(),
                 CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{-w, +h}), theta).toArray(),
@@ -119,11 +109,20 @@ public class Display {
 
         glVertex2d(x*pixel_to_percentage_x+transform[0], y*pixel_to_percentage_y+transform[1]);
         glEnd();
-        //GL_LINE_LOOP
-//        glLoadIdentity();
     }
 
-    public void drawRobot(final double x, final double y, final double theta, final double width, final double height, final double pxPerM) {
+    public void drawCompassPixel(final double theta, final double x, final double y, final double length) {
+        final double[] transform = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{length*pixel_to_percentage_x,0}), theta).toArray();
+        glBegin(GL_LINE_LOOP);
+        glColor3d(0,255,0);
+        glLineWidth(2000);
+        glVertex2d(x*pixel_to_percentage_x, y*pixel_to_percentage_y);
+        glVertex2d(x*pixel_to_percentage_x+transform[0], y*pixel_to_percentage_y+transform[1]);
+        glEnd();
+        drawCirclePixels(x, y, 5, 100, new double[]{255,0,0});
+    }
+
+    public void drawRobot(final double x, final double y, final double theta, final double width, final double height) {
         final double x_px = x*pxPerM;
         final double y_px = y*pxPerM;
         final double width_px = width*pxPerM;
@@ -135,6 +134,7 @@ public class Display {
     {
         glColor3d(color[0], color[1], color[2]);
         glBegin(GL_POLYGON);
+//        System.out.println("Position: " + x + "," + y);
         for(int ii = 0; ii < num_segments; ii++)
         {
             double theta = 2.0f * Math.PI * (double)ii / (double)num_segments;//get the current angle
@@ -148,10 +148,10 @@ public class Display {
         glEnd();
     }
 
-    public void drawCircle(double x, double y, double r, int num_segments, final double[] color, final double metersToPixels) {
-        final double x_px = x*metersToPixels;
-        final double y_px = y*metersToPixels;
-        final double r_px = r*metersToPixels;
+    public void drawCircle(double x, double y, double r, int num_segments, final double[] color) {
+        final double x_px = x*pxPerM;
+        final double y_px = y*pxPerM;
+        final double r_px = r*pxPerM;
         drawCirclePixels(x_px, y_px, r_px, num_segments, color);
     }
 }

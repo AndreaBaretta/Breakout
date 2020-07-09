@@ -113,46 +113,95 @@ public class MecanumKinematics {
 
 //        }
 
-        System.out.println("Actual alpha: " + fieldPos.theta);
+//        System.out.println("Actual alpha: " + fieldPos.theta);
         final double P_X = newPowerSetting[0]*Math.cos(fieldPos.theta) + newPowerSetting[1]*Math.sin(fieldPos.theta);
         final double P_Y = -newPowerSetting[0]*Math.sin(fieldPos.theta) + newPowerSetting[1]*Math.cos(fieldPos.theta);
 
-        System.out.println("P_x P_y: " + Arrays.toString(new double[]{newPowerSetting[0], newPowerSetting[1]}));
-        System.out.println("P_X P_Y: " + Arrays.toString(new double[]{P_X, P_Y}));
-        System.out.println("P_alpha: " + newPowerSetting[2]);
+//        System.out.println("P_x P_y: " + Arrays.toString(new double[]{newPowerSetting[0], newPowerSetting[1]}));
+//        System.out.println("P_X P_Y: " + Arrays.toString(new double[]{P_X, P_Y}));
+//        System.out.println("P_alpha: " + newPowerSetting[2]);
 //
 //        /*----------------------------P_X P_Y -> P_i ----------------------------------------*/
 //
-        final double P_1 = P_Y - P_X + newPowerSetting[2];
-        final double P_2 = P_Y + P_X - newPowerSetting[2];
-        final double P_3 = P_Y - P_X - newPowerSetting[2];
-        final double P_4 = P_Y + P_X + newPowerSetting[2];
+        final double P_1_ = P_Y - P_X + newPowerSetting[2];
+        final double P_2_ = P_Y + P_X - newPowerSetting[2];
+        final double P_3_ = P_Y - P_X - newPowerSetting[2];
+        final double P_4_ = P_Y + P_X + newPowerSetting[2];
+
+        final double P_1, P_2, P_3, P_4;
+
+
+//        if (Math.abs(P_1_) > 1) {
+//            P_1 = Math.abs(P_1_) / P_1_;
+//        } else {
+//            P_1 = P_1_;
+//        }
+//        if (Math.abs(P_2_) > 1) {
+//            P_2 = Math.abs(P_2_) / P_2_;
+//        } else {
+//            P_2 = P_2_;
+//        }
+//        if (Math.abs(P_3_) > 1) {
+//            P_3 = Math.abs(P_3_) / P_3_;
+//        } else {
+//            P_3 = P_3_;
+//        }
+//        if (Math.abs(P_4_) > 1) {
+//            P_4 = Math.abs(P_4_) / P_4_;
+//        } else {
+//            P_4 = P_4_;
+//        }
+
+        final double[] P_array = new double[]{P_1_, P_2_, P_3_, P_4_};
+        if (Math.abs(P_1_) > 1 || Math.abs(P_2_) > 1 || Math.abs(P_3_) > 1 || Math.abs(P_4_) > 1) {
+            double max_P = 0;
+            for (int i = 0; i < 4; i++) {
+                if (Math.abs(P_array[i]) > max_P) {
+                    max_P = Math.abs(P_array[i]);
+                }
+            }
+            P_1 = P_1_/max_P;
+            P_2 = P_2_/max_P;
+            P_3 = P_3_/max_P;
+            P_4 = P_4_/max_P;
+        } else {
+            P_1 = P_1_;
+            P_2 = P_2_;
+            P_3 = P_3_;
+            P_4 = P_4_;
+        }
+
+//        System.out.println(Arrays.toString(new double[]{P_1, P_2, P_3, P_4}));
+//        P_1 = 1;
+//        P_2 = 1;
+//        P_3 = 1;
+//        P_4 = 1;
 
 //        P[1]:=P[Y]-P[X]+P[\[Alpha]]
 //        P[2]:=P[Y]+P[X]-P[\[Alpha]]
 //        P[3]:=P[Y]-P[X]-P[\[Alpha]]
 //        P[4]:=P[Y]+P[X]+P[\[Alpha]]
 
-        System.out.println(Arrays.toString(new double[] {P_1, P_2, P_3, P_4}));
+//        System.out.println(Arrays.toString(new double[] {P_1, P_2, P_3, P_4}));
 
         double noise_x = 0;
         double noise_y = 0;
         double noise_alpha = 0;
 
         final Random rand = new Random();
-        noise_x += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
-        noise_y += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
-        noise_alpha += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*5;
+//        noise_x += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
+//        noise_y += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
+//        noise_alpha += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*5;
 
         final double[] P = newPowerSetting;
 //        final double R_omegamax = R*omegamax;
         final double R2_omegamax = Math.pow(R, 2)*omegamax;
         final double Tmax4_div_R2_omegamax = -4*Tmax/R2_omegamax;
-        final double coefficient_Px = Tmax4_div_R2_omegamax * R * omegamax;
+//        final double coefficient_Px = Tmax4_div_R2_omegamax * R * omegamax;
         final double coefficient_xdot = Tmax4_div_R2_omegamax;
-        final double coefficient_Py = coefficient_Px;
+//        final double coefficient_Py = coefficient_Px;
         final double coefficient_ydot = coefficient_xdot;
-        final double coefficient_Palpha = -4*Tmax*(rX+rY)*R*omegamax/(Math.pow(R,2)*omegamax);
+//        final double coefficient_Palpha = -4*Tmax*(rX+rY)*R*omegamax/(Math.pow(R,2)*omegamax);
         final double coefficient_alphadot = -4*Tmax*Math.pow((rX+rY),2)/(Math.pow(R,2)*omegamax);
 //        final double F_x = -4*Tmax*( R_omegamax*P[0] - fieldVel.x )/R2_omegamax;
 //        final double F_y = -4*Tmax*( R_omegamax*P[1] - fieldVel.y )/R2_omegamax;
@@ -176,21 +225,21 @@ public class MecanumKinematics {
         final double cy_P2_4 = (-Math.cos(fieldPos.theta) - Math.sin(fieldPos.theta))*Tmax/R;
 
 
-        System.out.println("coefficient_x_P_1_3: " + cx_P1_3);
-        System.out.println("coefficient_x_P_1_3: " + cx_P2_4);
-        System.out.println("Tmax/R: " + Tmax/R);
+//        System.out.println("coefficient_x_P_1_3: " + cx_P1_3);
+//        System.out.println("coefficient_x_P_1_3: " + cx_P2_4);
+//        System.out.println("Tmax/R: " + Tmax/R);
 
         final double c_P_alpha = ((rX+rY)*Tmax/R);
 
         final double F_x = cx_P1_3*P_1 + cx_P2_4*P_2 + cx_P1_3*P_3 + cx_P2_4*P_4 + coefficient_xdot*fieldVel.x + noise_x;
-        final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_xdot*fieldVel.y + noise_y;
+        final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
         final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
 
-        System.out.println("Forces: " + Arrays.toString(new double[]{F_x, F_y, tau}));
-        System.out.println("c_P_alpha: " + c_P_alpha);
-        System.out.println("coefficient_alphadot: " + coefficient_alphadot);
-
-        System.out.println("(rX*Tmax/R): " + (rX*Tmax/R));
+//        System.out.println("Forces: " + Arrays.toString(new double[]{F_x, F_y, tau}));
+//        System.out.println("c_P_alpha: " + c_P_alpha);
+//        System.out.println("coefficient_alphadot: " + coefficient_alphadot);
+//
+//        System.out.println("(rX*Tmax/R): " + (rX*Tmax/R));
 
 //        final double xdotdot = coefficient_Px*P[0] + coefficient_xdot*fieldVel.x + noise_x;
 //        final double ydotdot = coefficient_Py*P[1] + coefficient_ydot*fieldVel.y + noise_y;
@@ -202,15 +251,15 @@ public class MecanumKinematics {
 
 //        System.out.println("F_x: " + F_x + " F_y: " + F_y + " tau_alpha: " + tau_alpha);
         fieldAcc = new Vector3(F_x/mass, F_y/mass, tau/J);
-        System.out.println("ax: " + fieldAcc.x + " ay: " + fieldAcc.y + " aa: " + fieldAcc.theta);
+//        System.out.println("ax: " + fieldAcc.x + " ay: " + fieldAcc.y + " aa: " + fieldAcc.theta);
         fieldVel = Vector3.addVector(fieldVel, fieldAcc.scalarMultiply(delta_t));
-        System.out.println("vx: " + fieldVel.x + " vy: " + fieldVel.y + " va: " + fieldVel.theta);
+//        System.out.println("vx: " + fieldVel.x + " vy: " + fieldVel.y + " va: " + fieldVel.theta);
         fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
-        System.out.println("px: " + fieldPos.x + " py: " + fieldPos.y + " pa: " + fieldPos.theta);
+//        System.out.println("px: " + fieldPos.x + " py: " + fieldPos.y + " pa: " + fieldPos.theta);
 
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
-        ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta, width, length, 100);
+        ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta, width, length);
 //        ui.update();
     }
 

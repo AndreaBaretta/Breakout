@@ -72,15 +72,9 @@ public class PowerProfile {
 
 //        System.out.println("Power profile: " + Arrays.toString(new double[]{P_x_uncorrected, P_y_uncorrected, P_alpha_uncorrected}));
 
-        final double P_x = P_x_uncorrected
-                + correction[0]
-                ;
-        final double P_y = P_y_uncorrected
-                + correction[1]
-                ;
-        final double P_alpha = P_alpha_uncorrected
-                + correction[2]
-                ;
+        final double P_x = P_x_uncorrected + correction[0];
+        final double P_y = P_y_uncorrected + correction[1];
+        final double P_alpha = P_alpha_uncorrected + correction[2];
 
 //        System.out.println("Final power setting: " + Arrays.toString(new double[]{P_x, P_y, P_alpha}));
 
