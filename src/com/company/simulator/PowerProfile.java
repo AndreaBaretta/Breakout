@@ -76,6 +76,37 @@ public class PowerProfile {
         final double P_y = P_y_uncorrected + correction[1];
         final double P_alpha = P_alpha_uncorrected + correction[2];
 
+        final double[] P_rel = CoordinateTransformations.toRelativeCoordinates(new ArrayRealVector(new double[]{P_x, P_y}), alpha).toArray();
+        final double P_X = P_rel[0];
+        final double P_Y = P_rel[1];
+
+        final double P_1_ = P_Y - P_X + P_alpha;
+        final double P_2_ = P_Y + P_X - P_alpha;
+        final double P_3_ = P_Y - P_X - P_alpha;
+        final double P_4_ = P_Y + P_X + P_alpha;
+
+        final double P_1, P_2, P_3, P_4;
+
+        final double[] P_array = new double[]{P_1_, P_2_, P_3_, P_4_};
+        if (Math.abs(P_1_) > 1 || Math.abs(P_2_) > 1 || Math.abs(P_3_) > 1 || Math.abs(P_4_) > 1) {
+            double max_P = 0;
+            for (int i = 0; i < 4; i++) {
+                if (Math.abs(P_array[i]) > max_P) {
+                    max_P = Math.abs(P_array[i]);
+                }
+            }
+            P_1 = P_1_/max_P;
+            P_2 = P_2_/max_P;
+            P_3 = P_3_/max_P;
+            P_4 = P_4_/max_P;
+        } else {
+            P_1 = P_1_;
+            P_2 = P_2_;
+            P_3 = P_3_;
+            P_4 = P_4_;
+        }
+
+
 //        System.out.println("Final power setting: " + Arrays.toString(new double[]{P_x, P_y, P_alpha}));
 
 
@@ -100,6 +131,6 @@ public class PowerProfile {
 //
 //        return new double[] {P_1, P_2, P_3, P_4};
 
-        return new double[]{P_x, P_y, P_alpha};
+        return new double[]{P_1, P_2, P_3, P_4};
     }
 }

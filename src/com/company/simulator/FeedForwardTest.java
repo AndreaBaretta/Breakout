@@ -11,7 +11,7 @@ public class FeedForwardTest {
 //        return new Vector3(0, 0, 0);
 //        return new Vector3(Math.cos(t), 0, 0);
 //        return new Vector3(Math.pow(Math.cos(t),3), Math.pow(Math.sin(t),3),t);
-        return new Vector3(Math.cos(0.5*t), Math.sin(0.5*t), 0);
+        return new Vector3(Math.cos(0.5*t), Math.sin(0.5*t), t);
 //        return new Vector3(0, t, 0);
 //        return new Vector3(t, 0, 0);
 //        return new Vector3(
@@ -25,7 +25,7 @@ public class FeedForwardTest {
 //        return new Vector3(0, 0,0);
 //        return new Vector3(-Math.sin(t), 0,0);
 //        return new Vector3(-3*Math.pow(Math.cos(t),2)*Math.sin(t), 3*Math.pow(Math.sin(t),2)*Math.cos(t),1);
-        return new Vector3(-0.5*Math.sin(0.5*t), 0.5*Math.cos(0.5*t), 0);
+        return new Vector3(-0.5*Math.sin(0.5*t), 0.5*Math.cos(0.5*t), 1);
 //        return new Vector3(0, 1, 0);
 //        return new Vector3(1, 0, 0);
 //        return new Vector3(

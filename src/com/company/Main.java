@@ -12,28 +12,7 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Howdy world");
 
-
-//        final Motor motor = new Motor(2.1, 31.4, new LowPassFilter(20, 0));
-//        final double phi = Math.PI/4;
-//        final double m = 20;
-//        final double[][] u_Pi = new double[][] {
-//                {-Math.sin(phi), Math.cos(phi)},
-//                {Math.sin(phi), Math.cos(phi)},
-//                {-Math.sin(phi), Math.cos(phi)},
-//                {Math.sin(phi), Math.cos(phi)}
-//        };
-//        final MecanumWheel wheel = new MecanumWheel(motor.clone(), 0.1, 1, 1, phi, m, u_Pi[0]);
-//        final double r = 37.5d/1000d;
-//        final double X = 0.4572/2d;
-//        final double Y = 0.4572/2d;
-//        final MecanumWheel[] wheels = new MecanumWheel[] {
-//                new MecanumWheel(motor.clone(), r, X, Y, -phi, m, u_Pi[0]),
-//                new MecanumWheel(motor.clone(), r, -X, Y, phi, m, u_Pi[1]),
-//                new MecanumWheel(motor.clone(), r, -X, -Y, -phi, m, u_Pi[2]),
-//                new MecanumWheel(motor.clone(), r, X, -Y, phi, m, u_Pi[3])
-//        };
-
-        Display window1 = new Display(1000, 1000, 50);
+        Display window1 = new Display(1000, 1000, 100);
         window1.init();
 
         final double rX = 0.4572/2;
@@ -41,12 +20,13 @@ public class Main {
         final double Tmax = 2.1;
         final double omegamax = 31.4;
         final double R = 37.5/1000;
-        final double J = 0.141667;
-        final double m = 13.6;
+        final double m = 20;
+        final double J = MecanumKinematics.FindMomentOfInertia(0.5, 0.5, m);
+
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(10, 10,20),
+                new Vector3(0,0,0), new Vector3(0, 1,0),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -55,16 +35,14 @@ public class Main {
 
         final FeedForwardTest feedForwardTest = new FeedForwardTest();
         double t = 0;
-//        final double dt = 0.0001;
-        double dt = 0;
         final double updateControllerEveryHz = 20;
         double counter = 0;
         double[] prevCorrection = new double[]{0,0,0};
         double t1 = System.currentTimeMillis()/(double)1000;
         double t2 = System.currentTimeMillis()/(double)1000;
         while (true) {
-            dt = t2 - t1;
-//            System.out.println(dt_realtime);
+//            final double dt = 0.0001; //Preset time
+            final double dt = t2 - t1; //Real-time simulation
             t1 = System.currentTimeMillis()/(double)1000;
             final Vector3 pos = feedForwardTest.getPosition(t);
             final Vector3 vel = feedForwardTest.getVelocity(t);
@@ -73,7 +51,7 @@ public class Main {
             final double[] correction;
             if (counter == updateControllerEveryHz) {
                 correction = controller.correction(Vector3.subtractVector(kinematics.getFieldPos(), pos),
-                        Vector3.subtractVector(kinematics.getFieldVel(), vel), kinematics.getFieldPos().theta);
+                        Vector3.subtractVector(kinematics.getFieldVel(), vel));
                 prevCorrection = correction;
                 counter = 0;
             } else {
