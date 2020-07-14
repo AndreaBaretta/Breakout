@@ -1,13 +1,8 @@
 package com.company;
 
 import com.company.simulator.*;
-import com.company.simulator.FeedForwardTest;
 
 public class Main {
-
-    public Main() {
-
-    }
 
     public static void main(String[] args) {
         System.out.println("Howdy world");
@@ -34,12 +29,16 @@ public class Main {
         final Controller controller = new Controller(Controller.computeK(m, R, J, omegamax, Tmax, rX, rY));
 
         final FeedForwardTest feedForwardTest = new FeedForwardTest();
+
+        double error_xy = 0;
+        double error_alpha = 0;
         double t = 0;
-        final double updateControllerEveryHz = 20;
+        final double updateControllerEveryHz = 300;
         double counter = 0;
         double[] prevCorrection = new double[]{0,0,0};
         double t1 = System.currentTimeMillis()/(double)1000;
         double t2 = System.currentTimeMillis()/(double)1000;
+        final double time_limit = 5;
         while (true) {
 //            final double dt = 0.0001; //Preset time
             final double dt = t2 - t1; //Real-time simulation
@@ -68,11 +67,18 @@ public class Main {
             kinematics.ui.drawCompassPixel(pos.theta, 400, -400, 50);
 
             kinematics.ui.update();
-//            System.out.println();
             System.out.println(kinematics.getFieldVel());
             counter++;
             t+=dt;
+            error_xy += Math.sqrt(Math.hypot(pos.x-kinematics.getFieldPos().x, pos.y-kinematics.getFieldPos().y))*dt;
+            error_alpha += (pos.theta-kinematics.getFieldPos().theta)*dt;
             t2 = System.currentTimeMillis()/(double)1000;
+            if (t >= time_limit) {
+                kinematics.ui.terminate();
+                System.out.println("Average error in x-y: " + error_xy/t);
+                System.out.println("Average error in alpha: " + error_alpha/t);
+                break;
+            }
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.company.simulator;
+package com.company;
 
 import com.company.simulator.Vector3;
 

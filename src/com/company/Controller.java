@@ -1,5 +1,6 @@
-package com.company.simulator;
+package com.company;
 
+import com.company.simulator.Vector3;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;
