@@ -10,6 +10,9 @@ public class Main {
         Display window1 = new Display(1000, 1000, 100);
         window1.init();
 
+        final double v_max = 1.17749;
+        final double a_max = 11.2;
+
         final double rX = 0.4572/2;
         final double rY = 0.4572/2;
         final double Tmax = 2.1;
@@ -39,7 +42,10 @@ public class Main {
         double t1 = System.currentTimeMillis()/(double)1000;
         double t2 = System.currentTimeMillis()/(double)1000;
         final double time_limit = 5;
+        double maxAccel = 0;
         while (true) {
+//            System.out.println("tan(pi/2): " + Math.tan(Math.PI/2));
+//            System.out.println(Math.PI);
 //            final double dt = 0.0001; //Preset time
             final double dt = t2 - t1; //Real-time simulation
             t1 = System.currentTimeMillis()/(double)1000;
@@ -67,18 +73,23 @@ public class Main {
             kinematics.ui.drawCompassPixel(pos.theta, 400, -400, 50);
 
             kinematics.ui.update();
-            System.out.println(kinematics.getFieldVel());
+            System.out.println("Current accel: " + Math.abs(kinematics.getFieldAcc().y));
+            if (Math.abs(kinematics.getFieldAcc().y) > maxAccel) {
+                maxAccel = Math.abs(kinematics.getFieldAcc().y);
+                System.out.println("maxAccel: " + maxAccel);
+            }
+//            System.out.println(kinematics.getFieldAcc());
             counter++;
             t+=dt;
             error_xy += Math.sqrt(Math.hypot(pos.x-kinematics.getFieldPos().x, pos.y-kinematics.getFieldPos().y))*dt;
             error_alpha += (pos.theta-kinematics.getFieldPos().theta)*dt;
             t2 = System.currentTimeMillis()/(double)1000;
-            if (t >= time_limit) {
-                kinematics.ui.terminate();
-                System.out.println("Average error in x-y: " + error_xy/t);
-                System.out.println("Average error in alpha: " + error_alpha/t);
-                break;
-            }
+//            if (t >= time_limit) {
+//                kinematics.ui.terminate();
+//                System.out.println("Average error in x-y: " + error_xy/t);
+//                System.out.println("Average error in alpha: " + error_alpha/t);
+//                break;
+//            }
         }
     }
 }
