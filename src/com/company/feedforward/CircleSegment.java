@@ -55,16 +55,22 @@ public class CircleSegment extends Segment {
 //                alpha
 //        );
         if (counterClockwise) {
+            final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
+            final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
+            final double alpha = Math.atan2(y - center.y, x - center.x) + Math.PI/2;
             return new Vector3(
-                    center.x + r*Math.cos(theta0_ + (s - s0)/r),
-                    center.y + r*Math.sin(theta0_ + (s - s0)/r),
-                    s/r + Math.PI
+                    x,
+                    y,
+                    alpha
             );
         } else {
+            final double x = center.x + r*Math.cos(theta0_ - (s - s0)/r);
+            final double y = center.y + r*Math.sin(theta0_ - (s - s0)/r);
+            final double alpha = Math.atan2(y - center.y, x - center.x) - Math.PI/2;
             return new Vector3(
-                    center.x + r*Math.cos(theta0_ - (s - s0)/r),
-                    center.y + r*Math.sin(theta0_ - (s - s0)/r),
-                    s/r - Math.PI
+                    x,
+                    y,
+                    alpha
             );
         }
     }
