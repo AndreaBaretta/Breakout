@@ -1,6 +1,13 @@
 package com.company;
 
+import com.company.feedforward.AnchorPoint;
+import com.company.feedforward.MainSegment;
+import com.company.feedforward.Path;
+import com.company.feedforward.Point2D;
 import com.company.simulator.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -43,41 +50,55 @@ public class Main {
         double t2 = System.currentTimeMillis()/(double)1000;
         final double time_limit = 5;
         double maxAccel = 0;
+
+        final List<AnchorPoint> anchorPoints = new ArrayList<AnchorPoint>();
+        anchorPoints.add(new AnchorPoint(0, 0, 0, AnchorPoint.Heading.FRONT, 0, 0, null, 0,
+                1, new Point2D(0, 1), 0, null, new Point2D(1, 1), true, false));
+        anchorPoints.add(new AnchorPoint(2, 4, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(2, 3), Math.PI,
+                0, null, 0, new Point2D(1, 3), null, false, true));
+        final Path path = new Path(anchorPoints);
         while (true) {
 //            System.out.println("tan(pi/2): " + Math.tan(Math.PI/2));
 //            System.out.println(Math.PI);
 //            final double dt = 0.0001; //Preset time
             final double dt = t2 - t1; //Real-time simulation
             t1 = System.currentTimeMillis()/(double)1000;
-            final Vector3 pos = feedForwardTest.getPosition(t);
-            final Vector3 vel = feedForwardTest.getVelocity(t);
-            final Vector3 acc = feedForwardTest.getAcceleration(t);
+//            final Vector3 pos = feedForwardTest.getPosition(t);
+//            final Vector3 vel = feedForwardTest.getVelocity(t);
+//            final Vector3 acc = feedForwardTest.getAcceleration(t);
+            final Vector3 pos = path.evaluate(t, 0, 0).pos;
 
-            final double[] correction;
-            if (counter == updateControllerEveryHz) {
-                correction = controller.correction(Vector3.subtractVector(kinematics.getFieldPos(), pos),
-                        Vector3.subtractVector(kinematics.getFieldVel(), vel));
-                prevCorrection = correction;
-                counter = 0;
-            } else {
-                correction = prevCorrection;
-            }
-            final double[] powerSettings = powerProfile.powerSetting(acc, vel, correction, kinematics.getFieldPos().theta);
-            kinematics.update(powerSettings, dt);
+//            final double[] correction;
+//            if (counter == updateControllerEveryHz) {
+//                correction = controller.correction(Vector3.subtractVector(kinematics.getFieldPos(), pos),
+//                        Vector3.subtractVector(kinematics.getFieldVel(), vel));
+//                prevCorrection = correction;
+//                counter = 0;
+//            } else {
+//                correction = prevCorrection;
+//            }
+//            final double[] powerSettings = powerProfile.powerSetting(acc, vel, correction, kinematics.getFieldPos().theta);
+//            kinematics.update(powerSettings, dt);
+
 //            System.out.println("Desired pos: " + pos.toString() + " actual pos: " + kinematics.getFieldPos() +
 //                    " || Desired vel: " + vel.toString() + " actual vel: " + kinematics.getFieldVel() +
 //                    " || Desired acc: " + acc.toString() + " actual acc: " + kinematics.getFieldAcc() +
 //                    " || Power settings: " + Arrays.toString(powerSettings));
+
+//            System.out.println(path.mainSegments.get(0).circleSegment1.theta1_);
+
+            kinematics.ui.setBackground(new double[]{255,255,255});
+
             kinematics.ui.drawCircle(pos.x, pos.y, 0.05, 100, new double[]{255,0,0});
             kinematics.ui.drawCircle(0, 0, 0.05, 100, new double[]{0,255,0});
             kinematics.ui.drawCompassPixel(pos.theta, 400, -400, 50);
 
             kinematics.ui.update();
-            System.out.println("Current accel: " + Math.abs(kinematics.getFieldAcc().y));
-            if (Math.abs(kinematics.getFieldAcc().y) > maxAccel) {
-                maxAccel = Math.abs(kinematics.getFieldAcc().y);
-                System.out.println("maxAccel: " + maxAccel);
-            }
+//            System.out.println("Current accel: " + Math.abs(kinematics.getFieldAcc().y));
+//            if (Math.abs(kinematics.getFieldAcc().y) > maxAccel) {
+//                maxAccel = Math.abs(kinematics.getFieldAcc().y);
+//                System.out.println("maxAccel: " + maxAccel);
+//            }
 //            System.out.println(kinematics.getFieldAcc());
             counter++;
             t+=dt;

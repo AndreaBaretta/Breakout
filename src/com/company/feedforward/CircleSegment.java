@@ -56,14 +56,14 @@ public class CircleSegment extends Segment {
 //        );
         if (counterClockwise) {
             return new Vector3(
-                    center.x + r*Math.cos(theta0_ + s/r),
-                    center.y + r*Math.sin(theta0_ + s/r),
+                    center.x + r*Math.cos(theta0_ + (s - s0)/r),
+                    center.y + r*Math.sin(theta0_ + (s - s0)/r),
                     s/r + Math.PI
             );
         } else {
             return new Vector3(
-                    center.x + r*Math.cos(theta0_ - s/r),
-                    center.y + r*Math.sin(theta0_ - s/r),
+                    center.x + r*Math.cos(theta0_ - (s - s0)/r),
+                    center.y + r*Math.sin(theta0_ - (s - s0)/r),
                     s/r - Math.PI
             );
         }

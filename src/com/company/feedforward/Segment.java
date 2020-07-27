@@ -3,9 +3,9 @@ package com.company.feedforward;
 import com.company.simulator.Vector3;
 
 public abstract class Segment {
-    final ConnectionPoint firstPoint;
-    final ConnectionPoint lastPoint;
-    final double s0;
+    public final ConnectionPoint firstPoint;
+    public final ConnectionPoint lastPoint;
+    public final double s0;
 
     Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0) {
         this.firstPoint = firstPoint;

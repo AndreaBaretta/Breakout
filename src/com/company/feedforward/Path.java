@@ -1,13 +1,15 @@
 package com.company.feedforward;
 
+import com.company.simulator.Vector3;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Path {
-    final List<AnchorPoint> anchorPoints;
-    final List<MainSegment> mainSegments;
+    public final List<AnchorPoint> anchorPoints;
+    public final List<MainSegment> mainSegments;
 
-    Path(final List<AnchorPoint> anchorPoints) {
+    public Path(final List<AnchorPoint> anchorPoints) {
         this.anchorPoints = anchorPoints;
         this.mainSegments = new ArrayList<MainSegment>();
 
@@ -16,19 +18,21 @@ public class Path {
 
         double s0 = 0;
         for (int i = 0; i < anchorPoints.size(); i++) {
+            System.out.println(i);
             curPoint = anchorPoints.get(i);
             if (curPoint.first) {
                 prevPoint = curPoint;
             } else {
+                System.out.println("ah");
                 final ConnectionPoint connection0 = prevPoint.middlePoint;
                 final ConnectionPoint connection1 = prevPoint.nextPoint;
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
 
                 final double prevAnchorTheta = Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x);
-                final double curAnchorTheta = Math.atan2(curPoint.middlePoint.y-curPoint.center1.y, curPoint.middlePoint.x-curPoint.center1.x);
+                final double curAnchorTheta = Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x);
 
-                final CircleSegment segment0 = new CircleSegment(connection0, connection1, s0, prevPoint.center1, prevPoint.r1, prevPoint.theta1, prevAnchorTheta, prevPoint.counterClockwise1);
+                final CircleSegment segment0 = new CircleSegment(connection0, connection1, s0, prevPoint.center1, prevPoint.r1, prevAnchorTheta, prevPoint.theta1, prevPoint.counterClockwise1);
                 s0 = segment0.getEndS();
                 final LinearSegment segment1 = new LinearSegment(connection1, connection2, s0);
                 s0 = segment1.getEndS();
@@ -54,12 +58,12 @@ public class Path {
                 );
             }
         }
-
+        System.out.println("End");
         final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
         return new State(
-                lastSegment.getPosition(s),
-                lastSegment.getVelocity(s, s_dot),
-                lastSegment.getAcceleration(s, s_dot, s_dot_dot)
+                lastSegment.getPosition(lastSegment.getEndS()),
+                new Vector3(0,0,0),
+                new Vector3(0,0,0)
         );
     }
 }

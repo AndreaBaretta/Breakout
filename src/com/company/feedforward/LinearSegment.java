@@ -4,7 +4,7 @@ import com.company.simulator.Vector3;
 
 public class LinearSegment extends Segment {
 
-    final double theta;
+    public final double theta;
 
     LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0) {
         super(firstPoint, lastPoint, s0);
@@ -13,8 +13,8 @@ public class LinearSegment extends Segment {
 
     public Vector3 getPosition(final double s) {
         return new Vector3(
-                firstPoint.x + s*Math.cos(theta),
-                firstPoint.y + s*Math.sin(theta),
+                firstPoint.x + (s - s0)*Math.cos(theta),
+                firstPoint.y + (s - s0)*Math.sin(theta),
                 theta
         );
     }

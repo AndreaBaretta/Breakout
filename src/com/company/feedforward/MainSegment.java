@@ -3,9 +3,9 @@ package com.company.feedforward;
 import com.company.simulator.Vector3;
 
 public class MainSegment extends Segment {
-    final CircleSegment circleSegment0;
-    final LinearSegment linearSegment;
-    final CircleSegment circleSegment1;
+    public final CircleSegment circleSegment0;
+    public final LinearSegment linearSegment;
+    public final CircleSegment circleSegment1;
 
     MainSegment(final CircleSegment circleSegment0, final LinearSegment linearSegment, final CircleSegment circleSegment1) {
         super(circleSegment0.firstPoint, circleSegment1.lastPoint, circleSegment0.s0);

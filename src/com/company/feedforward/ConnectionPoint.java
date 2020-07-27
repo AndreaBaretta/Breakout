@@ -1,9 +1,9 @@
 package com.company.feedforward;
 
 public class ConnectionPoint extends Point2D {
-    protected Segment prevSegment;
-    protected Segment nextSegment;
-    protected boolean complete;
+    public Segment prevSegment;
+    public Segment nextSegment;
+    public boolean complete;
 
     ConnectionPoint(final double x, final double y/*, final double tan*/) {
 //        super(x, y, tan);
