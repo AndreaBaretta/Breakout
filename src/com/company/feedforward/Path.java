@@ -45,6 +45,21 @@ public class Path {
     }
 
     public State evaluate(final double s, final double s_dot, final  double s_dot_dot) {
+        for (final MainSegment segment : mainSegments) {
+            if (segment.inRange(s)) {
+                return new State(
+                        segment.getPosition(s),
+                        segment.getVelocity(s, s_dot),
+                        segment.getAcceleration(s, s_dot, s_dot_dot)
+                );
+            }
+        }
 
+        final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
+        return new State(
+                lastSegment.getPosition(s),
+                lastSegment.getVelocity(s, s_dot),
+                lastSegment.getAcceleration(s, s_dot, s_dot_dot)
+        );
     }
 }
