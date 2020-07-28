@@ -40,20 +40,6 @@ public class CircleSegment extends Segment {
     }
 
     public Vector3 getPosition(final double s) {
-//        final double alpha;
-//        final double theta;
-//        if (counterClockwise) {
-//            alpha = (s/r) + Math.PI;
-//            theta = theta0_ + s/r;
-//        } else {
-//            alpha = (s/r) - Math.PI;
-//            theta = theta0_ - s/r;
-//        }
-//        return new Vector3(
-//                center.x + r*Math.cos(s/r),
-//                center.y + r*Math.sin(s/r),
-//                alpha
-//        );
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
@@ -76,60 +62,36 @@ public class CircleSegment extends Segment {
     }
 
     public Vector3 getVelocity(final double s, final double s_dot) {
-//        return new Vector3(
-//                -s_dot*Math.sin(s/r),
-//                s_dot*Math.cos(s/r),
-//                s_dot/r
-//        );
         if (counterClockwise) {
             return new Vector3(
-                    -s_dot*Math.sin(theta0_ + s/r),
-                    s_dot*Math.cos(theta0_ + s/r),
+                    -s_dot*Math.sin(theta0_ + (s - s0)/r),
+                    s_dot*Math.cos(theta0_ + (s - s0)/r),
                     s_dot/r
             );
         } else {
             return new Vector3(
-                    s_dot*Math.sin(theta0_ - s/r),
-                    -s_dot*Math.cos(theta0_ - s/r),
+                    s_dot*Math.sin(theta0_ - (s - s0)/r),
+                    -s_dot*Math.cos(theta0_ - (s - s0)/r),
                     s_dot/r
             );
         }
     }
 
     public Vector3 getAcceleration(final double s, final double s_dot, final double s_dot_dot) {
-//        return new Vector3(
-//                -s_dot_dot*Math.sin(s/r) - Math.pow(s_dot,2)*Math.cos(s/r)/r,
-//                s_dot_dot*Math.cos(s/r) - Math.pow(s_dot,2)*Math.sin(s/r)/r,
-//                s_dot_dot/r
-//        );
         if (counterClockwise) {
             return new Vector3(
-                    -s_dot_dot*Math.sin(theta0_ + s/r) - Math.pow(s_dot,2)*Math.cos(theta0_ + s/r)/r,
-                    s_dot_dot*Math.cos(theta0_ + s/r) - Math.pow(s_dot,2)*Math.sin(theta0_ + s/r)/r,
+                    -s_dot_dot*Math.sin(theta0_ + (s - s0)/r) - Math.pow(s_dot,2)*Math.cos(theta0_ + (s - s0)/r)/r,
+                    s_dot_dot*Math.cos(theta0_ + (s - s0)/r) - Math.pow(s_dot,2)*Math.sin(theta0_ + (s - s0)/r)/r,
                     s_dot_dot/r
             );
         } else {
             return new Vector3(
-                    s_dot_dot*Math.sin(theta0_ - s/r) - Math.pow(s_dot,2)*Math.cos(theta0_ - s/r)/r,
-                    -s_dot_dot*Math.cos(theta0_ - s/r) - Math.pow(s_dot,2)*Math.sin(theta0_ - s/r)/r,
+                    s_dot_dot*Math.sin(theta0_ - (s - s0)/r) - Math.pow(s_dot,2)*Math.cos(theta0_ - (s - s0)/r)/r,
+                    -s_dot_dot*Math.cos(theta0_ - (s - s0)/r) - Math.pow(s_dot,2)*Math.sin(theta0_ - (s - s0)/r)/r,
                     s_dot_dot/r
             );
         }
     }
-
-//    public double getAlpha(final double s) {
-//        if (counterClockwise) {
-//            return
-//        }
-//    }
-//
-//    public double getAngularVelocity(final double s) {
-//        return 0;
-//    }
-//
-//    public double getAngularAcceleration(final double s) {
-//        return 0;
-//    }
 
     public double getTotalS() {
         if (counterClockwise) {

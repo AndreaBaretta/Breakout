@@ -23,7 +23,6 @@ public class Path {
             if (curPoint.first) {
                 prevPoint = curPoint;
             } else {
-                System.out.println("ah");
                 final ConnectionPoint connection0 = prevPoint.middlePoint;
                 final ConnectionPoint connection1 = prevPoint.nextPoint;
                 final ConnectionPoint connection2 = curPoint.prevPoint;
@@ -58,7 +57,7 @@ public class Path {
                 );
             }
         }
-        System.out.println("End");
+
         final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
         return new State(
                 lastSegment.getPosition(lastSegment.getEndS()),
