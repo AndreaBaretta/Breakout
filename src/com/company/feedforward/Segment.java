@@ -38,4 +38,10 @@ public abstract class Segment {
     }
 
     public abstract double calcMinVelocity();
+
+    public abstract double calcS(final double x, final double y);
+
+    public double calcS(final Vector3 pos) {
+        return calcS(pos.x, pos.y);
+    }
 }

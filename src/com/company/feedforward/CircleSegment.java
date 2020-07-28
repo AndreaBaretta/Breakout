@@ -104,4 +104,24 @@ public class CircleSegment extends Segment {
     public double calcMinVelocity() {
         return Math.sqrt(r * Config.MAX_ACCELERATION);
     }
+
+    public double calcS(final double x, final double y) {
+        final double gamma = Math.atan2(y - center.y, x - center.x);
+        final double theta;
+        if (counterClockwise) {
+            if (gamma < theta0) {
+                theta = (gamma + 2*Math.PI) - theta0;
+            } else {
+                theta = gamma - theta0;
+            }
+        } else {
+            if (gamma > theta0) {
+                theta = theta0 - (gamma - 2*Math.PI);
+            } else {
+                theta = theta0 - gamma;
+            }
+        }
+
+        return theta*r + s0;
+    }
 }

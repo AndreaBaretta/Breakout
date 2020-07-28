@@ -9,6 +9,9 @@ public class Path {
     public final List<AnchorPoint> anchorPoints;
     public final List<MainSegment> mainSegments;
 
+    protected MainSegment currentSegment;
+    protected boolean finished;
+
     public Path(final List<AnchorPoint> anchorPoints) {
         this.anchorPoints = anchorPoints;
         this.mainSegments = new ArrayList<MainSegment>();
@@ -38,31 +41,101 @@ public class Path {
                 final CircleSegment segment2 = new CircleSegment(connection2, connection3, s0, prevPoint.configVelocity, curPoint.center0, curPoint.r0, curPoint.theta0, curAnchorTheta, curPoint.counterClockwise0);
                 s0 = segment2.getEndS();
 
-                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2);
+                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i);
 
                 mainSegments.add(mainSegment);
 
                 prevPoint = curPoint;
             }
         }
+
+        currentSegment = mainSegments.get(mainSegments.size() - 1);
+        finished = false;
     }
 
-    public State evaluate(final double s, final double s_dot, final  double s_dot_dot) {
-        for (final MainSegment segment : mainSegments) {
-            if (segment.inRange(s)) {
-                return new State(
-                        segment.getPosition(s),
-                        segment.getVelocity(s, s_dot),
-                        segment.getAcceleration(s, s_dot, s_dot_dot)
-                );
-            }
+    public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
+//        for (final MainSegment segment : mainSegments) {
+//            if (segment.inRange(s)) {
+//                return new RobotState(
+//                        segment.getPosition(s),
+//                        segment.getVelocity(s, s_dot),
+//                        segment.getAcceleration(s, s_dot, s_dot_dot)
+//                );
+//            }
+//        }
+//        final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
+//        return new RobotState(
+//                lastSegment.getPosition(lastSegment.getEndS()),
+//                new Vector3(0,0,0),
+//                new Vector3(0,0,0)
+//        );
+        final double endS = currentSegment.getEndS();
+        if (finished) { //If at end, stay there
+            return new RobotState(
+                    currentSegment.getPosition(endS),
+                    currentSegment.getVelocity(endS, 0),
+                    currentSegment.getAcceleration(endS, 0, 0)
+            );
         }
+        if (currentSegment.index == mainSegments.size() - 1 && s >= endS - 0.01) { //Condition to finish
+            finish();
+            return new RobotState(
+                    currentSegment.getPosition(endS),
+                    currentSegment.getVelocity(endS, 0),
+                    currentSegment.getAcceleration(endS, 0, 0)
+            );
+        } else { //Else, do the normal thing
+            return new RobotState(
+                    currentSegment.getPosition(s),
+                    currentSegment.getVelocity(s, s_dot),
+                    currentSegment.getAcceleration(s, s_dot, s_dot_dot)
+                );
+        }
+    }
 
-        final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
-        return new State(
-                lastSegment.getPosition(lastSegment.getEndS()),
-                new Vector3(0,0,0),
-                new Vector3(0,0,0)
-        );
+    public double calcS(final double x, final double y) {
+        final double curSegmentS = currentSegment.calcS(x, y);
+        if (curSegmentS >= currentSegment.getEndS()) {
+            next();
+            return currentSegment.calcS(x, y);
+        } else if (curSegmentS < currentSegment.s0) {
+            back();
+            return currentSegment.calcS(x, y);
+        } else {
+            return curSegmentS;
+        }
+    }
+
+    protected void next() {
+        if (currentSegment.index == mainSegments.size() - 1) {
+            ;
+        } else {
+            currentSegment = mainSegments.get(currentSegment.index + 1);
+        }
+    }
+
+    protected void back() {
+        if (currentSegment.index == 0) {
+            ;
+        } else {
+            currentSegment = mainSegments.get(currentSegment.index - 1);
+        }
+    }
+
+    protected void finish() {
+        finished = true;
+    }
+
+    public double calcAccelerationCorrection(final double s_dot) {
+        final double theta = Config.CALC_ACCELERATION_CORRECTION * Math.PI/2;
+        final double v_c = currentSegment.currentSegment.minVelocity;
+        final double correction = (v_c - s_dot)*Math.tan(theta);
+        if (correction >= Config.MAX_ACCELERATION) { //Max acceleration
+            return Config.MAX_ACCELERATION;
+        } else if (correction <= Config.MAX_DECELERATION) { //Max deceleration
+            return Config.MAX_DECELERATION;
+        } else { //Just apply correction
+            return correction;
+        }
     }
 }
