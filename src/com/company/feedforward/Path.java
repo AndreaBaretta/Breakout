@@ -31,11 +31,11 @@ public class Path {
                 final double prevAnchorTheta = Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x);
                 final double curAnchorTheta = Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x);
 
-                final CircleSegment segment0 = new CircleSegment(connection0, connection1, s0, prevPoint.center1, prevPoint.r1, prevAnchorTheta, prevPoint.theta1, prevPoint.counterClockwise1);
+                final CircleSegment segment0 = new CircleSegment(connection0, connection1, s0, prevPoint.configVelocity, prevPoint.center1, prevPoint.r1, prevAnchorTheta, prevPoint.theta1, prevPoint.counterClockwise1);
                 s0 = segment0.getEndS();
-                final LinearSegment segment1 = new LinearSegment(connection1, connection2, s0);
+                final LinearSegment segment1 = new LinearSegment(connection1, connection2, s0, prevPoint.configVelocity);
                 s0 = segment1.getEndS();
-                final CircleSegment segment2 = new CircleSegment(connection2, connection3, s0, curPoint.center0, curPoint.r0, curPoint.theta0, curAnchorTheta, curPoint.counterClockwise0);
+                final CircleSegment segment2 = new CircleSegment(connection2, connection3, s0, prevPoint.configVelocity, curPoint.center0, curPoint.r0, curPoint.theta0, curAnchorTheta, curPoint.counterClockwise0);
                 s0 = segment2.getEndS();
 
                 final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2);

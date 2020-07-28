@@ -8,7 +8,7 @@ public class MainSegment extends Segment {
     public final CircleSegment circleSegment1;
 
     MainSegment(final CircleSegment circleSegment0, final LinearSegment linearSegment, final CircleSegment circleSegment1) {
-        super(circleSegment0.firstPoint, circleSegment1.lastPoint, circleSegment0.s0);
+        super(circleSegment0.firstPoint, circleSegment1.lastPoint, circleSegment0.s0, Config.MAX_VELOCITY);
         this.circleSegment0 = circleSegment0;
         this.linearSegment = linearSegment;
         this.circleSegment1 = circleSegment1;
@@ -46,5 +46,9 @@ public class MainSegment extends Segment {
 
     public double getTotalS() {
         return circleSegment0.getTotalS() + linearSegment.getTotalS() + circleSegment1.getTotalS();
+    }
+
+    public double calcMinVelocity() {
+        return Config.MAX_VELOCITY;
     }
 }

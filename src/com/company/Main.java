@@ -1,9 +1,6 @@
 package com.company;
 
-import com.company.feedforward.AnchorPoint;
-import com.company.feedforward.MainSegment;
-import com.company.feedforward.Path;
-import com.company.feedforward.Point2D;
+import com.company.feedforward.*;
 import com.company.simulator.*;
 
 import java.util.ArrayList;
@@ -53,9 +50,9 @@ public class Main {
 
         final List<AnchorPoint> anchorPoints = new ArrayList<AnchorPoint>();
         anchorPoints.add(new AnchorPoint(0, 0, 0, AnchorPoint.Heading.FRONT, 0, 0, null, 0,
-                1, new Point2D(0, 1), 0, null, new Point2D(1, 1), true, false));
+                1, new Point2D(0, 1), 0, null, new Point2D(1, 1), Config.MAX_VELOCITY, true, false));
         anchorPoints.add(new AnchorPoint(2, 4, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(2, 3), Math.PI,
-                0, null, 0, new Point2D(1, 3), null, false, true));
+                0, null, 0, new Point2D(1, 3), null, Config.MAX_VELOCITY, false, true));
         final Path path = new Path(anchorPoints);
         while (true) {
 //            System.out.println("tan(pi/2): " + Math.tan(Math.PI/2));

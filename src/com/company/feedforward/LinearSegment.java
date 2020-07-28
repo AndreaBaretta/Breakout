@@ -6,8 +6,8 @@ public class LinearSegment extends Segment {
 
     public final double theta;
 
-    LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0) {
-        super(firstPoint, lastPoint, s0);
+    LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
+        super(firstPoint, lastPoint, s0, configVelocity);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
     }
 
@@ -35,19 +35,11 @@ public class LinearSegment extends Segment {
         );
     }
 
-//    public double getAlpha(final double s) {
-//        return theta;
-//    }
-//
-//    public double getAngularVelocity(final double s) {
-//        return 0;
-//    }
-//
-//    public double getAngularAcceleration(final double s) {
-//        return 0;
-//    }
-
     public double getTotalS() {
         return Math.hypot(lastPoint.x-firstPoint.x, lastPoint.y-firstPoint.y);
+    }
+
+    public double calcMinVelocity() {
+        return minVelocity;
     }
 }

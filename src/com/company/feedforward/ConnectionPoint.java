@@ -4,17 +4,18 @@ public class ConnectionPoint extends Point2D {
     public Segment prevSegment;
     public Segment nextSegment;
     public boolean complete;
+    protected double minVelocity;
 
-    ConnectionPoint(final double x, final double y/*, final double tan*/) {
-//        super(x, y, tan);
+    ConnectionPoint(final double x, final double y, final double configVelocity) {
         super(x, y);
         complete = false;
+        minVelocity = configVelocity;
     }
 
-    ConnectionPoint(final Point2D point/*, final double tan*/) {
-//        super(point, tan);
+    ConnectionPoint(final Point2D point, final double configVelocity) {
         super(point.x, point.y);
         complete = false;
+        minVelocity = configVelocity;
     }
 
     public void setPrevSegment(final Segment segment) {
@@ -25,6 +26,7 @@ public class ConnectionPoint extends Point2D {
         if (prevSegment != null && nextSegment != null) {
             complete = true;
         }
+        minVelocity = Math.min(minVelocity, prevSegment.minVelocity);
     }
 
     public void setNextSegment(final Segment segment) {
@@ -35,5 +37,10 @@ public class ConnectionPoint extends Point2D {
         if (prevSegment != null && nextSegment != null) {
             complete = true;
         }
+        minVelocity = Math.min(minVelocity, nextSegment.minVelocity);
+    }
+
+    public double getMinVelocity() {
+        return minVelocity;
     }
 }
