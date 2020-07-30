@@ -36,9 +36,9 @@ public class MainSegment extends Segment {
         } else {
             alpha0 = anchorPoint0.customHeading;
         }
-        if (anchorPoint0.heading == AnchorPoint.Heading.FRONT) {
+        if (anchorPoint1.heading == AnchorPoint.Heading.FRONT) {
             alpha1 = circleSegment1.getPosition(circleSegment1.getEndS()).theta;
-        } else if (anchorPoint0.heading == AnchorPoint.Heading.BACK) {
+        } else if (anchorPoint1.heading == AnchorPoint.Heading.BACK) {
             alpha1 = -circleSegment1.getPosition(circleSegment1.getEndS()).theta;
         } else {
             alpha1 = anchorPoint1.customHeading;
