@@ -1,5 +1,6 @@
 package com.company.feedforward;
 
+import com.company.simulator.PowerProfile;
 import com.company.simulator.Vector3;
 
 import java.util.ArrayList;
@@ -54,21 +55,6 @@ public class Path {
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
-//        for (final MainSegment segment : mainSegments) {
-//            if (segment.inRange(s)) {
-//                return new RobotState(
-//                        segment.getPosition(s),
-//                        segment.getVelocity(s, s_dot),
-//                        segment.getAcceleration(s, s_dot, s_dot_dot)
-//                );
-//            }
-//        }
-//        final MainSegment lastSegment = mainSegments.get(mainSegments.size() - 1);
-//        return new RobotState(
-//                lastSegment.getPosition(lastSegment.getEndS()),
-//                new Vector3(0,0,0),
-//                new Vector3(0,0,0)
-//        );
         final double endS = currentSegment.getEndS();
         if (finished) { //If at end, stay there
             return new RobotState(
@@ -126,16 +112,27 @@ public class Path {
         finished = true;
     }
 
-    public double calcAccelerationCorrection(final double s_dot) { //TODO: Fix correction cap
-        final double theta = Config.CALC_ACCELERATION_CORRECTION * Math.PI/2;
-        final double v_c = currentSegment.currentSegment.minVelocity;
-        final double correction = (v_c - s_dot)*Math.tan(theta);
-        if (correction >= Config.MAX_ACCELERATION) { //Max acceleration
-            return Config.MAX_ACCELERATION;
-        } else if (correction <= Config.MAX_DECELERATION) { //Max deceleration
-            return Config.MAX_DECELERATION;
-        } else { //Just apply correction
-            return correction;
+    public double calcAccelerationCorrection(final double s, final double s_dot) {
+        double s_dot_dot = Config.MAX_ACCELERATION;
+        while (true) {
+            final RobotState state = evaluate(s, s_dot, s_dot_dot);
+            final Vector3 vel = state.vel;
+            final Vector3 acc = state.acc;
+            final double[] powerSettings = PowerProfile.toRawPowerSettings(acc, vel, state.pos.theta);
+            boolean optimized = true;
+            for (double p : powerSettings) {
+                if (Math.abs(p) >= 1) {
+                    optimized = false;
+                }
+            }
+            if (optimized) {
+                return s_dot_dot;
+            }
+            if (s_dot_dot < Config.MAX_DECELERATION) {
+                System.out.println("Fuck");
+                return 0;
+            }
+            s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
         }
     }
 }
