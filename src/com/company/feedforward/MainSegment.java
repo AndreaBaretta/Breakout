@@ -11,42 +11,117 @@ public class MainSegment extends Segment {
 
     protected Segment currentSegment;
 
-    MainSegment(final CircleSegment circleSegment0, final LinearSegment linearSegment, final CircleSegment circleSegment1, final int index) {
+    public final AnchorPoint anchorPoint0;
+    public final AnchorPoint anchorPoint1;
+    public final double alpha0;
+    public final double alpha1;
+    public final AnchorPoint.Heading heading;
+    public final boolean counterClockwise;
+    public final double alpha0_;
+
+    MainSegment(final CircleSegment circleSegment0, final LinearSegment linearSegment, final CircleSegment circleSegment1, final int index,
+                final AnchorPoint anchorPoint0, final AnchorPoint anchorPoint1) {
         super(circleSegment0.firstPoint, circleSegment1.lastPoint, circleSegment0.s0, Config.MAX_VELOCITY);
         this.circleSegment0 = circleSegment0;
         this.linearSegment = linearSegment;
         this.circleSegment1 = circleSegment1;
         this.index = index;
         currentSegment = circleSegment0;
+        this.anchorPoint0 = anchorPoint0;
+        this.anchorPoint1 = anchorPoint1;
+        if (anchorPoint0.heading == AnchorPoint.Heading.FRONT) {
+            alpha0 = circleSegment0.getPosition(circleSegment0.s0).theta;
+        } else if (anchorPoint0.heading == AnchorPoint.Heading.BACK) {
+            alpha0 = -circleSegment0.getPosition(circleSegment0.s0).theta;
+        } else {
+            alpha0 = anchorPoint0.customHeading;
+        }
+        if (anchorPoint0.heading == AnchorPoint.Heading.FRONT) {
+            alpha1 = circleSegment1.getPosition(circleSegment1.getEndS()).theta;
+        } else if (anchorPoint0.heading == AnchorPoint.Heading.BACK) {
+            alpha1 = -circleSegment1.getPosition(circleSegment1.getEndS()).theta;
+        } else {
+            alpha1 = anchorPoint1.customHeading;
+        }
+        if (anchorPoint0.heading == AnchorPoint.Heading.FRONT && anchorPoint1.heading == AnchorPoint.Heading.FRONT) {
+            heading = AnchorPoint.Heading.FRONT;
+        } else if (anchorPoint0.heading == AnchorPoint.Heading.BACK && anchorPoint1.heading == AnchorPoint.Heading.BACK) {
+            heading = AnchorPoint.Heading.BACK;
+        } else {
+            heading = AnchorPoint.Heading.CUSTOM;
+        }
+        if (alpha1 > alpha0) {
+            if (alpha1 - alpha0 >= Math.PI) {
+                counterClockwise = false;
+                alpha0_ = alpha0 + 2*Math.PI;
+            } else {
+                counterClockwise = true;
+                alpha0_ = alpha0;
+            }
+        } else {
+            if (alpha0 - alpha1 >= Math.PI) {
+                counterClockwise = true;
+                alpha0_ = alpha0 - 2*Math.PI;
+            } else {
+                counterClockwise = false;
+                alpha0_ = alpha0;
+            }
+        }
     }
 
     public Vector3 getPosition(final double s) {
+        final Vector3 position;
         if (circleSegment0.inRange(s)) {
-            return circleSegment0.getPosition(s);
+            position = circleSegment0.getPosition(s);
         } else if (linearSegment.inRange(s)) {
-            return linearSegment.getPosition(s);
+            position = linearSegment.getPosition(s);
         } else {
-            return circleSegment1.getPosition(s);
+            position = circleSegment1.getPosition(s);
+        }
+
+        if (heading == AnchorPoint.Heading.FRONT) {
+            return position;
+        } else if (heading == AnchorPoint.Heading.BACK) {
+            return new Vector3(position.x, position.y, position.theta + Math.PI);
+        } else {
+            final double alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(getEndS() - s0);
+            return new Vector3(position.x, position.y, normalizeAlpha(alpha));
         }
     }
 
     public Vector3 getVelocity(final double s, final double s_dot) {
+        final Vector3 velocity;
         if (circleSegment0.inRange(s)) {
-            return circleSegment0.getVelocity(s, s_dot);
+            velocity = circleSegment0.getVelocity(s, s_dot);
         } else if (linearSegment.inRange(s)) {
-            return linearSegment.getVelocity(s, s_dot);
+            velocity = linearSegment.getVelocity(s, s_dot);
         } else {
-            return circleSegment1.getVelocity(s, s_dot);
+            velocity = circleSegment1.getVelocity(s, s_dot);
+        }
+
+        if (heading == AnchorPoint.Heading.CUSTOM) {
+            final double alpha_dot = s_dot*(alpha1 - alpha0)/(getEndS() - s0);
+            return new Vector3(velocity.x, velocity.y, alpha_dot);
+        } else {
+            return velocity;
         }
     }
 
     public Vector3 getAcceleration(final double s, final double s_dot, final double s_dot_dot) {
+        final Vector3 acceleration;
         if (circleSegment0.inRange(s)) {
-            return circleSegment0.getAcceleration(s, s_dot, s_dot_dot);
+            acceleration = circleSegment0.getAcceleration(s, s_dot, s_dot_dot);
         } else if (linearSegment.inRange(s)) {
-            return linearSegment.getAcceleration(s, s_dot, s_dot_dot);
+            acceleration = linearSegment.getAcceleration(s, s_dot, s_dot_dot);
         } else {
-            return circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
+            acceleration = circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
+        }
+
+        if (heading == AnchorPoint.Heading.CUSTOM) {
+            final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0);
+            return new Vector3(acceleration.x, acceleration.y, alpha_dot_dot);
+        } else {
+            return acceleration;
         }
     }
 
@@ -71,6 +146,25 @@ public class MainSegment extends Segment {
             return currentSegment.calcS(x, y);
         } else {
             return currentSegment.calcS(x, y);
+        }
+    }
+
+    public static double normalizeAlpha(final double alpha) {
+        final double sin = Math.sin(alpha);
+        final double cos = Math.cos(alpha);
+        final double arcsin = Math.asin(sin);
+        if (sin >= 0) {
+            if (cos >= 0) { //Q1
+                return arcsin;
+            } else { //Q2
+                return Math.PI - arcsin;
+            }
+        } else {
+            if (cos >= 0) { //Q4
+                return arcsin;
+            } else { //Q3
+                return Math.PI - arcsin;
+            }
         }
     }
 }

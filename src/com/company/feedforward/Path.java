@@ -41,7 +41,7 @@ public class Path {
                 final CircleSegment segment2 = new CircleSegment(connection2, connection3, s0, prevPoint.configVelocity, curPoint.center0, curPoint.r0, curPoint.theta0, curAnchorTheta, curPoint.counterClockwise0);
                 s0 = segment2.getEndS();
 
-                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i);
+                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint);
 
                 mainSegments.add(mainSegment);
 
@@ -126,7 +126,7 @@ public class Path {
         finished = true;
     }
 
-    public double calcAccelerationCorrection(final double s_dot) {
+    public double calcAccelerationCorrection(final double s_dot) { //TODO: Fix correction cap
         final double theta = Config.CALC_ACCELERATION_CORRECTION * Math.PI/2;
         final double v_c = currentSegment.currentSegment.minVelocity;
         final double correction = (v_c - s_dot)*Math.tan(theta);
