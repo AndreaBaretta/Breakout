@@ -140,7 +140,7 @@ public class CircleSegment extends Segment {
 //            System.out.println("gamma: " + gamma + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
 //            return s0;
 //        }
-        System.out.println("gamma: " + gamma + " theta0: " + theta0 + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
+//        System.out.println("gamma: " + gamma + " theta0: " + theta0 + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
         return theta*r + s0;
     }
 }

@@ -112,9 +112,10 @@ public class MecanumKinematics {
         double noise_alpha = 0;
 
         final Random rand = new Random();
-//        noise_x += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
-//        noise_y += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*35;
-//        noise_alpha += Math.pow(-1, rand.nextInt(1))*rand.nextDouble()*5;
+//        noise_x += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
+//        noise_y += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
+//        noise_alpha += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*5;
+//        System.out.println("noise_alpha: " + noise_alpha + " noise_x: " + noise_x + " noise_y: " + noise_y + " random_int: " + Math.pow(-1, rand.nextInt(2)));
 
         final double[] P = newPowerSetting;
         final double R2_omegamax = Math.pow(R, 2)*omegamax;
