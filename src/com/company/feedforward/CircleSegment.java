@@ -3,7 +3,7 @@ package com.company.feedforward;
 import com.company.Main;
 import com.company.simulator.Vector3;
 
-public class CircleSegment extends Segment {
+public class CircleSegment extends MinorSegment {
 
     public final Point2D center;
     public final double r;

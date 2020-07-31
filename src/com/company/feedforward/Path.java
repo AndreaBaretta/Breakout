@@ -22,6 +22,7 @@ public class Path {
         AnchorPoint prevPoint = curPoint;
 
         double s0 = 0;
+        double connectionPointCounter = 0;
         for (int i = 0; i < anchorPoints.size(); i++) {
             System.out.println(i);
             curPoint = anchorPoints.get(i);
@@ -33,6 +34,16 @@ public class Path {
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
 
+                connection0.index = connectionPointCounter;
+                connectionPointCounter++;
+                connection1.index = connectionPointCounter;
+                connectionPointCounter++;
+                connection2.index = connectionPointCounter;
+                connectionPointCounter++;
+                connection3.index = connectionPointCounter;
+                connectionPointCounter++;
+
+                System.out.println("toString: " + prevPoint.center1.toString());
                 final double prevAnchorTheta = Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x);
                 final double curAnchorTheta = Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x);
 
@@ -48,10 +59,11 @@ public class Path {
                 mainSegments.add(mainSegment);
 
                 prevPoint = curPoint;
+//                break;
             }
         }
 
-        currentSegment = mainSegments.get(mainSegments.size() - 1);
+        currentSegment = mainSegments.get(0);
         finished = false;
     }
 

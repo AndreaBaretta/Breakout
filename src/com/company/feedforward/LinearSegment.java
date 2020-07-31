@@ -2,7 +2,7 @@ package com.company.feedforward;
 
 import com.company.simulator.Vector3;
 
-public class LinearSegment extends Segment {
+public class LinearSegment extends MinorSegment {
 
     public final double theta;
 

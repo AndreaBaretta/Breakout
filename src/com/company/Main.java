@@ -29,7 +29,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(-0.5, -0.3,3.14),
+                new Vector3(0,0,0), new Vector3(0.1, 0.3,0.1),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -52,8 +52,10 @@ public class Main {
         final List<AnchorPoint> anchorPoints = new ArrayList<AnchorPoint>();
         anchorPoints.add(new AnchorPoint(0, 0, 0, AnchorPoint.Heading.FRONT, 0, 0, null, 0,
                 1, new Point2D(0, 1), 0, null, new Point2D(1, 1), Config.MAX_VELOCITY, true, false));
-        anchorPoints.add(new AnchorPoint(2, 4, 0, AnchorPoint.Heading.FRONT, 1, 1, new Point2D(2, 3), Math.PI,
-                0, null, 0, new Point2D(1, 3), null, Config.MAX_VELOCITY, false, true));
+        anchorPoints.add(new AnchorPoint(2, 3, 0, AnchorPoint.Heading.FRONT, 1, 1, new Point2D(2, 2), Math.PI,
+                1, new Point2D(2,2), 0, new Point2D(1, 2), new Point2D(3,2), Config.MAX_VELOCITY, false, false));
+        anchorPoints.add(new AnchorPoint(4, 0, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(4,1), Math.PI,
+                         0, null, 0, new Point2D(3,1), null, Config.MAX_VELOCITY, false, true));
         final Path path = new Path(anchorPoints);
 
         double prev_s = 0;
@@ -62,8 +64,8 @@ public class Main {
 //            System.out.println("tan(pi/2): " + Math.tan(Math.PI/2));
 //            System.out.println(Math.PI);
 //            final double dt = 0.0001; //Preset time
-//            double dt = t2 - t1;
-            double dt = 0.001;
+            double dt = t2 - t1;
+//            double dt = 0.001;
 
             final double s;
             final double s_dot;
@@ -74,7 +76,7 @@ public class Main {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = 0;
                 s_dot_dot = 0;
-                System.out.println("Set to 0");
+//                System.out.println("Set to 0");
             } else {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = (s - prev_s)/dt;
@@ -117,7 +119,9 @@ public class Main {
 //            kinematics.ui.setBackground(new double[]{255,255,255});
 
             kinematics.ui.drawCircle(state.pos.x, state.pos.y, 0.05, 100, new double[]{255,0,0});
+//            kinematics.ui.drawCircle(path.evaluate(t, 0, 0).pos.x, path.evaluate(t, 0, 0).pos.y, 0.05, 100, new double[]{255,0,0});
             kinematics.ui.drawCircle(0, 0, 0.05, 100, new double[]{0,255,0});
+//            kinematics.ui.drawCompassPixel(path.evaluate(t, 0, 0).pos.theta, 400, -400, 50);
             kinematics.ui.drawCompassPixel(state.pos.theta, 400, -400, 50);
 
             kinematics.ui.update();

@@ -3,16 +3,16 @@ package com.company.feedforward;
 import com.company.simulator.Vector3;
 
 public abstract class Segment {
-    public final ConnectionPoint firstPoint;
-    public final ConnectionPoint lastPoint;
+//    public final ConnectionPoint firstPoint;
+//    public final ConnectionPoint lastPoint;
     public final double s0;
     public final double minVelocity;
 
     Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
-        this.firstPoint = firstPoint;
-        this.lastPoint = lastPoint;
-        firstPoint.setNextSegment(this);
-        lastPoint.setPrevSegment(this);
+//        this.firstPoint = firstPoint;
+//        this.lastPoint = lastPoint;
+//        firstPoint.setNextSegment(this);
+//        lastPoint.setPrevSegment(this);
         this.s0 = s0;
         minVelocity = Math.min(configVelocity, calcMinVelocity());
     }
