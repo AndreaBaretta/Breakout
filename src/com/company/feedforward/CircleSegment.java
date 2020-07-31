@@ -1,5 +1,6 @@
 package com.company.feedforward;
 
+import com.company.Main;
 import com.company.simulator.Vector3;
 
 public class CircleSegment extends Segment {
@@ -40,6 +41,7 @@ public class CircleSegment extends Segment {
     }
 
     public Vector3 getPosition(final double s) {
+//        System.out.println("received s: " + s + " counterClockwise: " + counterClockwise);
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
@@ -72,7 +74,7 @@ public class CircleSegment extends Segment {
             return new Vector3(
                     s_dot*Math.sin(theta0_ - (s - s0)/r),
                     -s_dot*Math.cos(theta0_ - (s - s0)/r),
-                    s_dot/r
+                    -s_dot/r
             );
         }
     }
@@ -88,7 +90,7 @@ public class CircleSegment extends Segment {
             return new Vector3(
                     s_dot_dot*Math.sin(theta0_ - (s - s0)/r) - Math.pow(s_dot,2)*Math.cos(theta0_ - (s - s0)/r)/r,
                     -s_dot_dot*Math.cos(theta0_ - (s - s0)/r) - Math.pow(s_dot,2)*Math.sin(theta0_ - (s - s0)/r)/r,
-                    s_dot_dot/r
+                    -s_dot_dot/r
             );
         }
     }
@@ -106,22 +108,39 @@ public class CircleSegment extends Segment {
     }
 
     public double calcS(final double x, final double y) {
-        final double gamma = Math.atan2(y - center.y, x - center.x);
+        final double gamma = MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
         final double theta;
         if (counterClockwise) {
-            if (gamma < theta0) {
-                theta = (gamma + 2*Math.PI) - theta0;
-            } else {
-                theta = gamma - theta0;
-            }
+//            if (gamma < theta0) {
+//                theta = (gamma + 2*Math.PI) - theta0;
+//            } else {
+//                theta = gamma - theta0;
+//                System.out.println("theta: " + theta);
+//            }
+//            theta = gamma - MainSegment.normalizeAlpha(theta0);
+            final double sin = Math.sin(gamma)*Math.cos(theta0) - Math.cos(gamma)*Math.sin(theta0);
+            final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
+            theta = MainSegment.angleFromSinCos(sin, cos);
         } else {
-            if (gamma > theta0) {
-                theta = theta0 - (gamma - 2*Math.PI);
-            } else {
-                theta = theta0 - gamma;
-            }
+
+//            if (gamma > theta0) {
+//                theta = theta0 - (gamma - 2*Math.PI);
+//            } else {
+//                theta = theta0 - gamma;
+//            }
+//            theta = MainSegment.normalizeAlpha(theta0) - gamma;
+            final double sin = Math.cos(gamma)*Math.sin(theta0) - Math.sin(gamma)*Math.cos(theta0);
+            final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
+            theta = MainSegment.angleFromSinCos(sin, cos);
         }
 
+//        System.out.println("gamma: " + gamma + " theta: " + MainSegment.normalizeAlpha(theta0) + " s: " + (theta*r + s0));
+//        if (theta*r + s0 <= s0) {
+//            System.out.println("This was useful");
+//            System.out.println("gamma: " + gamma + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
+//            return s0;
+//        }
+        System.out.println("gamma: " + gamma + " theta0: " + theta0 + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
         return theta*r + s0;
     }
 }

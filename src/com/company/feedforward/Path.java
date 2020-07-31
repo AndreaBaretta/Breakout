@@ -4,6 +4,7 @@ import com.company.simulator.PowerProfile;
 import com.company.simulator.Vector3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Path {
@@ -70,6 +71,12 @@ public class Path {
                     currentSegment.getVelocity(endS, 0),
                     currentSegment.getAcceleration(endS, 0, 0)
             );
+        } else if (s < 0) {
+            return new RobotState(
+                    currentSegment.getPosition(currentSegment.s0),
+                    currentSegment.getVelocity(currentSegment.s0, s_dot),
+                    currentSegment.getAcceleration(currentSegment.s0, s_dot, s_dot_dot)
+            );
         } else { //Else, do the normal thing
             return new RobotState(
                     currentSegment.getPosition(s),
@@ -119,7 +126,9 @@ public class Path {
             final Vector3 vel = state.vel;
             final Vector3 acc = state.acc;
             final double[] powerSettings = PowerProfile.toRawPowerSettings(acc, vel, state.pos.theta);
+//            final double[] powerSettings = PowerProfile.toRawPowerSettings(new Vector3(0,0,0), vel, state.pos.theta);
             boolean optimized = true;
+//            System.out.println("s_dot_dot: " + s_dot_dot + "  Power settings: " + Arrays.toString(powerSettings) + "  s: " + s + "  s_dot: " + s_dot + "  alpha: " + state.pos.theta + "  acceleration: " + state.acc.toString());
             for (double p : powerSettings) {
                 if (Math.abs(p) >= 1) {
                     optimized = false;
@@ -129,7 +138,6 @@ public class Path {
                 return s_dot_dot;
             }
             if (s_dot_dot < Config.MAX_DECELERATION) {
-                System.out.println("Fuck");
                 return 0;
             }
             s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;

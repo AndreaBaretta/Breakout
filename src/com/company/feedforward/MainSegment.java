@@ -32,14 +32,14 @@ public class MainSegment extends Segment {
         if (anchorPoint0.heading == AnchorPoint.Heading.FRONT) {
             alpha0 = circleSegment0.getPosition(circleSegment0.s0).theta;
         } else if (anchorPoint0.heading == AnchorPoint.Heading.BACK) {
-            alpha0 = -circleSegment0.getPosition(circleSegment0.s0).theta;
+            alpha0 = normalizeAlpha(Math.PI + circleSegment0.getPosition(circleSegment0.s0).theta);
         } else {
             alpha0 = anchorPoint0.customHeading;
         }
         if (anchorPoint1.heading == AnchorPoint.Heading.FRONT) {
             alpha1 = circleSegment1.getPosition(circleSegment1.getEndS()).theta;
         } else if (anchorPoint1.heading == AnchorPoint.Heading.BACK) {
-            alpha1 = -circleSegment1.getPosition(circleSegment1.getEndS()).theta;
+            alpha1 = normalizeAlpha(Math.PI + circleSegment1.getPosition(circleSegment1.getEndS()).theta);
         } else {
             alpha1 = anchorPoint1.customHeading;
         }
@@ -152,6 +152,24 @@ public class MainSegment extends Segment {
     public static double normalizeAlpha(final double alpha) {
         final double sin = Math.sin(alpha);
         final double cos = Math.cos(alpha);
+        final double arcsin = Math.asin(sin);
+//        System.out.println("sin: " + sin + " cos: " + cos + " arcsin: " + arcsin);
+        if (sin >= 0) {
+            if (cos >= 0) { //Q1
+                return arcsin;
+            } else { //Q2
+                return Math.PI - arcsin;
+            }
+        } else {
+            if (cos >= 0) { //Q4
+                return arcsin + 2*Math.PI;
+            } else { //Q3
+                return Math.PI - arcsin;
+            }
+        }
+    }
+
+    public static double angleFromSinCos(final double sin, final double cos) {
         final double arcsin = Math.asin(sin);
         if (sin >= 0) {
             if (cos >= 0) { //Q1
