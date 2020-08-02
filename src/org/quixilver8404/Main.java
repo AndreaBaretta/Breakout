@@ -1,13 +1,12 @@
 package org.quixilver8404;
 
-import com.company.feedforward.*;
-import com.company.simulator.*;
 import org.quixilver8404.feedforward.*;
 import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.simulator.PowerProfile;
 import org.quixilver8404.simulator.Vector3;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(0.1, 0.3,0.1),
+                new Vector3(0,0,0), new Vector3(0, 0,0),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -53,14 +52,15 @@ public class Main {
         final double time_limit = 5;
         double maxAccel = 0;
 
-        final List<AnchorPoint> anchorPoints = new ArrayList<AnchorPoint>();
-        anchorPoints.add(new AnchorPoint(0, 0, 0, AnchorPoint.Heading.FRONT, 0, 0, null, 0,
-                1, new Point2D(0, 1), 0, null, new Point2D(1, 1), Config.MAX_VELOCITY, true, false));
-        anchorPoints.add(new AnchorPoint(2, 3, 0, AnchorPoint.Heading.FRONT, 1, 1, new Point2D(2, 2), Math.PI,
-                1, new Point2D(2,2), 0, new Point2D(1, 2), new Point2D(3,2), Config.MAX_VELOCITY, false, false));
-        anchorPoints.add(new AnchorPoint(4, 0, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(4,1), Math.PI,
-                         0, null, 0, new Point2D(3,1), null, Config.MAX_VELOCITY, false, true));
-        final Path path = new Path(anchorPoints);
+//        final List<AnchorPoint> anchorPoints = new ArrayList<AnchorPoint>();
+//        anchorPoints.add(new AnchorPoint(0, 0, 0, AnchorPoint.Heading.FRONT, 0, 0, null, 0,
+//                1, new Point2D(0, 1), 0, null, new Point2D(1, 1), Config.MAX_VELOCITY, true, false));
+//        anchorPoints.add(new AnchorPoint(2, 3, 0, AnchorPoint.Heading.FRONT, 1, 1, new Point2D(2, 2), Math.PI,
+//                1, new Point2D(2,2), 0, new Point2D(1, 2), new Point2D(3,2), Config.MAX_VELOCITY, false, false));
+//        anchorPoints.add(new AnchorPoint(4, 0, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(4,1), Math.PI,
+//                         0, null, 0, new Point2D(3,1), null, Config.MAX_VELOCITY, false, true));
+//        final Path path = new Path(anchorPoints);
+        final Path path = Path.foxtrotParser(new File("/home/andrea/Desktop/test.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;

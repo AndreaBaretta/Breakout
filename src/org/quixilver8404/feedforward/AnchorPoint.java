@@ -114,4 +114,9 @@ public class AnchorPoint extends Point {
         this.first = first;
         this.last = last;
     }
+
+//    public static AnchorPoint fromParams(final CurveParameters params) {
+//        return new AnchorPoint(params.x, params.y, params.tan, params.heading, params.customHeading, params.r0, params.center0, params.theta0,
+//                params.r1, params.center1, params.theta1, params.tanPoint0, params.tanPoint1, params.configVelocity, params.first, params.last);
+//    }
 }

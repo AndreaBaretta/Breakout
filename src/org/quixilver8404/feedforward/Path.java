@@ -1,10 +1,16 @@
 package org.quixilver8404.feedforward;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.quixilver8404.simulator.PowerProfile;
 import org.quixilver8404.simulator.Vector3;
 
+import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Path {
     public final List<AnchorPoint> anchorPoints;
@@ -58,7 +64,6 @@ public class Path {
                 mainSegments.add(mainSegment);
 
                 prevPoint = curPoint;
-//                break;
             }
         }
 
@@ -137,9 +142,7 @@ public class Path {
             final Vector3 vel = state.vel;
             final Vector3 acc = state.acc;
             final double[] powerSettings = PowerProfile.toRawPowerSettings(acc, vel, state.pos.theta);
-//            final double[] powerSettings = PowerProfile.toRawPowerSettings(new Vector3(0,0,0), vel, state.pos.theta);
             boolean optimized = true;
-//            System.out.println("s_dot_dot: " + s_dot_dot + "  Power settings: " + Arrays.toString(powerSettings) + "  s: " + s + "  s_dot: " + s_dot + "  alpha: " + state.pos.theta + "  acceleration: " + state.acc.toString());
             for (double p : powerSettings) {
                 if (Math.abs(p) >= 1) {
                     optimized = false;
@@ -153,5 +156,78 @@ public class Path {
             }
             s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
         }
+    }
+
+    public static Path foxtrotParser(final File file, final int config) {
+        final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
+        final JSONParser jsonParser = new JSONParser();
+        try (final FileReader fileReader = new FileReader(file)) {
+            final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
+            final JSONArray anchorPoints = (JSONArray) obj.get("anchors");
+
+            final JSONObject output = (JSONObject) obj.get("output");
+            final JSONObject configObj = (JSONObject) output.get(Integer.toString(config));
+            final JSONArray curves = (JSONArray) configObj.get("curves");
+
+//            System.out.println("Read file");
+
+            CurveParameters curParams = null;
+            CurveParameters prevParams = null;
+
+            for (int i = 0; i < anchorPoints.size(); i++) {
+                final JSONObject anchorObj = (JSONObject) anchorPoints.get(i);
+
+//                System.out.println("config: " + anchorObj.get("config") + "  type: " + anchorObj.get("config").getClass());
+                if (((Long)anchorObj.get("config")).intValue() != config && ((Long)anchorObj.get("config")).intValue() != 0) {
+                    continue;
+                }
+
+                final boolean first = i == 0;
+                final boolean last = i == anchorPoints.size() - 1;
+
+                final double x = ((double)anchorObj.get("x"))*Config.INCHES_TO_METERS;
+                final double y = ((double)anchorObj.get("y"))*Config.INCHES_TO_METERS;
+                final double tan = (double)anchorObj.get("tangent");
+                final AnchorPoint.Heading heading;
+                final double customHeading;
+                if (((String) anchorObj.get("headingState")).equals("FRONT")) {
+                    heading = AnchorPoint.Heading.FRONT;
+                    customHeading = 0d;
+                } else if (((String) anchorObj.get("headingState")).equals("BACK")) {
+                    heading = AnchorPoint.Heading.BACK;
+                    customHeading = 0d;
+                } else {
+                    heading = AnchorPoint.Heading.CUSTOM;
+                    customHeading = (double)anchorObj.get("heading");
+                }
+                final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
+
+                if (first) {
+                    curParams = new CurveParameters((JSONObject)curves.get(0));
+                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
+                            curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, first, last);
+                    anchorPointsList.add(anchorPoint);
+                    prevParams = curParams.copy();
+                } else if (last) {
+                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                            prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, first, last);
+                    anchorPointsList.add(anchorPoint);
+                } else {
+                    System.out.println("Length curves: " + curves.size());
+                    System.out.println("curves: " + curves.toString());
+                    curParams = new CurveParameters((JSONObject)curves.get(anchorPoints.size()-2));
+                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                            prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, first, last);
+                    anchorPointsList.add(anchorPoint);
+                    prevParams = curParams.copy();
+                }
+            }
+        } catch (final Exception e) {
+            System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+        return new Path(anchorPointsList);
     }
 }
