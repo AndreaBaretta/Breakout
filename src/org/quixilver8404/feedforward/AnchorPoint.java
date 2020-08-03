@@ -27,40 +27,45 @@ public class AnchorPoint extends Point {
     final boolean last;
 
     public boolean CheckDirection(final Point2D center) {
-        System.out.println("CheckDirection");
+//        System.out.println(1/Math.tan(Math.atan2(1, 0)));
         if (center == null) {
             return false;
         }
-        if (x > center.x && y >= center.y) { //Q1
-            if (Math.PI/2 <= tan && tan <= Math.PI) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (x <= center.x && y > center.y) { //Q2
-            if (Math.PI <= tan && tan <= 3*Math.PI/2) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (x <= center.x && y <= center.y) { //Q3
-            if (tan == 0) return true;
-            if (3*Math.PI/2 <= tan && tan <= 2*Math.PI) {
-                return true;
-            } else {
-                return false;
-            }
+//        if (x > center.x && y >= center.y) { //Q1
+//            if (Math.PI/2 <= tan && tan <= Math.PI) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (x <= center.x && y > center.y) { //Q2
+//            if (Math.PI <= tan && tan <= 3*Math.PI/2) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else if (x <= center.x && y <= center.y) { //Q3
+//            if (tan == 0) return true;
+//            if (3*Math.PI/2 <= tan && tan <= 2*Math.PI) {
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        } else {
+//            if (0 <= tan && tan <= Math.PI/2) { //Q4
+//                return true;
+//            } else {
+//                return false;
+//            }
+//        }
+        final double counterClockTheta = MainSegment.normalizeAlpha(MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x)) + Math.PI/2);
+        final double sin = Math.sin(tan)*Math.cos(counterClockTheta) - Math.cos(tan)*Math.sin(counterClockTheta);
+        final double cos = Math.cos(tan)*Math.cos(counterClockTheta) + Math.sin(tan)*Math.sin(counterClockTheta);
+        final double theta = MainSegment.angleFromSinCos(sin, cos);
+        System.out.println("CheckDirection  tan: " + tan + "  counterClockTheta: " + counterClockTheta);
+        if (Math.abs(theta) <= 1e-12) {
+            return true;
         } else {
-            System.out.println("Q4");
-            if (0 <= tan && tan <= Math.PI/2) { //Q4
-                System.out.println("true");
-                System.out.println("tangent: " + tan);
-                return true;
-            } else {
-                System.out.println("false");
-                System.out.println("tangent: " + tan + " 2pi");
-                return false;
-            }
+            return false;
         }
     }
 
