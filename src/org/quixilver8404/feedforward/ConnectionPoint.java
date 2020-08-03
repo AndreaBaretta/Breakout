@@ -20,26 +20,22 @@ public class ConnectionPoint extends Point2D {
     }
 
     public void setPrevSegment(final Segment segment) {
-        System.out.println("setPrevSegment at index: " + index);
         if (complete) {
             throw new Error("Error parsing: Connector point already complete when setting prevSegment at index: " + index);
         }
         prevSegment = segment;
         if (prevSegment != null && nextSegment != null) {
-            System.out.println("Complete in prevSegment at index: " + index);
             complete = true;
         }
         minVelocity = Math.min(minVelocity, prevSegment.minVelocity);
     }
 
     public void setNextSegment(final Segment segment) {
-        System.out.println("setNextSegment at index: " + index);
         if (complete) {
             throw new Error("Error parsing: Connector point already complete when setting nextSegment at index: " + index);
         }
         nextSegment = segment;
         if (prevSegment != null && nextSegment != null) {
-            System.out.println("Complete in nextSegment at index: " + index);
             complete = true;
         }
         minVelocity = Math.min(minVelocity, nextSegment.minVelocity);

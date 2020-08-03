@@ -37,6 +37,10 @@ public class CircleSegment extends MinorSegment {
             }
             theta1_ = theta1;
         }
+        System.out.println("0 segment: " + (MainSegment.normalizeAlpha(theta0) == MainSegment.normalizeAlpha(theta1)));
+        System.out.println("0 segment2 : " + (Math.abs(firstPoint.x - lastPoint.x) < 1e-12) + "  " + (Math.abs(firstPoint.y - lastPoint.y) < 1e-12));
+        System.out.println("firstPoint = (" + firstPoint.x + ", " + firstPoint.y + ")  lastPoint = (" + lastPoint.x + ", " + lastPoint.y + ")");
+        System.out.println();
     }
 
     public Vector3 getPosition(final double s) {
@@ -110,36 +114,15 @@ public class CircleSegment extends MinorSegment {
         final double gamma = MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
         final double theta;
         if (counterClockwise) {
-//            if (gamma < theta0) {
-//                theta = (gamma + 2*Math.PI) - theta0;
-//            } else {
-//                theta = gamma - theta0;
-//                System.out.println("theta: " + theta);
-//            }
-//            theta = gamma - MainSegment.normalizeAlpha(theta0);
             final double sin = Math.sin(gamma)*Math.cos(theta0) - Math.cos(gamma)*Math.sin(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
             theta = MainSegment.angleFromSinCos(sin, cos);
         } else {
-
-//            if (gamma > theta0) {
-//                theta = theta0 - (gamma - 2*Math.PI);
-//            } else {
-//                theta = theta0 - gamma;
-//            }
-//            theta = MainSegment.normalizeAlpha(theta0) - gamma;
             final double sin = Math.cos(gamma)*Math.sin(theta0) - Math.sin(gamma)*Math.cos(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
             theta = MainSegment.angleFromSinCos(sin, cos);
         }
 
-//        System.out.println("gamma: " + gamma + " theta: " + MainSegment.normalizeAlpha(theta0) + " s: " + (theta*r + s0));
-//        if (theta*r + s0 <= s0) {
-//            System.out.println("This was useful");
-//            System.out.println("gamma: " + gamma + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
-//            return s0;
-//        }
-//        System.out.println("gamma: " + gamma + " theta0: " + theta0 + " theta: " + theta + " r: " + r + " s0: " + s0 + " s: " + (theta*r + s0));
         return theta*r + s0;
     }
 }

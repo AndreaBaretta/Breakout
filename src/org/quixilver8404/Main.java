@@ -47,8 +47,10 @@ public class Main {
         final double updateControllerEveryHz = 50;
         double counter = 0;
         double[] prevCorrection = new double[]{0,0,0};
-        double t1 = System.currentTimeMillis()/(double)1000;
-        double t2 = System.currentTimeMillis()/(double)1000;
+//        double t1 = System.currentTimeMillis()/(double)1000;
+//        double t2 = System.currentTimeMillis()/(double)1000;
+        double t1 = (double)System.nanoTime()/(double)1e9;
+        double t2 = (double)System.nanoTime()/(double)1e9;
         final double time_limit = 5;
         double maxAccel = 0;
 
@@ -77,9 +79,11 @@ public class Main {
             if (dt == 0) {
 //                throw new Error("dt = 0");
 //                dt = 0.001;
+
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = 0;
                 s_dot_dot = 0;
+//                t2 = System.currentTimeMillis()/(double)1000;
 //                System.out.println("Set to 0");
             } else {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
@@ -100,7 +104,7 @@ public class Main {
 
             final double[] correction;
             if (counter == updateControllerEveryHz) {
-                correction = controller.correction(Vector3.subtractVector(kinematics.getFieldPos(), state.pos),
+                correction = controller.correction(Vector3.subtractVector2(kinematics.getFieldPos(), state.pos),
                         Vector3.subtractVector(kinematics.getFieldVel(), state.vel));
                 prevCorrection = correction;
                 counter = 0;
@@ -140,6 +144,7 @@ public class Main {
             error_xy += Math.sqrt(Math.hypot(state.pos.x-kinematics.getFieldPos().x, state.pos.y-kinematics.getFieldPos().y))*dt;
             error_alpha += (state.pos.theta-kinematics.getFieldPos().theta)*dt;
             t2 = System.currentTimeMillis()/(double)1000;
+//            t2 = (double)System.nanoTime()/(double)1e9;
             if (counter >= 20000) {
                 kinematics.ui.terminate();
 //                System.out.println("Average error in x-y: " + error_xy/t);

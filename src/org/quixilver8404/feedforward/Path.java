@@ -29,7 +29,6 @@ public class Path {
         double s0 = 0;
         double connectionPointCounter = 0;
         for (int i = 0; i < anchorPoints.size(); i++) {
-            System.out.println(i);
             curPoint = anchorPoints.get(i);
             if (curPoint.first) {
                 prevPoint = curPoint;
@@ -48,7 +47,7 @@ public class Path {
                 connection3.index = connectionPointCounter;
                 connectionPointCounter++;
 
-                System.out.println("toString: " + prevPoint.center1.toString());
+//                System.out.println("toString: (" + curPoint.middlePoint.x/Config.INCHES_TO_METERS + ", " + curPoint.middlePoint.y/Config.INCHES_TO_METERS + ")");
                 final double prevAnchorTheta = Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x);
                 final double curAnchorTheta = Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x);
 
@@ -213,8 +212,6 @@ public class Path {
                             prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, first, last);
                     anchorPointsList.add(anchorPoint);
                 } else {
-                    System.out.println("Length curves: " + curves.size());
-                    System.out.println("curves: " + curves.toString());
                     curParams = new CurveParameters((JSONObject)curves.get(anchorPoints.size()-2));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, first, last);
