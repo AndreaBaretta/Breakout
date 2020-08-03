@@ -27,6 +27,7 @@ public class AnchorPoint extends Point {
     final boolean last;
 
     public boolean CheckDirection(final Point2D center) {
+        System.out.println("CheckDirection");
         if (center == null) {
             return false;
         }
@@ -42,25 +43,32 @@ public class AnchorPoint extends Point {
             } else {
                 return false;
             }
-        } else if (x < center.x && y <= center.y) { //Q3
+        } else if (x <= center.x && y <= center.y) { //Q3
+            if (tan == 0) return true;
             if (3*Math.PI/2 <= tan && tan <= 2*Math.PI) {
                 return true;
             } else {
                 return false;
             }
         } else {
+            System.out.println("Q4");
             if (0 <= tan && tan <= Math.PI/2) { //Q4
+                System.out.println("true");
+                System.out.println("tangent: " + tan);
                 return true;
             } else {
+                System.out.println("false");
+                System.out.println("tangent: " + tan + " 2pi");
                 return false;
             }
         }
     }
 
-    public AnchorPoint(final double x, final double y, final double tan, final Heading heading, final double customHeading,
+    public AnchorPoint(final double x, final double y, final double tangent, final Heading heading, final double customHeading,
                 final double r0, final Point2D center0, final double theta0, final double r1, final Point2D center1, final double theta1,
                 final Point2D tanPoint0, final Point2D tanPoint1, final double configVelocity, final boolean first, final boolean last) {
-        super(x, y, tan);
+        super(x, y, MainSegment.normalizeAlpha(tangent));
+        final double tan = MainSegment.normalizeAlpha(tangent);
         this.heading = heading;
         if (heading == Heading.CUSTOM) {
             this.customHeading = customHeading;
@@ -114,9 +122,4 @@ public class AnchorPoint extends Point {
         this.first = first;
         this.last = last;
     }
-
-//    public static AnchorPoint fromParams(final CurveParameters params) {
-//        return new AnchorPoint(params.x, params.y, params.tan, params.heading, params.customHeading, params.r0, params.center0, params.theta0,
-//                params.r1, params.center1, params.theta1, params.tanPoint0, params.tanPoint1, params.configVelocity, params.first, params.last);
-//    }
 }

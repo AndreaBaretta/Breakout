@@ -26,7 +26,14 @@ public class MainSegment extends Segment {
         this.linearSegment = linearSegment;
         this.circleSegment1 = circleSegment1;
         this.index = index;
-        currentSegment = circleSegment0;
+//        currentSegment = circleSegment0;
+        if (!circleSegment0.zeroSegment) {
+            currentSegment = circleSegment0;
+        } else if (!linearSegment.zeroSegment) {
+            currentSegment = linearSegment;
+        } else {
+            currentSegment = circleSegment1;
+        }
         this.anchorPoint0 = anchorPoint0;
         this.anchorPoint1 = anchorPoint1;
         if (anchorPoint0.heading == AnchorPoint.Heading.FRONT) {
@@ -75,9 +82,14 @@ public class MainSegment extends Segment {
             position = circleSegment0.getPosition(s);
         } else if (linearSegment.inRange(s)) {
             position = linearSegment.getPosition(s);
-        } else {
+        } else if (circleSegment1.inRange(s)) {
+            if (circleSegment1.zeroSegment) System.out.println("Shouldn't be happening");
+//            System.out.println(circleSegment1.zeroSegment);
             position = circleSegment1.getPosition(s);
+        } else {
+            throw new Error("Fuccccckkkkk");
         }
+//        position = currentSegment.getPosition(s);
 
         if (heading == AnchorPoint.Heading.FRONT) {
             return position;
@@ -95,9 +107,10 @@ public class MainSegment extends Segment {
             velocity = circleSegment0.getVelocity(s, s_dot);
         } else if (linearSegment.inRange(s)) {
             velocity = linearSegment.getVelocity(s, s_dot);
-        } else {
+        } else if (circleSegment1.inRange(s)) {
             velocity = circleSegment1.getVelocity(s, s_dot);
-        }
+        } else throw new Error("Frick in velocity");
+//        velocity = currentSegment.getVelocity(s, s_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {
             final double alpha_dot = s_dot*(alpha1 - alpha0)/(getEndS() - s0);
@@ -113,9 +126,10 @@ public class MainSegment extends Segment {
             acceleration = circleSegment0.getAcceleration(s, s_dot, s_dot_dot);
         } else if (linearSegment.inRange(s)) {
             acceleration = linearSegment.getAcceleration(s, s_dot, s_dot_dot);
-        } else {
+        } else if (circleSegment1.inRange(s)) {
             acceleration = circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
-        }
+        } else throw new Error("Frick in acc");
+//        acceleration = currentSegment.getAcceleration(s, s_dot, s_dot_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {
             final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0);
@@ -126,7 +140,8 @@ public class MainSegment extends Segment {
     }
 
     public double getTotalS() {
-        return circleSegment0.getTotalS() + linearSegment.getTotalS() + circleSegment1.getTotalS();
+//        return circleSegment0.getTotalS() + linearSegment.getTotalS() + circleSegment1.getTotalS();
+        return circleSegment1.getEndS() - s0;
     }
 
     public double calcMinVelocity() {
@@ -136,12 +151,18 @@ public class MainSegment extends Segment {
     public double calcS(final double x, final double y) {
         if (currentSegment == circleSegment0) {
             if (circleSegment0.calcS(x, y) >= circleSegment0.getEndS()) {
-                currentSegment = linearSegment;
+                if (linearSegment.zeroSegment) {
+                    currentSegment = circleSegment1;
+                } else {
+                    currentSegment = linearSegment;
+                }
             }
             return currentSegment.calcS(x, y);
         } else if (currentSegment == linearSegment) {
             if (linearSegment.calcS(x, y) >= linearSegment.getEndS()) {
-                currentSegment = circleSegment1;
+                if (!circleSegment1.zeroSegment) {
+                    currentSegment = circleSegment1;
+                }
             }
             return currentSegment.calcS(x, y);
         } else {

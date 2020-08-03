@@ -16,4 +16,8 @@ public abstract class Point {
         this.y = point.y;
         this.tan = tan;
     }
+
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

@@ -37,14 +37,13 @@ public class CircleSegment extends MinorSegment {
             }
             theta1_ = theta1;
         }
-        System.out.println("0 segment: " + (MainSegment.normalizeAlpha(theta0) == MainSegment.normalizeAlpha(theta1)));
-        System.out.println("0 segment2 : " + (Math.abs(firstPoint.x - lastPoint.x) < 1e-12) + "  " + (Math.abs(firstPoint.y - lastPoint.y) < 1e-12));
-        System.out.println("firstPoint = (" + firstPoint.x + ", " + firstPoint.y + ")  lastPoint = (" + lastPoint.x + ", " + lastPoint.y + ")");
-        System.out.println();
+//        System.out.println("0 segment: " + (MainSegment.normalizeAlpha(theta0) == MainSegment.normalizeAlpha(theta1)));
+//        System.out.println("0 segment2 : " + (Math.abs(firstPoint.x - lastPoint.x) < 1e-12) + "  " + (Math.abs(firstPoint.y - lastPoint.y) < 1e-12));
+//        System.out.println("firstPoint = (" + firstPoint.x + ", " + firstPoint.y + ")  lastPoint = (" + lastPoint.x + ", " + lastPoint.y + ")");
+//        System.out.println();
     }
 
     public Vector3 getPosition(final double s) {
-//        System.out.println("received s: " + s + " counterClockwise: " + counterClockwise);
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);

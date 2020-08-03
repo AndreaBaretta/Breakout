@@ -91,6 +91,7 @@ public class Main {
                 s_dot_dot = path.calcAccelerationCorrection(s, s_dot);
             }
             t1 = t2;
+
 //            final Vector3 pos = feedForwardTest.getPosition(t);
 //            final Vector3 vel = feedForwardTest.getVelocity(t);
 //            final Vector3 acc = feedForwardTest.getAcceleration(t);
@@ -101,6 +102,8 @@ public class Main {
             prev_s = s;
             prev_s_dot = s_dot;
             final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
+
+//            System.out.println("Position: " + state.pos.toString() + "  Velocity: " + state.vel.toString() + "  Acceleration: " + state.acc.toString());
 
             final double[] correction;
             if (counter == updateControllerEveryHz) {
