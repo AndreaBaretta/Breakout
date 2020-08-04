@@ -67,6 +67,7 @@ public class Path {
 //                System.out.println("zeroSegment linear: " + segment1.zeroSegment + " firstpoint: " + segment1.firstPoint.toString() + "  " + "lastpoint: " + segment1.lastPoint.toString() + "  length: " + segment1.getTotalS());
                 System.out.println("zeroSegment circle2: " + segment2.zeroSegment + " firstpoint: " + segment2.firstPoint.toString() + "  " + "lastpoint: " + segment2.lastPoint.toString() + "  counterclockwise: " + segment2.counterClockwise + "  center: " + segment2.center.toString() + "  tangent: " + curPoint.tan + "  length: " + segment2.getTotalS()
                  + "  theta0_: " + segment2.theta0_ + "  theta1_: " + segment2.theta1_ + "  theta0: " + segment2.theta0 + "  theta1: " + segment2.theta1);
+                System.out.println("At point, s = " + segment2.calcS(76.13/Config.INCHES_TO_METERS, 68.24/Config.INCHES_TO_METERS));
 //                System.out.println();
 
 //                System.out.println(co);
@@ -132,6 +133,7 @@ public class Path {
         if (currentSegment.index == mainSegments.size() - 1) {
             ;
         } else {
+            System.out.println("Next segment");
             currentSegment = mainSegments.get(currentSegment.index + 1);
         }
     }
@@ -140,6 +142,7 @@ public class Path {
         if (currentSegment.index == 0) {
             ;
         } else {
+            System.out.println("Previous segment");
             currentSegment = mainSegments.get(currentSegment.index - 1);
         }
     }

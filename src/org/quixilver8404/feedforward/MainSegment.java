@@ -83,7 +83,6 @@ public class MainSegment extends Segment {
         } else if (linearSegment.inRange(s)) {
             position = linearSegment.getPosition(s);
         } else if (circleSegment1.inRange(s)) {
-            if (circleSegment1.zeroSegment) System.out.println("Shouldn't be happening");
 //            System.out.println(circleSegment1.zeroSegment);
             position = circleSegment1.getPosition(s);
         } else {

@@ -62,7 +62,7 @@ public class Main {
 //        anchorPoints.add(new AnchorPoint(4, 0, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(4,1), Math.PI,
 //                         0, null, 0, new Point2D(3,1), null, Config.MAX_VELOCITY, false, true));
 //        final Path path = new Path(anchorPoints);
-        final Path path = Path.foxtrotParser(new File("/home/andrea/Desktop/testing3.foxtrot2"), 0);
+        final Path path = Path.foxtrotParser(new File("/home/andrea/Desktop/testing3-3.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -128,6 +128,8 @@ public class Main {
 //            System.out.println(path.mainSegments.get(0).circleSegment1.theta1_);
 
 //            kinematics.ui.setBackground(new double[]{255,255,255});
+
+//            System.out.println("Current s: " + s);
 
             kinematics.ui.drawCircle(state.pos.x, state.pos.y, 0.05, 100, new double[]{255,0,0});
 //            kinematics.ui.drawCircle(path.evaluate(t, 0, 0).pos.x, path.evaluate(t, 0, 0).pos.y, 0.05, 100, new double[]{255,0,0});

@@ -16,6 +16,7 @@ public class CircleSegment extends MinorSegment {
     CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity,
                   final Point2D center, final double r, final double theta0, final double theta1, final boolean counterClockwise) {
         super(firstPoint, lastPoint, s0, configVelocity);
+        System.out.println("Theta0 in circle: " + theta0);
         System.out.println("Theta1 in circle: " + theta1);
         this.center = center;
         this.r = r;
@@ -32,12 +33,14 @@ public class CircleSegment extends MinorSegment {
             theta0_ = theta0;
         } else {
             if (theta0 < theta1) {
-                theta0_ = 2*Math.PI + theta0;
+                theta0_ = 2*Math.PI + theta0; //Probably not the right change
             } else {
                 theta0_ = theta0;
             }
             theta1_ = theta1;
         }
+//        System.out.println("Theta0_ in circle: " + theta0_);
+//        System.out.println("Theta1_ in circle: " + theta1_);
 //        System.out.println("0 segment: " + (MainSegment.normalizeAlpha(theta0) == MainSegment.normalizeAlpha(theta1)));
 //        System.out.println("0 segment2 : " + (Math.abs(firstPoint.x - lastPoint.x) < 1e-12) + "  " + (Math.abs(firstPoint.y - lastPoint.y) < 1e-12));
 //        System.out.println("firstPoint = (" + firstPoint.x + ", " + firstPoint.y + ")  lastPoint = (" + lastPoint.x + ", " + lastPoint.y + ")");
@@ -116,12 +119,14 @@ public class CircleSegment extends MinorSegment {
         if (counterClockwise) {
             final double sin = Math.sin(gamma)*Math.cos(theta0) - Math.cos(gamma)*Math.sin(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
-            theta = MainSegment.angleFromSinCos(sin, cos);
+            theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
         } else {
             final double sin = Math.cos(gamma)*Math.sin(theta0) - Math.sin(gamma)*Math.cos(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
-            theta = MainSegment.angleFromSinCos(sin, cos);
+            theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
         }
+
+        System.out.println("s: " + (theta*r + s0) + "  theta: " + theta + "  gamma: " + gamma);
 
         return theta*r + s0;
     }
