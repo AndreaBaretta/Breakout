@@ -16,6 +16,7 @@ public class CircleSegment extends MinorSegment {
     CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity,
                   final Point2D center, final double r, final double theta0, final double theta1, final boolean counterClockwise) {
         super(firstPoint, lastPoint, s0, configVelocity);
+        System.out.println("Theta1 in circle: " + theta1);
         this.center = center;
         this.r = r;
         this.theta0 = theta0;
