@@ -31,7 +31,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(0, 0,0),
+                new Vector3(0,0,0), new Vector3(0, 0,Math.PI/2),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 

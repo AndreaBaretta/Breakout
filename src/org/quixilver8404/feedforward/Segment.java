@@ -38,7 +38,7 @@ public abstract class Segment {
 
     public boolean inRange(final double s) {
         if (zeroSegment) return false;
-        if (s0 <= s && s <= getEndS()) {
+        if (s0 <= s && s <= getEndS() + 1e-12) {
             return true;
         } else {
             return false;

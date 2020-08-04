@@ -87,7 +87,7 @@ public class MainSegment extends Segment {
 //            System.out.println(circleSegment1.zeroSegment);
             position = circleSegment1.getPosition(s);
         } else {
-            throw new Error("Fuccccckkkkk");
+            throw new Error("Out of bounds error that REALLY shouldn't be happening");
         }
 //        position = currentSegment.getPosition(s);
 
@@ -109,7 +109,7 @@ public class MainSegment extends Segment {
             velocity = linearSegment.getVelocity(s, s_dot);
         } else if (circleSegment1.inRange(s)) {
             velocity = circleSegment1.getVelocity(s, s_dot);
-        } else throw new Error("Frick in velocity");
+        } else throw new Error("Out of bounds error that REALLY shouldn't be happening");
 //        velocity = currentSegment.getVelocity(s, s_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {
@@ -128,7 +128,7 @@ public class MainSegment extends Segment {
             acceleration = linearSegment.getAcceleration(s, s_dot, s_dot_dot);
         } else if (circleSegment1.inRange(s)) {
             acceleration = circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
-        } else throw new Error("Frick in acc");
+        } else throw new Error("Out of bounds error that REALLY shouldn't be happening");
 //        acceleration = currentSegment.getAcceleration(s, s_dot, s_dot_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {

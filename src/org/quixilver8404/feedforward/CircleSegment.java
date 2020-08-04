@@ -127,7 +127,7 @@ public class CircleSegment extends MinorSegment {
             theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
         }
 
-        System.out.println("s: " + (theta*r + s0) + "  theta: " + theta + "  gamma: " + gamma);
+//        System.out.println("s: " + (theta*r + s0) + "  theta: " + theta + "  gamma: " + gamma);
 
         return theta*r + s0;
     }
