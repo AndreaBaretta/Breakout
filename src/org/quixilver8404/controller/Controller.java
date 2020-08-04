@@ -1,6 +1,6 @@
-package org.quixilver8404;
+package org.quixilver8404.controller;
 
-import org.quixilver8404.simulator.Vector3;
+import org.quixilver8404.util.Vector3;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealMatrix;

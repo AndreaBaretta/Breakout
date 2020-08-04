@@ -3,8 +3,9 @@ package org.quixilver8404.feedforward;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.quixilver8404.simulator.PowerProfile;
-import org.quixilver8404.simulator.Vector3;
+import org.quixilver8404.controller.PowerProfile;
+import org.quixilver8404.util.Config;
+import org.quixilver8404.util.Vector3;
 
 import java.io.File;
 import java.io.FileReader;
@@ -67,7 +68,7 @@ public class Path {
 //                System.out.println("zeroSegment linear: " + segment1.zeroSegment + " firstpoint: " + segment1.firstPoint.toString() + "  " + "lastpoint: " + segment1.lastPoint.toString() + "  length: " + segment1.getTotalS());
                 System.out.println("zeroSegment circle2: " + segment2.zeroSegment + " firstpoint: " + segment2.firstPoint.toString() + "  " + "lastpoint: " + segment2.lastPoint.toString() + "  counterclockwise: " + segment2.counterClockwise + "  center: " + segment2.center.toString() + "  tangent: " + curPoint.tan + "  length: " + segment2.getTotalS()
                  + "  theta0_: " + segment2.theta0_ + "  theta1_: " + segment2.theta1_ + "  theta0: " + segment2.theta0 + "  theta1: " + segment2.theta1);
-                System.out.println("At point, s = " + segment2.calcS(76.13/Config.INCHES_TO_METERS, 68.24/Config.INCHES_TO_METERS));
+                System.out.println("At point, s = " + segment2.calcS(76.13/ Config.INCHES_TO_METERS, 68.24/Config.INCHES_TO_METERS));
 //                System.out.println();
 
 //                System.out.println(co);
@@ -174,7 +175,7 @@ public class Path {
         }
     }
 
-    public static Path foxtrotParser(final File file, final int config) {
+    public static Path parseFoxtrot(final File file, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
         final JSONParser jsonParser = new JSONParser();
         try (final FileReader fileReader = new FileReader(file)) {

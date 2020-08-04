@@ -1,6 +1,7 @@
 package org.quixilver8404.simulator;
 
 import org.lwjgl.opengl.GL11;
+import org.quixilver8404.util.Vector3;
 
 import java.util.Random;
 

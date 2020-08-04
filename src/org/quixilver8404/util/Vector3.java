@@ -1,4 +1,4 @@
-package org.quixilver8404.simulator;
+package org.quixilver8404.util;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.quixilver8404.feedforward.MainSegment;

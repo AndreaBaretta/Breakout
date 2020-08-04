@@ -1,6 +1,7 @@
 package org.quixilver8404.feedforward;
 
 import org.json.simple.JSONObject;
+import org.quixilver8404.util.Config;
 
 public class CurveParameters {
     protected final double circle1Radius;
@@ -13,7 +14,7 @@ public class CurveParameters {
     protected final Point2D p2;
 
     CurveParameters(final JSONObject curve) {
-        circle1Radius = (double)curve.get("circle1Radius")*Config.INCHES_TO_METERS;
+        circle1Radius = (double)curve.get("circle1Radius")* Config.INCHES_TO_METERS;
         circle2Radius = (double)curve.get("circle2Radius")*Config.INCHES_TO_METERS;
         circle1Center = new Point2D((double)curve.get("circle1X")*Config.INCHES_TO_METERS, (double)curve.get("circle1Y")*Config.INCHES_TO_METERS);
         circle2Center = new Point2D((double)curve.get("circle2X")*Config.INCHES_TO_METERS, (double)curve.get("circle2Y")*Config.INCHES_TO_METERS);

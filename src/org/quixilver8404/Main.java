@@ -1,14 +1,13 @@
 package org.quixilver8404;
 
+import org.quixilver8404.controller.Controller;
 import org.quixilver8404.feedforward.*;
 import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
-import org.quixilver8404.simulator.PowerProfile;
-import org.quixilver8404.simulator.Vector3;
+import org.quixilver8404.controller.PowerProfile;
+import org.quixilver8404.util.Vector3;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
@@ -39,8 +38,6 @@ public class Main {
         final PowerProfile powerProfile = new PowerProfile(m, R, J, omegamax, Tmax, rX, rY, false);
         final Controller controller = new Controller(Controller.computeK(m, R, J, omegamax, Tmax, rX, rY));
 
-        final FeedForwardTest feedForwardTest = new FeedForwardTest();
-
         double error_xy = 0;
         double error_alpha = 0;
         double t = 0;
@@ -62,7 +59,7 @@ public class Main {
 //        anchorPoints.add(new AnchorPoint(4, 0, 0, AnchorPoint.Heading.FRONT, 0, 1, new Point2D(4,1), Math.PI,
 //                         0, null, 0, new Point2D(3,1), null, Config.MAX_VELOCITY, false, true));
 //        final Path path = new Path(anchorPoints);
-        final Path path = Path.foxtrotParser(new File("/home/andrea/Desktop/testing3-3.foxtrot2"), 0);
+        final Path path = Path.parseFoxtrot(new File("/home/andrea/Desktop/testing.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -76,15 +73,10 @@ public class Main {
             final double s;
             final double s_dot;
             final double s_dot_dot;
-            if (dt == 0) {
-//                throw new Error("dt = 0");
-//                dt = 0.001;
-
+            if (dt == 0) { //Only when running real-time simulation
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = 0;
                 s_dot_dot = 0;
-//                t2 = System.currentTimeMillis()/(double)1000;
-//                System.out.println("Set to 0");
             } else {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = (s - prev_s)/dt;
@@ -92,18 +84,9 @@ public class Main {
             }
             t1 = t2;
 
-//            final Vector3 pos = feedForwardTest.getPosition(t);
-//            final Vector3 vel = feedForwardTest.getVelocity(t);
-//            final Vector3 acc = feedForwardTest.getAcceleration(t);
-//            final Vector3 pos = path.evaluate(t, 0, 0).pos;
-//            final double s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
-//            final double s_dot = (s - prev_s)/dt;
-//            final double s_dot_dot = path.calcAccelerationCorrection(s, s_dot);
             prev_s = s;
-            prev_s_dot = s_dot;
-            final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
 
-//            System.out.println("Position: " + state.pos.toString() + "  Velocity: " + state.vel.toString() + "  Acceleration: " + state.acc.toString());
+            final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
 
             final double[] correction;
             if (counter == updateControllerEveryHz) {
@@ -116,46 +99,24 @@ public class Main {
             }
 
             final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, kinematics.getFieldPos().theta);
-//            System.out.println(Arrays.toString(powerSettings));
+
             kinematics.update(powerSettings, dt);
-//            kinematics.update(new double[]{1, -1, 1, -1}, dt);
-
-//            System.out.println("Desired pos: " + pos.toString() + " actual pos: " + kinematics.getFieldPos() +
-//                    " || Desired vel: " + vel.toString() + " actual vel: " + kinematics.getFieldVel() +
-//                    " || Desired acc: " + acc.toString() + " actual acc: " + kinematics.getFieldAcc() +
-//                    " || Power settings: " + Arrays.toString(powerSettings));
-
-//            System.out.println(path.mainSegments.get(0).circleSegment1.theta1_);
-
-//            kinematics.ui.setBackground(new double[]{255,255,255});
-
-//            System.out.println("Current s: " + s);
 
             kinematics.ui.drawCircle(state.pos.x, state.pos.y, 0.05, 100, new double[]{255,0,0});
-//            kinematics.ui.drawCircle(path.evaluate(t, 0, 0).pos.x, path.evaluate(t, 0, 0).pos.y, 0.05, 100, new double[]{255,0,0});
             kinematics.ui.drawCircle(0, 0, 0.05, 100, new double[]{0,255,0});
-//            kinematics.ui.drawCompassPixel(path.evaluate(t, 0, 0).pos.theta, 400, -400, 50);
             kinematics.ui.drawCompassPixel(state.pos.theta, 400, -400, 50);
-
             kinematics.ui.update();
-//            System.out.println("Current accel: " + Math.abs(kinematics.getFieldAcc().y));
-//            if (Math.abs(kinematics.getFieldAcc().y) > maxAccel) {
-//                maxAccel = Math.abs(kinematics.getFieldAcc().y);
-//                System.out.println("maxAccel: " + maxAccel);
-//            }
-//            System.out.println(kinematics.getFieldAcc());
             counter++;
             t+=dt;
             error_xy += Math.sqrt(Math.hypot(state.pos.x-kinematics.getFieldPos().x, state.pos.y-kinematics.getFieldPos().y))*dt;
             error_alpha += (state.pos.theta-kinematics.getFieldPos().theta)*dt;
             t2 = System.currentTimeMillis()/(double)1000;
-//            t2 = (double)System.nanoTime()/(double)1e9;
-            if (counter >= 20000) {
-                kinematics.ui.terminate();
-//                System.out.println("Average error in x-y: " + error_xy/t);
-//                System.out.println("Average error in alpha: " + error_alpha/t);
-                break;
-            }
+//            if (counter >= 20000) {
+//                kinematics.ui.terminate();
+////                System.out.println("Average error in x-y: " + error_xy/t);
+////                System.out.println("Average error in alpha: " + error_alpha/t);
+//                break;
+//            }
         }
     }
 }

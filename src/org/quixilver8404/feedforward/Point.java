@@ -1,5 +1,7 @@
 package org.quixilver8404.feedforward;
 
+import org.quixilver8404.util.Config;
+
 public abstract class Point {
     final double x;
     final double y;
@@ -18,6 +20,6 @@ public abstract class Point {
     }
 
     public String toString() {
-        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ")";
+        return "(" + x/ Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ")";
     }
 }

@@ -1,7 +1,9 @@
-package org.quixilver8404.simulator;
+package org.quixilver8404.controller;
 
-import org.quixilver8404.feedforward.Config;
+import org.quixilver8404.util.Config;
 import org.apache.commons.math3.linear.ArrayRealVector;
+import org.quixilver8404.simulator.CoordinateTransformations;
+import org.quixilver8404.util.Vector3;
 
 public class PowerProfile {
 

@@ -1,6 +1,7 @@
 package org.quixilver8404.feedforward;
 
-import org.quixilver8404.simulator.Vector3;
+import org.quixilver8404.util.Config;
+import org.quixilver8404.util.Vector3;
 
 public class CircleSegment extends MinorSegment {
 

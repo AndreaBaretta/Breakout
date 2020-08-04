@@ -1,4 +1,4 @@
-package org.quixilver8404.feedforward;
+package org.quixilver8404.util;
 
 public class Config {
     public final static double MAX_ACCELERATION = 11.2;
