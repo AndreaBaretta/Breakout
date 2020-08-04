@@ -18,6 +18,6 @@ public abstract class Point {
     }
 
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ")";
     }
 }

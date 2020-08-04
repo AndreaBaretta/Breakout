@@ -38,6 +38,11 @@ public class Path {
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
 
+                System.out.println("Connection point 0: " + connection0.toString());
+                System.out.println("Connection point 1: " + connection1.toString());
+                System.out.println("Connection point 2: " + connection2.toString());
+                System.out.println("Connection point 3: " + connection3.toString());
+
                 connection0.index = connectionPointCounter;
                 connectionPointCounter++;
                 connection1.index = connectionPointCounter;
@@ -208,23 +213,31 @@ public class Path {
                 }
                 final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
 
+                System.out.println();
                 if (first) {
                     curParams = new CurveParameters((JSONObject)curves.get(0));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
                             curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, first, last);
+//                    System.out.println("In first");
+//                    System.out.println(anchorPointsList.size());
                     anchorPointsList.add(anchorPoint);
                     prevParams = curParams.copy();
+//                    System.out.println(anchorPointsList.size());
                 } else if (last) {
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, first, last);
                     anchorPointsList.add(anchorPoint);
                 } else {
-                    curParams = new CurveParameters((JSONObject)curves.get(anchorPoints.size()-2));
+                    System.out.println("Index of curves: " + anchorPoints.size());
+                    curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, first, last);
+//                    System.out.println(anchorPointsList.size());
                     anchorPointsList.add(anchorPoint);
+//                    System.out.println(anchorPointsList.size());
                     prevParams = curParams.copy();
                 }
+                System.out.println("Parsed");
             }
         } catch (final Exception e) {
             System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");

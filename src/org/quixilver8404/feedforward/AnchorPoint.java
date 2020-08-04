@@ -61,7 +61,7 @@ public class AnchorPoint extends Point {
         final double sin = Math.sin(tan)*Math.cos(counterClockTheta) - Math.cos(tan)*Math.sin(counterClockTheta);
         final double cos = Math.cos(tan)*Math.cos(counterClockTheta) + Math.sin(tan)*Math.sin(counterClockTheta);
         final double theta = MainSegment.angleFromSinCos(sin, cos);
-        System.out.println("CheckDirection  tan: " + tan + "  counterClockTheta: " + counterClockTheta);
+//        System.out.println("CheckDirection  tan: " + tan + "  counterClockTheta: " + counterClockTheta);
         if (Math.abs(theta) <= 1e-12) {
             return true;
         } else {
