@@ -10,19 +10,22 @@ import org.quixilver8404.util.Vector3;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class Path {
     public final List<AnchorPoint> anchorPoints;
     public final List<MainSegment> mainSegments;
+    public final List<ConnectionPoint> connectionPoints;
 
     protected MainSegment currentSegment;
     protected boolean finished;
 
     public Path(final List<AnchorPoint> anchorPoints) {
         this.anchorPoints = anchorPoints;
-        this.mainSegments = new ArrayList<MainSegment>();
+        mainSegments = new ArrayList<MainSegment>();
+        connectionPoints = new ArrayList<ConnectionPoint>();
 
         AnchorPoint curPoint = null;
         AnchorPoint prevPoint = curPoint;
@@ -33,11 +36,16 @@ public class Path {
             curPoint = anchorPoints.get(i);
             if (curPoint.first) {
                 prevPoint = curPoint;
+                connectionPoints.add(curPoint.middlePoint);
             } else {
                 final ConnectionPoint connection0 = prevPoint.middlePoint;
                 final ConnectionPoint connection1 = prevPoint.nextPoint;
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
+
+                connectionPoints.add(prevPoint.nextPoint);
+                connectionPoints.add(curPoint.prevPoint);
+                connectionPoints.add(curPoint.middlePoint);
 
                 System.out.println("Connection point 0: " + connection0.toString());
                 System.out.println("Connection point 1: " + connection1.toString());
@@ -64,19 +72,19 @@ public class Path {
                 final CircleSegment segment2 = new CircleSegment(connection2, connection3, s0, prevPoint.configVelocity, curPoint.center0, curPoint.r0, curPoint.theta0, curAnchorTheta, curPoint.counterClockwise0);
                 s0 = segment2.getEndS();
 
-                System.out.println("zeroSegment circle1: " + segment0.zeroSegment + " firstpoint: " + segment0.firstPoint.toString() + "  " + "lastpoint: " + segment0.lastPoint.toString() + "  counterclockwise: " + segment0.counterClockwise + "  center: " + segment0.center.toString() + "  tangent: " + prevPoint.tan + "  length: " + segment0.getTotalS());
-                System.out.println("zeroSegment linear: " + segment1.zeroSegment + " firstpoint: " + segment1.firstPoint.toString() + "  " + "lastpoint: " + segment1.lastPoint.toString() + "  length: " + segment1.getTotalS());
-                System.out.println("zeroSegment circle2: " + segment2.zeroSegment + " firstpoint: " + segment2.firstPoint.toString() + "  " + "lastpoint: " + segment2.lastPoint.toString() + "  counterclockwise: " + segment2.counterClockwise + "  center: " + segment2.center.toString() + "  tangent: " + curPoint.tan + "  length: " + segment2.getTotalS()
-                 + "  theta0_: " + segment2.theta0_ + "  theta1_: " + segment2.theta1_ + "  theta0: " + segment2.theta0 + "  theta1: " + segment2.theta1);
-                System.out.println("At point, s = " + segment2.calcS(76.13/ Config.INCHES_TO_METERS, 68.24/Config.INCHES_TO_METERS));
+//                System.out.println("zeroSegment circle1: " + segment0.zeroSegment + " firstpoint: " + segment0.firstPoint.toString() + "  " + "lastpoint: " + segment0.lastPoint.toString() + "  counterclockwise: " + segment0.counterClockwise + "  center: " + segment0.center.toString() + "  tangent: " + prevPoint.tan + "  length: " + segment0.getTotalS());
+//                System.out.println("zeroSegment linear: " + segment1.zeroSegment + " firstpoint: " + segment1.firstPoint.toString() + "  " + "lastpoint: " + segment1.lastPoint.toString() + "  length: " + segment1.getTotalS());
+//                System.out.println("zeroSegment circle2: " + segment2.zeroSegment + " firstpoint: " + segment2.firstPoint.toString() + "  " + "lastpoint: " + segment2.lastPoint.toString() + "  counterclockwise: " + segment2.counterClockwise + "  center: " + segment2.center.toString() + "  tangent: " + curPoint.tan + "  length: " + segment2.getTotalS()
+//                 + "  theta0_: " + segment2.theta0_ + "  theta1_: " + segment2.theta1_ + "  theta0: " + segment2.theta0 + "  theta1: " + segment2.theta1);
+//                System.out.println("At point, s = " + segment2.calcS(76.13/ Config.INCHES_TO_METERS, 68.24/Config.INCHES_TO_METERS));
 //                System.out.println();
 
 //                System.out.println(co);
                 final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint);
 
                 mainSegments.add(mainSegment);
-                System.out.println("Domain mainsegment: " + mainSegment.getEndS());
-                System.out.println("Domain circlesegment: " + mainSegment.circleSegment0.getEndS());
+//                System.out.println("Domain mainsegment: " + mainSegment.getEndS());
+                System.out.println("Domain circlesegment1: " + mainSegment.circleSegment1.getEndS());
 
                 prevPoint = curPoint;
             }
@@ -85,6 +93,8 @@ public class Path {
         currentSegment = mainSegments.get(0);
         finished = false;
         System.out.println("End S: " + mainSegments.get(mainSegments.size() - 1).getEndS());
+
+        System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
@@ -220,32 +230,23 @@ public class Path {
                 }
                 final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
 
-                System.out.println();
                 if (first) {
                     curParams = new CurveParameters((JSONObject)curves.get(0));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
                             curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, first, last);
-//                    System.out.println("In first");
-//                    System.out.println(anchorPointsList.size());
                     anchorPointsList.add(anchorPoint);
                     prevParams = curParams.copy();
-//                    System.out.println(anchorPointsList.size());
                 } else if (last) {
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, first, last);
                     anchorPointsList.add(anchorPoint);
-                    System.out.println("endTheta2: " + prevParams.endTheta2);
                 } else {
-                    System.out.println("Index of curves: " + anchorPoints.size());
                     curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, first, last);
-//                    System.out.println(anchorPointsList.size());
                     anchorPointsList.add(anchorPoint);
-//                    System.out.println(anchorPointsList.size());
                     prevParams = curParams.copy();
                 }
-                System.out.println("Parsed");
             }
         } catch (final Exception e) {
             System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");

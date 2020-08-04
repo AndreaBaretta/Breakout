@@ -7,6 +7,11 @@ public abstract class MinorSegment extends Segment {
         super(firstPoint, lastPoint, s0, configVelocity);
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
+//        firstPoint.setNextSegment(this);
+//        lastPoint.setPrevSegment(this);
+    }
+
+    public void setPointSegment() {
         firstPoint.setNextSegment(this);
         lastPoint.setPrevSegment(this);
     }

@@ -17,8 +17,8 @@ public class CircleSegment extends MinorSegment {
     CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity,
                   final Point2D center, final double r, final double theta0, final double theta1, final boolean counterClockwise) {
         super(firstPoint, lastPoint, s0, configVelocity);
-        System.out.println("Theta0 in circle: " + theta0);
-        System.out.println("Theta1 in circle: " + theta1);
+//        System.out.println("Theta0 in circle: " + theta0);
+//        System.out.println("Theta1 in circle: " + theta1);
         this.center = center;
         this.r = r;
         this.theta0 = theta0;
@@ -40,12 +40,7 @@ public class CircleSegment extends MinorSegment {
             }
             theta1_ = theta1;
         }
-//        System.out.println("Theta0_ in circle: " + theta0_);
-//        System.out.println("Theta1_ in circle: " + theta1_);
-//        System.out.println("0 segment: " + (MainSegment.normalizeAlpha(theta0) == MainSegment.normalizeAlpha(theta1)));
-//        System.out.println("0 segment2 : " + (Math.abs(firstPoint.x - lastPoint.x) < 1e-12) + "  " + (Math.abs(firstPoint.y - lastPoint.y) < 1e-12));
-//        System.out.println("firstPoint = (" + firstPoint.x + ", " + firstPoint.y + ")  lastPoint = (" + lastPoint.x + ", " + lastPoint.y + ")");
-//        System.out.println();
+        setPointSegment();
     }
 
     public Vector3 getPosition(final double s) {
@@ -126,8 +121,6 @@ public class CircleSegment extends MinorSegment {
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
             theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
         }
-
-//        System.out.println("s: " + (theta*r + s0) + "  theta: " + theta + "  gamma: " + gamma);
 
         return theta*r + s0;
     }

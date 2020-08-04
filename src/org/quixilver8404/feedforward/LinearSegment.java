@@ -9,6 +9,7 @@ public class LinearSegment extends MinorSegment {
     LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
         super(firstPoint, lastPoint, s0, configVelocity);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
+        setPointSegment();
     }
 
     public Vector3 getPosition(final double s) {
