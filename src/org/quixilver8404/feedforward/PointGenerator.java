@@ -17,6 +17,7 @@ public class PointGenerator<E> {
     }
 
     public E getNext() {
+        System.out.println("Getting index: " + i);
         final E point = velocityPoints.get(i);
         i++;
         if (i == velocityPoints.size()) {

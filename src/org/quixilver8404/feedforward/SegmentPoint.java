@@ -36,6 +36,6 @@ public class SegmentPoint implements VelocityPoint {
     }
 
     public String toString() {
-        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", headingState=" + headingState + ", heading" + heading + ")";
+        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", headingState=" + headingState + ", heading=" + heading + ")";
     }
 }

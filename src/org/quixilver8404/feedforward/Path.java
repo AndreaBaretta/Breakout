@@ -9,9 +9,7 @@ import org.quixilver8404.util.Vector3;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 
 public class Path {
@@ -99,30 +97,21 @@ public class Path {
 
         segmentPoints = parseSegmentPoints(foxtrotFile, config);
 
-        final PointGenerator<ConnectionPoint> connectionPointGenerator = new PointGenerator<ConnectionPoint>(connectionPoints);
-        final PointGenerator<SegmentPoint> segmentPointGenerator = new PointGenerator<SegmentPoint>(segmentPoints);
-
         final List<VelocityPoint> velocityPoints = new ArrayList<VelocityPoint>();
 
-        ConnectionPoint connectionPoint = connectionPointGenerator.getNext();
-        SegmentPoint segmentPoint = segmentPointGenerator.getNext();
-        while (true) {
-            if (connectionPointGenerator.finished && segmentPointGenerator.finished) {
-                break;
-            } else if (connectionPointGenerator.finished) {
-                velocityPoints.add(segmentPointGenerator.getNext());
-            } else if (segmentPointGenerator.finished) {
-                velocityPoints.add(connectionPointGenerator.getNext());
-            } else {
-                if (connectionPoint.getS() < connectionPoint.getS()) {
-                    velocityPoints.add(connectionPoint);
-                    connectionPoint = connectionPointGenerator.getNext();
+        segmentPoints.forEach((n) -> velocityPoints.add(n));
+        connectionPoints.forEach((n) -> velocityPoints.add(n));
+
+        velocityPoints.sort(new Comparator<VelocityPoint>() {
+            @Override
+            public int compare(final VelocityPoint t0, final VelocityPoint t1) {
+                if (t0.getS() - t1.getS() <= 0) {
+                    return -1;
                 } else {
-                    velocityPoints.add(segmentPoint);
-                    segmentPoint = segmentPointGenerator.getNext();
+                    return 1;
                 }
             }
-        }
+        });
 
         VelocityPoint prevVelocityPoint = null;
         for (int i = 0; i < velocityPoints.size(); i++) {
@@ -139,6 +128,8 @@ public class Path {
 
         System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
         System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
+        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {

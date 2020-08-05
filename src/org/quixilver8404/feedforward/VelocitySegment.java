@@ -14,4 +14,8 @@ public class VelocitySegment {
     public void setMinVelocity(final double minVelocity) {
         this.minVelocity = Math.min(this.minVelocity, minVelocity);
     }
+
+    public String toString() {
+        return "(s0=" + s0 + ", s1=" + s1 + ", minV=" + minVelocity + ")";
+    }
 }
