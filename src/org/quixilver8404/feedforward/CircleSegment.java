@@ -3,6 +3,8 @@ package org.quixilver8404.feedforward;
 import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
+import java.util.List;
+
 public class CircleSegment extends MinorSegment {
 
     public final Point2D center;
@@ -34,7 +36,7 @@ public class CircleSegment extends MinorSegment {
             theta0_ = theta0;
         } else {
             if (theta0 < theta1) {
-                theta0_ = 2*Math.PI + theta0; //Probably not the right change
+                theta0_ = 2*Math.PI + theta0;
             } else {
                 theta0_ = theta0;
             }
@@ -105,8 +107,9 @@ public class CircleSegment extends MinorSegment {
         }
     }
 
-    public double calcMinVelocity() {
-        return Math.sqrt(r * Config.MAX_ACCELERATION);
+    public double getMinVelocity() {
+//        System.out.println("In circle: r=" + r + " max_a=" + Config.MAX_ACCELERATION);
+        return Math.min(Math.sqrt(r * Config.MAX_ACCELERATION), Config.MAX_SAFE_VELOCITY*Config.MAX_VELOCITY);
     }
 
     public double calcS(final double x, final double y) {

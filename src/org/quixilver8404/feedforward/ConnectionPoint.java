@@ -3,10 +3,11 @@ package org.quixilver8404.feedforward;
 import org.quixilver8404.util.Config;
 
 public class ConnectionPoint extends Point2D implements VelocityPoint {
-    public Segment prevSegment = null;
-    public Segment nextSegment = null;
+    public MinorSegment prevSegment = null;
+    public MinorSegment nextSegment = null;
     public boolean complete;
     protected double minVelocity;
+    public double configVelocity;
     protected double s;
     public double index;
 
@@ -14,15 +15,17 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
         super(x, y);
         complete = false;
         minVelocity = configVelocity;
+        this.configVelocity = configVelocity;
     }
 
     ConnectionPoint(final Point2D point, final double configVelocity) {
         super(point.x, point.y);
         complete = false;
         minVelocity = configVelocity;
+        this.configVelocity = configVelocity;
     }
 
-    public void setPrevSegment(final Segment segment) {
+    public void setPrevSegment(final MinorSegment segment) {
         if (complete) {
             throw new Error("Error parsing: Connector point already complete when setting prevSegment at index: " + index);
         }
@@ -30,12 +33,11 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
         if (prevSegment != null && nextSegment != null) {
             complete = true;
         }
-        minVelocity = Math.min(minVelocity, prevSegment.minVelocity);
-        System.out.println("Set prevSegment at index: " + index + "  s = " + segment.getEndS());
+//        System.out.println("Set prevSegment at index: " + index + "  s = " + segment.getEndS());
         s = segment.getEndS();
     }
 
-    public void setNextSegment(final Segment segment) {
+    public void setNextSegment(final MinorSegment segment) {
         if (complete) {
             throw new Error("Error parsing: Connector point already complete when setting nextSegment at index: " + index);
         }
@@ -43,13 +45,17 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
         if (prevSegment != null && nextSegment != null) {
             complete = true;
         }
-        minVelocity = Math.min(minVelocity, nextSegment.minVelocity);
-        System.out.println("Set nextSegment at index: " + index + "  s = " + segment.s0);
+        minVelocity = Math.min(minVelocity, nextSegment.getMinVelocity());
+//        System.out.println("Set nextSegment at index: " + index + "  s = " + segment.s0);
         s = segment.s0;
     }
 
     public double getMinVelocity() {
         return minVelocity;
+    }
+
+    public double getConfigVelocity() {
+        return configVelocity;
     }
 
     public double getS() {
@@ -58,5 +64,9 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
 
     public String toString() {
         return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ")";
+    }
+
+    public void setConfigVelocity(final double newConfigVelocity) {
+        configVelocity = newConfigVelocity;
     }
 }

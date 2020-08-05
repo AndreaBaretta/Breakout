@@ -3,6 +3,9 @@ package org.quixilver8404.feedforward;
 import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainSegment extends Segment {
     public final CircleSegment circleSegment0;
     public final LinearSegment linearSegment;
@@ -21,7 +24,7 @@ public class MainSegment extends Segment {
     public final double alpha0_;
 
     MainSegment(final CircleSegment circleSegment0, final LinearSegment linearSegment, final CircleSegment circleSegment1, final int index,
-                final AnchorPoint anchorPoint0, final AnchorPoint anchorPoint1) {
+                final AnchorPoint anchorPoint0, final AnchorPoint anchorPoint1, final List<SegmentPoint> segmentPoints) {
         super(circleSegment0.firstPoint, circleSegment1.lastPoint, circleSegment0.s0, Config.MAX_VELOCITY);
         this.circleSegment0 = circleSegment0;
         this.linearSegment = linearSegment;
@@ -75,6 +78,30 @@ public class MainSegment extends Segment {
                 alpha0_ = alpha0;
             }
         }
+
+        final List<SegmentPoint> circle0SegmentPoints = new ArrayList<SegmentPoint>();
+        final List<SegmentPoint> linearSegmentPoints = new ArrayList<SegmentPoint>();
+        final List<SegmentPoint> circle1SegmentPoints = new ArrayList<SegmentPoint>();
+
+//        segmentPoints.forEach((final SegmentPoint p) -> {
+//            p.setMinVelocity(getMinVelocity());
+//            p.setS(s0, getTotalS());
+//        });
+
+        segmentPoints.forEach((final SegmentPoint p) -> {
+            p.setS(s0, getTotalS());
+            if (circleSegment1.inRange(p.getS())) {
+                circle0SegmentPoints.add(p);
+            } else if (linearSegment.inRange(p.getS())) {
+                linearSegmentPoints.add(p);
+            } else {
+                circle1SegmentPoints.add(p);
+            }
+        });
+
+        circleSegment0.setVelocitySegments(circle0SegmentPoints);
+        linearSegment.setVelocitySegments(linearSegmentPoints);
+        circleSegment1.setVelocitySegments(circle1SegmentPoints);
     }
 
     public Vector3 getPosition(final double s) {

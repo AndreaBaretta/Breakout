@@ -1,18 +1,48 @@
 package org.quixilver8404.feedforward;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class MinorSegment extends Segment {
     public final ConnectionPoint firstPoint;
     public final ConnectionPoint lastPoint;
+    public final List<VelocitySegment> velocitySegments;
     MinorSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
         super(firstPoint, lastPoint, s0, configVelocity);
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
-//        firstPoint.setNextSegment(this);
-//        lastPoint.setPrevSegment(this);
+        velocitySegments = new ArrayList<VelocitySegment>();
     }
 
     public void setPointSegment() {
         firstPoint.setNextSegment(this);
         lastPoint.setPrevSegment(this);
     }
+
+    public void setVelocitySegments(final List<SegmentPoint> segmentPoints) {
+        if (segmentPoints.size() != 0) {
+            segmentPoints.forEach((final SegmentPoint p) -> {
+                p.setMinVelocity(getMinVelocity());
+            });
+            VelocityPoint prevPoint = firstPoint;
+            for (int i = 0; i < segmentPoints.size(); i++) {
+                final VelocityPoint point = segmentPoints.get(i);
+                final VelocitySegment segment = new VelocitySegment(prevPoint.getS(), point.getS(), getMinVelocity(), prevPoint, point);
+                velocitySegments.add(segment);
+                prevPoint = point;
+            }
+            final VelocitySegment finalSegment = new VelocitySegment(prevPoint.getS(), lastPoint.getS(), getMinVelocity(), prevPoint, lastPoint);
+            velocitySegments.add(finalSegment);
+            lastPoint.setConfigVelocity(prevPoint.getConfigVelocity());
+        } else {
+            final VelocitySegment segment = new VelocitySegment(firstPoint.getS(), lastPoint.getS(), getMinVelocity(), firstPoint, lastPoint);
+            velocitySegments.add(segment);
+        }
+        System.out.print("Minor segment: ");
+        System.out.print(Arrays.toString(velocitySegments.toArray()));
+        System.out.println(" Segment minVelocity: " + getMinVelocity());
+    }
+
+    public abstract double getMinVelocity();
 }

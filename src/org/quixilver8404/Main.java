@@ -51,7 +51,7 @@ public class Main {
         final double time_limit = 5;
         double maxAccel = 0;
 
-        final Path path = new Path(new File("/home/andrea/Desktop/test.foxtrot2"), 0);
+        final Path path = new Path(new File("/home/andrea/Desktop/testing2.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -96,7 +96,7 @@ public class Main {
 
             for (int i = 0; i < path.segmentPoints.size(); i++) { //Draw segmentpoints
                 final SegmentPoint segmentPoint = path.segmentPoints.get(i);
-                final Vector3 pointPos = path.mainSegments.get(segmentPoint.anchorIndex).getPosition(segmentPoint.s);
+                final Vector3 pointPos = path.mainSegments.get(segmentPoint.anchorIndex).getPosition(segmentPoint.getS());
                 kinematics.ui.drawCircle(pointPos.x, pointPos.y, 0.05, 100, new double[]{255,255,0});
             }
 

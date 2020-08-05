@@ -6,14 +6,12 @@ public abstract class Segment {
     public final ConnectionPoint firstPoint;
     public final ConnectionPoint lastPoint;
     public final double s0;
-    public final double minVelocity;
     public final boolean zeroSegment;
 
     Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
         this.s0 = s0;
-        minVelocity = Math.min(configVelocity, calcMinVelocity());
         if (Math.abs(firstPoint.x - lastPoint.x) < 1e-12 && Math.abs(firstPoint.y - lastPoint.y) < 1e-12) {
             zeroSegment = true;
         } else {
@@ -44,8 +42,6 @@ public abstract class Segment {
             return false;
         }
     }
-
-    public abstract double calcMinVelocity();
 
     public abstract double calcS(final double x, final double y);
 

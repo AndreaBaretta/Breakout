@@ -2,6 +2,8 @@ package org.quixilver8404.feedforward;
 
 import org.quixilver8404.util.Vector3;
 
+import java.util.List;
+
 public class LinearSegment extends MinorSegment {
 
     public final double theta;
@@ -10,6 +12,11 @@ public class LinearSegment extends MinorSegment {
         super(firstPoint, lastPoint, s0, configVelocity);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
         setPointSegment();
+    }
+
+    @Override
+    public void setVelocitySegments(final List<SegmentPoint> segmentPoints) {
+        super.setVelocitySegments(segmentPoints);
     }
 
     public Vector3 getPosition(final double s) {
@@ -40,8 +47,8 @@ public class LinearSegment extends MinorSegment {
         return Math.hypot(lastPoint.x-firstPoint.x, lastPoint.y-firstPoint.y);
     }
 
-    public double calcMinVelocity() {
-        return minVelocity;
+    public double getMinVelocity() {
+        return firstPoint.minVelocity;
     }
 
     public double calcS(final double x, final double y) {

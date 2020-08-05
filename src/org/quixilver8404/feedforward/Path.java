@@ -17,17 +17,18 @@ public class Path {
     public final List<MainSegment> mainSegments;
     public final List<ConnectionPoint> connectionPoints;
     public final List<SegmentPoint> segmentPoints;
-    public final List<VelocitySegment> velocitySegments;
+//    public final List<VelocitySegment> velocitySegments;
 
     protected MainSegment currentMainSegment;
     protected VelocitySegment currentVelocitySegment;
     protected boolean finished;
 
     public Path(final File foxtrotFile, final int config) {
-        this.anchorPoints = parseAnchorPoints(foxtrotFile, config);
+        anchorPoints = parseAnchorPoints(foxtrotFile, config);
         mainSegments = new ArrayList<MainSegment>();
         connectionPoints = new ArrayList<ConnectionPoint>();
-        velocitySegments = new ArrayList<VelocitySegment>();
+        segmentPoints = parseSegmentPoints(foxtrotFile, config);
+//        velocitySegments = new ArrayList<VelocitySegment>();
 
         AnchorPoint curPoint = null;
         AnchorPoint prevPoint = curPoint;
@@ -49,10 +50,10 @@ public class Path {
                 connectionPoints.add(curPoint.prevPoint);
                 connectionPoints.add(curPoint.middlePoint);
 
-                System.out.println("Connection point 0: " + connection0.toString());
-                System.out.println("Connection point 1: " + connection1.toString());
-                System.out.println("Connection point 2: " + connection2.toString());
-                System.out.println("Connection point 3: " + connection3.toString());
+//                System.out.println("Connection point 0: " + connection0.toString());
+//                System.out.println("Connection point 1: " + connection1.toString());
+//                System.out.println("Connection point 2: " + connection2.toString());
+//                System.out.println("Connection point 3: " + connection3.toString());
 
                 connection0.index = connectionPointCounter;
                 connectionPointCounter++;
@@ -62,6 +63,8 @@ public class Path {
                 connectionPointCounter++;
                 connection3.index = connectionPointCounter;
                 connectionPointCounter++;
+
+
 
 //                System.out.println("toString: (" + curPoint.middlePoint.x/Config.INCHES_TO_METERS + ", " + curPoint.middlePoint.y/Config.INCHES_TO_METERS + ")");
                 final double prevAnchorTheta = MainSegment.normalizeAlpha(Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x));
@@ -82,7 +85,13 @@ public class Path {
 //                System.out.println();
 
 //                System.out.println(co);
-                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint);
+                final List<SegmentPoint> curSegmentPoints = new ArrayList<SegmentPoint>();
+                segmentPoints.forEach((final SegmentPoint p) -> {
+                    if (p.anchorIndex == mainSegments.size()) {
+                        curSegmentPoints.add(p);
+                    }
+                });
+                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint, curSegmentPoints);
 
                 mainSegments.add(mainSegment);
 //                System.out.println("Domain mainsegment: " + mainSegment.getEndS());
@@ -95,48 +104,48 @@ public class Path {
         currentMainSegment = mainSegments.get(0);
         finished = false;
 
-        segmentPoints = parseSegmentPoints(foxtrotFile, config);
+//        segmentPoints = parseSegmentPoints(foxtrotFile, config);
+//
+//        final List<VelocityPoint> velocityPoints = new ArrayList<VelocityPoint>();
+//
+//        segmentPoints.forEach((n) -> velocityPoints.add(n));
+//        connectionPoints.forEach((n) -> velocityPoints.add(n));
+//
+//        velocityPoints.sort(new Comparator<VelocityPoint>() {
+//            @Override
+//            public int compare(final VelocityPoint t0, final VelocityPoint t1) {
+//                if (t0.getS() - t1.getS() <= 0) {
+//                    return -1;
+//                } else {
+//                    return 1;
+//                }
+//            }
+//        });
 
-        final List<VelocityPoint> velocityPoints = new ArrayList<VelocityPoint>();
-
-        segmentPoints.forEach((n) -> velocityPoints.add(n));
-        connectionPoints.forEach((n) -> velocityPoints.add(n));
-
-        velocityPoints.sort(new Comparator<VelocityPoint>() {
-            @Override
-            public int compare(final VelocityPoint t0, final VelocityPoint t1) {
-                if (t0.getS() - t1.getS() <= 0) {
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        });
-
-        VelocityPoint prevVelocityPoint = null;
-        int velocitySegmentCounter = 0;
-        for (int i = 0; i < velocityPoints.size(); i++) {
-            if (i == 0) {
-                prevVelocityPoint = velocityPoints.get(i);
-            } else {
-                final VelocityPoint velocityPoint = velocityPoints.get(i);
-                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()), velocitySegmentCounter);
-                if (!velocitySegment.zeroSegment) {
-                    velocitySegments.add(velocitySegment);
-                    velocitySegmentCounter++;
-                }
-                prevVelocityPoint = velocityPoint;
-            }
-        }
-
-        currentVelocitySegment = velocitySegments.get(0);
+//        VelocityPoint prevVelocityPoint = null;
+//        int velocitySegmentCounter = 0;
+//        for (int i = 0; i < velocityPoints.size(); i++) {
+//            if (i == 0) {
+//                prevVelocityPoint = velocityPoints.get(i);
+//            } else {
+//                final VelocityPoint velocityPoint = velocityPoints.get(i);
+//                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()), velocitySegmentCounter, prevVelocityPoint, velocityPoint);
+//                if (!velocitySegment.zeroSegment) {
+//                    velocitySegments.add(velocitySegment);
+//                    velocitySegmentCounter++;
+//                }
+//                prevVelocityPoint = velocityPoint;
+//            }
+//        }
+//
+//        currentVelocitySegment = velocitySegments.get(0);
 
         System.out.println("End S: " + mainSegments.get(mainSegments.size() - 1).getEndS());
 
         System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
         System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
-        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
-        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
+//        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
+//        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
@@ -228,32 +237,50 @@ public class Path {
         }
     }
 
-    public double nextVelocity(final double s) {
-        if (currentVelocitySegment.inRange(s)) {
-            if (currentVelocitySegment.index == velocitySegments.size() - 1) {
-                return 0;
-            } else {
-                return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
-            }
-        } else {
-            if (s < currentVelocitySegment.s0) {
-                final double nextVelocity = currentVelocitySegment.minVelocity;
-                if (currentVelocitySegment.index == 0) {
-                    return nextVelocity;
-                } else {
-                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
-                    return nextVelocity;
-                }
-            } else {
-                if (currentVelocitySegment.index == velocitySegments.size() - 1) {
-                    return currentVelocitySegment.minVelocity;
-                } else {
-                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
-                    return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
-                }
-            }
-        }
-    }
+//    protected void nextVelocitySegment() {
+//        if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+//            ;
+//        } else {
+//            System.out.println("Next velocity segment");
+//            currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
+//        }
+//    }
+//
+//    protected void previousVelocitySegment() {
+//        if (currentVelocitySegment.index == 0) {
+//            ;
+//        } else {
+//            System.out.println("Previous segment");
+//            currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
+//        }
+//    }
+//
+//    public double nextVelocity(final double s) {
+//        if (currentVelocitySegment.inRange(s)) {
+//            if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+//                return 0;
+//            } else {
+//                return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
+//            }
+//        } else {
+//            if (s < currentVelocitySegment.s0) {
+//                final double nextVelocity = currentVelocitySegment.minVelocity;
+//                if (currentVelocitySegment.index == 0) {
+//                    return nextVelocity;
+//                } else {
+//                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
+//                    return nextVelocity;
+//                }
+//            } else {
+//                if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+//                    return currentVelocitySegment.minVelocity;
+//                } else {
+//                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
+//                    return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
+//                }
+//            }
+//        }
+//    }
 
     public List<AnchorPoint> parseAnchorPoints(final File file, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
@@ -333,7 +360,7 @@ public class Path {
             final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
             final JSONArray segments = (JSONArray) obj.get("segments");
             for (int i = 0; i < segments.size(); i++) {
-                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), mainSegments);
+                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i));
                 if (segment.config == config || segment.config == 0) {
                     segmentPoints.add(segment);
                 }
