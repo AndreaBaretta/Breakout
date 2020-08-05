@@ -2,7 +2,7 @@ package org.quixilver8404.feedforward;
 
 import org.quixilver8404.util.Config;
 
-public class ConnectionPoint extends Point2D {
+public class ConnectionPoint extends Point2D implements VelocityPoint {
     public Segment prevSegment = null;
     public Segment nextSegment = null;
     public boolean complete;
@@ -57,6 +57,6 @@ public class ConnectionPoint extends Point2D {
     }
 
     public String toString() {
-        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s = " + s + ")";
+        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ")";
     }
 }

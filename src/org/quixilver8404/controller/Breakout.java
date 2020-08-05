@@ -15,7 +15,7 @@ public class Breakout {
     public Breakout(final File foxtrotFile, final int config) {
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
-        path = Path.parseFoxtrot(foxtrotFile, config);
+        path = new Path(foxtrotFile, config);
     }
 
     protected double prev_s = 0;

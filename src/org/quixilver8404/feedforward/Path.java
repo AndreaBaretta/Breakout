@@ -18,12 +18,13 @@ public class Path {
     public final List<AnchorPoint> anchorPoints;
     public final List<MainSegment> mainSegments;
     public final List<ConnectionPoint> connectionPoints;
+    public final List<SegmentPoint> segmentPoints;
 
     protected MainSegment currentSegment;
     protected boolean finished;
 
-    public Path(final List<AnchorPoint> anchorPoints) {
-        this.anchorPoints = anchorPoints;
+    public Path(final File foxtrotFile, final int config) {
+        this.anchorPoints = parseAnchorPoints(foxtrotFile, config);
         mainSegments = new ArrayList<MainSegment>();
         connectionPoints = new ArrayList<ConnectionPoint>();
 
@@ -84,7 +85,7 @@ public class Path {
 
                 mainSegments.add(mainSegment);
 //                System.out.println("Domain mainsegment: " + mainSegment.getEndS());
-                System.out.println("Domain circlesegment1: " + mainSegment.circleSegment1.getEndS());
+//                System.out.println("Domain circlesegment1: " + mainSegment.circleSegment1.getEndS());
 
                 prevPoint = curPoint;
             }
@@ -92,9 +93,13 @@ public class Path {
 
         currentSegment = mainSegments.get(0);
         finished = false;
+
+        segmentPoints = parseSegmentPoints(foxtrotFile, config);
+
         System.out.println("End S: " + mainSegments.get(mainSegments.size() - 1).getEndS());
 
         System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
+        System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
@@ -186,7 +191,7 @@ public class Path {
         }
     }
 
-    public static Path parseFoxtrot(final File file, final int config) {
+    public List<AnchorPoint> parseAnchorPoints(final File file, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
         final JSONParser jsonParser = new JSONParser();
         try (final FileReader fileReader = new FileReader(file)) {
@@ -254,6 +259,27 @@ public class Path {
             e.printStackTrace();
         }
 
-        return new Path(anchorPointsList);
+        return anchorPointsList;
+    }
+
+    public List<SegmentPoint> parseSegmentPoints(final File file, final int config) {
+        final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
+        final JSONParser jsonParser = new JSONParser();
+        try (final FileReader fileReader = new FileReader(file)) {
+            final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
+            final JSONArray segments = (JSONArray) obj.get("segments");
+            for (int i = 0; i < segments.size(); i++) {
+                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), mainSegments);
+                if (segment.config == config || segment.config == 0) {
+                    segmentPoints.add(segment);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+        return segmentPoints;
     }
 }
