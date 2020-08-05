@@ -19,14 +19,17 @@ public class Path {
     public final List<MainSegment> mainSegments;
     public final List<ConnectionPoint> connectionPoints;
     public final List<SegmentPoint> segmentPoints;
+    public final List<VelocitySegment> velocitySegments;
 
-    protected MainSegment currentSegment;
+    protected MainSegment currentMainSegment;
+    protected VelocitySegment currentVelocitySegment;
     protected boolean finished;
 
     public Path(final File foxtrotFile, final int config) {
         this.anchorPoints = parseAnchorPoints(foxtrotFile, config);
         mainSegments = new ArrayList<MainSegment>();
         connectionPoints = new ArrayList<ConnectionPoint>();
+        velocitySegments = new ArrayList<VelocitySegment>();
 
         AnchorPoint curPoint = null;
         AnchorPoint prevPoint = curPoint;
@@ -91,10 +94,46 @@ public class Path {
             }
         }
 
-        currentSegment = mainSegments.get(0);
+        currentMainSegment = mainSegments.get(0);
         finished = false;
 
         segmentPoints = parseSegmentPoints(foxtrotFile, config);
+
+        final PointGenerator<ConnectionPoint> connectionPointGenerator = new PointGenerator<ConnectionPoint>(connectionPoints);
+        final PointGenerator<SegmentPoint> segmentPointGenerator = new PointGenerator<SegmentPoint>(segmentPoints);
+
+        final List<VelocityPoint> velocityPoints = new ArrayList<VelocityPoint>();
+
+        ConnectionPoint connectionPoint = connectionPointGenerator.getNext();
+        SegmentPoint segmentPoint = segmentPointGenerator.getNext();
+        while (true) {
+            if (connectionPointGenerator.finished && segmentPointGenerator.finished) {
+                break;
+            } else if (connectionPointGenerator.finished) {
+                velocityPoints.add(segmentPointGenerator.getNext());
+            } else if (segmentPointGenerator.finished) {
+                velocityPoints.add(connectionPointGenerator.getNext());
+            } else {
+                if (connectionPoint.getS() < connectionPoint.getS()) {
+                    velocityPoints.add(connectionPoint);
+                    connectionPoint = connectionPointGenerator.getNext();
+                } else {
+                    velocityPoints.add(segmentPoint);
+                    segmentPoint = segmentPointGenerator.getNext();
+                }
+            }
+        }
+
+        VelocityPoint prevVelocityPoint = null;
+        for (int i = 0; i < velocityPoints.size(); i++) {
+            if (i == 0) {
+                prevVelocityPoint = velocityPoints.get(i);
+            } else {
+                final VelocityPoint velocityPoint = velocityPoints.get(i);
+                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()));
+                velocitySegments.add(velocitySegment);
+            }
+        }
 
         System.out.println("End S: " + mainSegments.get(mainSegments.size() - 1).getEndS());
 
@@ -103,64 +142,64 @@ public class Path {
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
-        final double endS = currentSegment.getEndS();
+        final double endS = currentMainSegment.getEndS();
         if (finished) { //If at end, stay there
             return new RobotState(
-                    currentSegment.getPosition(endS),
-                    currentSegment.getVelocity(endS, 0),
-                    currentSegment.getAcceleration(endS, 0, 0)
+                    currentMainSegment.getPosition(endS),
+                    currentMainSegment.getVelocity(endS, 0),
+                    currentMainSegment.getAcceleration(endS, 0, 0)
             );
         }
-        if (currentSegment.index == mainSegments.size() - 1 && s >= endS - 0.01) { //Condition to finish
+        if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.01) { //Condition to finish
             finish();
             return new RobotState(
-                    currentSegment.getPosition(endS),
-                    currentSegment.getVelocity(endS, 0),
-                    currentSegment.getAcceleration(endS, 0, 0)
+                    currentMainSegment.getPosition(endS),
+                    currentMainSegment.getVelocity(endS, 0),
+                    currentMainSegment.getAcceleration(endS, 0, 0)
             );
         } else if (s < 0) {
             return new RobotState(
-                    currentSegment.getPosition(currentSegment.s0),
-                    currentSegment.getVelocity(currentSegment.s0, s_dot),
-                    currentSegment.getAcceleration(currentSegment.s0, s_dot, s_dot_dot)
+                    currentMainSegment.getPosition(currentMainSegment.s0),
+                    currentMainSegment.getVelocity(currentMainSegment.s0, s_dot),
+                    currentMainSegment.getAcceleration(currentMainSegment.s0, s_dot, s_dot_dot)
             );
         } else { //Else, do the normal thing
             return new RobotState(
-                    currentSegment.getPosition(s),
-                    currentSegment.getVelocity(s, s_dot),
-                    currentSegment.getAcceleration(s, s_dot, s_dot_dot)
+                    currentMainSegment.getPosition(s),
+                    currentMainSegment.getVelocity(s, s_dot),
+                    currentMainSegment.getAcceleration(s, s_dot, s_dot_dot)
                 );
         }
     }
 
     public double calcS(final double x, final double y) {
-        final double curSegmentS = currentSegment.calcS(x, y);
-        if (curSegmentS >= currentSegment.getEndS()) {
+        final double curSegmentS = currentMainSegment.calcS(x, y);
+        if (curSegmentS >= currentMainSegment.getEndS()) {
             next();
-            return currentSegment.calcS(x, y);
-        } else if (curSegmentS < currentSegment.s0) {
+            return currentMainSegment.calcS(x, y);
+        } else if (curSegmentS < currentMainSegment.s0) {
             back();
-            return currentSegment.calcS(x, y);
+            return currentMainSegment.calcS(x, y);
         } else {
             return curSegmentS;
         }
     }
 
     protected void next() {
-        if (currentSegment.index == mainSegments.size() - 1) {
+        if (currentMainSegment.index == mainSegments.size() - 1) {
             ;
         } else {
             System.out.println("Next segment");
-            currentSegment = mainSegments.get(currentSegment.index + 1);
+            currentMainSegment = mainSegments.get(currentMainSegment.index + 1);
         }
     }
 
     protected void back() {
-        if (currentSegment.index == 0) {
+        if (currentMainSegment.index == 0) {
             ;
         } else {
             System.out.println("Previous segment");
-            currentSegment = mainSegments.get(currentSegment.index - 1);
+            currentMainSegment = mainSegments.get(currentMainSegment.index - 1);
         }
     }
 

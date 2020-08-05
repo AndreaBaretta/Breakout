@@ -51,7 +51,7 @@ public class Main {
         final double time_limit = 5;
         double maxAccel = 0;
 
-        final Path path = new Path(new File("/home/andrea/Desktop/testing.foxtrot2"), 0);
+        final Path path = new Path(new File("/home/andrea/Desktop/test.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;
