@@ -344,6 +344,7 @@ public class Path {
                     prevParams = curParams.copy();
                 }
             }
+            anchorPointsList.get(anchorPointsList.size() - 1).middlePoint.setConfigVelocity(0);
         } catch (final Exception e) {
             System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");
             System.out.println(e);

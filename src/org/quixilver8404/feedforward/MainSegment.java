@@ -90,7 +90,8 @@ public class MainSegment extends Segment {
 
         segmentPoints.forEach((final SegmentPoint p) -> {
             p.setS(s0, getTotalS());
-            if (circleSegment1.inRange(p.getS())) {
+            System.out.println("segment point s: " + p.getS());
+            if (circleSegment0.inRange(p.getS())) {
                 circle0SegmentPoints.add(p);
             } else if (linearSegment.inRange(p.getS())) {
                 linearSegmentPoints.add(p);
@@ -100,6 +101,9 @@ public class MainSegment extends Segment {
         });
 
         circleSegment0.setVelocitySegments(circle0SegmentPoints);
+        if (circleSegment0.lastPoint.configVelocity != anchorPoint0.configVelocity) {
+            linearSegment.lastPoint.setConfigVelocity(circleSegment0.lastPoint.configVelocity);
+        }
         linearSegment.setVelocitySegments(linearSegmentPoints);
         circleSegment1.setVelocitySegments(circle1SegmentPoints);
     }
