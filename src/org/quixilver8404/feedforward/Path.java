@@ -114,15 +114,22 @@ public class Path {
         });
 
         VelocityPoint prevVelocityPoint = null;
+        int velocitySegmentCounter = 0;
         for (int i = 0; i < velocityPoints.size(); i++) {
             if (i == 0) {
                 prevVelocityPoint = velocityPoints.get(i);
             } else {
                 final VelocityPoint velocityPoint = velocityPoints.get(i);
-                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()));
-                velocitySegments.add(velocitySegment);
+                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()), velocitySegmentCounter);
+                if (!velocitySegment.zeroSegment) {
+                    velocitySegments.add(velocitySegment);
+                    velocitySegmentCounter++;
+                }
+                prevVelocityPoint = velocityPoint;
             }
         }
+
+        currentVelocitySegment = velocitySegments.get(0);
 
         System.out.println("End S: " + mainSegments.get(mainSegments.size() - 1).getEndS());
 
@@ -166,17 +173,17 @@ public class Path {
     public double calcS(final double x, final double y) {
         final double curSegmentS = currentMainSegment.calcS(x, y);
         if (curSegmentS >= currentMainSegment.getEndS()) {
-            next();
+            nextMainSegment();
             return currentMainSegment.calcS(x, y);
         } else if (curSegmentS < currentMainSegment.s0) {
-            back();
+            previousMainSegment();
             return currentMainSegment.calcS(x, y);
         } else {
             return curSegmentS;
         }
     }
 
-    protected void next() {
+    protected void nextMainSegment() {
         if (currentMainSegment.index == mainSegments.size() - 1) {
             ;
         } else {
@@ -185,7 +192,7 @@ public class Path {
         }
     }
 
-    protected void back() {
+    protected void previousMainSegment() {
         if (currentMainSegment.index == 0) {
             ;
         } else {
@@ -218,6 +225,33 @@ public class Path {
                 return 0;
             }
             s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
+        }
+    }
+
+    public double nextVelocity(final double s) {
+        if (currentVelocitySegment.inRange(s)) {
+            if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+                return 0;
+            } else {
+                return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
+            }
+        } else {
+            if (s < currentVelocitySegment.s0) {
+                final double nextVelocity = currentVelocitySegment.minVelocity;
+                if (currentVelocitySegment.index == 0) {
+                    return nextVelocity;
+                } else {
+                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
+                    return nextVelocity;
+                }
+            } else {
+                if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+                    return currentVelocitySegment.minVelocity;
+                } else {
+                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
+                    return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
+                }
+            }
         }
     }
 
