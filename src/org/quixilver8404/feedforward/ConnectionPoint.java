@@ -63,7 +63,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
     }
 
     public String toString() {
-        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ")";
+        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ", configVelocity: " + configVelocity + ", minVelocity: " + minVelocity + ")";
     }
 
     public void setConfigVelocity(final double newConfigVelocity) {

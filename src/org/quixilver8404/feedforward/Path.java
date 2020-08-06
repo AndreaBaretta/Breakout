@@ -45,6 +45,8 @@ public class Path {
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
 
+                System.out.println("Current connections: " + prevPoint.nextPoint.toString() + curPoint.prevPoint.toString() + curPoint.middlePoint.toString());
+
                 connectionPoints.add(prevPoint.nextPoint);
                 connectionPoints.add(curPoint.prevPoint);
                 connectionPoints.add(curPoint.middlePoint);
@@ -143,6 +145,7 @@ public class Path {
 
         System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
         System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+        System.out.println();
 //        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
 //        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
     }
@@ -221,7 +224,7 @@ public class Path {
         final double v_f = nextVCurVDistS.nextV;
         final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
 
-        if (accToVel <= 0.9*Config.MAX_DECELERATION) {
+        if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
             System.out.println("Return accToVel: " + accToVel);
             return accToVel;
         }

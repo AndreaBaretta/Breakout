@@ -13,6 +13,7 @@ public abstract class MinorSegment extends Segment {
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
         velocitySegments = new ArrayList<VelocitySegment>();
+        System.out.println("At start: Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
     }
 
     public void setPointSegment() {
@@ -42,6 +43,7 @@ public abstract class MinorSegment extends Segment {
         System.out.print("Minor segment: ");
         System.out.print(Arrays.toString(velocitySegments.toArray()));
         System.out.println(" Segment minVelocity: " + getMinVelocity());
+        System.out.println("Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
     }
 
     public abstract double getMinVelocity();

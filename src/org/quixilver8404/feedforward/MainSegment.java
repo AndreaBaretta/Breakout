@@ -79,6 +79,8 @@ public class MainSegment extends Segment {
             }
         }
 
+        circleSegment1.firstPoint.setConfigVelocity(circleSegment0.firstPoint.configVelocity);
+
         final List<SegmentPoint> circle0SegmentPoints = new ArrayList<SegmentPoint>();
         final List<SegmentPoint> linearSegmentPoints = new ArrayList<SegmentPoint>();
         final List<SegmentPoint> circle1SegmentPoints = new ArrayList<SegmentPoint>();
@@ -102,7 +104,9 @@ public class MainSegment extends Segment {
 
         circleSegment0.setVelocitySegments(circle0SegmentPoints);
         if (circleSegment0.lastPoint.configVelocity != anchorPoint0.configVelocity) {
+            System.out.println("Shouldn't happen -------------------------------------");
             linearSegment.lastPoint.setConfigVelocity(circleSegment0.lastPoint.configVelocity);
+//            throw new Error();
         }
         linearSegment.setVelocitySegments(linearSegmentPoints);
         circleSegment1.setVelocitySegments(circle1SegmentPoints);
