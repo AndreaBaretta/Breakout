@@ -104,7 +104,6 @@ public class MainSegment extends Segment {
 
         circleSegment0.setVelocitySegments(circle0SegmentPoints);
         if (circleSegment0.lastPoint.configVelocity != anchorPoint0.configVelocity) {
-            System.out.println("Shouldn't happen -------------------------------------");
             linearSegment.lastPoint.setConfigVelocity(circleSegment0.lastPoint.configVelocity);
 //            throw new Error();
         }
@@ -113,6 +112,7 @@ public class MainSegment extends Segment {
     }
 
     public Vector3 getPosition(final double s) {
+//        System.out.println("s: " + s);
         final Vector3 position;
 //        System.out.println("s = " + s + "  linearSegment.inRange(s) = " + linearSegment.inRange(s) + " linearSegment bounds: s0 = " + linearSegment.s0 + " getEndsS() = " + linearSegment.getEndS());
         if (circleSegment0.inRange(s)) {
@@ -188,11 +188,15 @@ public class MainSegment extends Segment {
     }
 
     public MinorSegment.NextVCurVDistS getNextVelocity(final double s) {
-        if (circleSegment0.inRange(s)) {
+        System.out.println("getNextVelocity(" + s + ")");
+        if (circleSegment0.inRange(s) || s <= s0) {
+            System.out.println("In circle0");
             return circleSegment0.getNextVelocity(s);
         } else if (linearSegment.inRange(s)) {
+            System.out.println("In line");
             return linearSegment.getNextVelocity(s);
         } else {
+            System.out.println("In circle1: inRange(" + s + ")=" + circleSegment1.inRange(s));
             return circleSegment1.getNextVelocity(s);
         }
     }

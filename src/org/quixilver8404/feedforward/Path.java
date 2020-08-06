@@ -224,6 +224,8 @@ public class Path {
         final double v_f = nextVCurVDistS.nextV;
         final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
 
+        System.out.println("Distance to next velocity: " + d_s);
+
         if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
             System.out.println("Return accToVel: " + accToVel);
             return accToVel;

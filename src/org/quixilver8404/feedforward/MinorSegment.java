@@ -52,10 +52,13 @@ public abstract class MinorSegment extends Segment {
         for (int i = 0; i < velocitySegments.size(); i++) {
             final VelocitySegment segment = velocitySegments.get(i);
             if (segment.inRange(s)) {
+                System.out.println();
+//                System.out.println("Current VelocitySegment: " + segment.toString());
                 return new NextVCurVDistS(segment.getNextVelocity(), segment.getSegmentVelocity(), segment.sToNextVelocity(s));
             }
         }
-        return new NextVCurVDistS(velocitySegments.get(velocitySegments.size() - 1).getNextVelocity(), velocitySegments.get(velocitySegments.size() - 1).getSegmentVelocity(), 0);
+//        System.out.println("Shouldn't be happening -----------------------------------");
+        return new NextVCurVDistS(velocitySegments.get(0).getNextVelocity(), velocitySegments.get(0).getSegmentVelocity(), velocitySegments.get(0).sToNextVelocity(s));
     }
 
     public class NextVCurVDistS {
