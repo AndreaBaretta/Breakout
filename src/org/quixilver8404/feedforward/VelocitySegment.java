@@ -33,7 +33,15 @@ public class VelocitySegment {
         }
     }
 
+    public double getSegmentVelocity() {
+        return velocity;
+    }
+
     public double getNextVelocity() {
         return Math.min(p1.getMinVelocity(), p1.getConfigVelocity());
+    }
+
+    public double sToNextVelocity(final double s) {
+        return s1 - s;
     }
 }

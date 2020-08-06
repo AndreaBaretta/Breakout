@@ -45,4 +45,26 @@ public abstract class MinorSegment extends Segment {
     }
 
     public abstract double getMinVelocity();
+
+    public NextVCurVDistS getNextVelocity(final double s) {
+        for (int i = 0; i < velocitySegments.size(); i++) {
+            final VelocitySegment segment = velocitySegments.get(i);
+            if (segment.inRange(s)) {
+                return new NextVCurVDistS(segment.getNextVelocity(), segment.getSegmentVelocity(), segment.sToNextVelocity(s));
+            }
+        }
+        return new NextVCurVDistS(velocitySegments.get(velocitySegments.size() - 1).getNextVelocity(), velocitySegments.get(velocitySegments.size() - 1).getSegmentVelocity(), 0);
+    }
+
+    public class NextVCurVDistS {
+        final double nextV;
+        final double curV;
+        final double s;
+        public NextVCurVDistS(final double nextV, final double curV, final double s) {
+            this.nextV = nextV;
+            this.curV = curV;
+            this.s = s;
+        }
+    }
+
 }

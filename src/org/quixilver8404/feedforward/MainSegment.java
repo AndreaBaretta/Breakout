@@ -110,9 +110,11 @@ public class MainSegment extends Segment {
 
     public Vector3 getPosition(final double s) {
         final Vector3 position;
+//        System.out.println("s = " + s + "  linearSegment.inRange(s) = " + linearSegment.inRange(s) + " linearSegment bounds: s0 = " + linearSegment.s0 + " getEndsS() = " + linearSegment.getEndS());
         if (circleSegment0.inRange(s)) {
             position = circleSegment0.getPosition(s);
         } else if (linearSegment.inRange(s)) {
+//            System.out.println("Got in");
             position = linearSegment.getPosition(s);
         } else if (circleSegment1.inRange(s)) {
 //            System.out.println(circleSegment1.zeroSegment);
@@ -121,7 +123,7 @@ public class MainSegment extends Segment {
             throw new Error("Out of bounds error that REALLY shouldn't be happening");
         }
 //        position = currentSegment.getPosition(s);
-
+//        System.out.println("Got position successfully");
         if (heading == AnchorPoint.Heading.FRONT) {
             return position;
         } else if (heading == AnchorPoint.Heading.BACK) {
@@ -134,15 +136,19 @@ public class MainSegment extends Segment {
 
     public Vector3 getVelocity(final double s, final double s_dot) {
         final Vector3 velocity;
+//        System.out.println("s = " + s + "  linearSegment.inRange(s) = " + linearSegment.inRange(s) + " linearSegment bounds: s0 = " + linearSegment.s0 + " getEndsS() = " + linearSegment.getEndS());
         if (circleSegment0.inRange(s)) {
             velocity = circleSegment0.getVelocity(s, s_dot);
         } else if (linearSegment.inRange(s)) {
+//            System.out.println("Got in");
             velocity = linearSegment.getVelocity(s, s_dot);
         } else if (circleSegment1.inRange(s)) {
             velocity = circleSegment1.getVelocity(s, s_dot);
-        } else throw new Error("Out of bounds error that REALLY shouldn't be happening");
+        } else {
+            throw new Error("Out of bounds error that REALLY shouldn't be happening");
+        }
 //        velocity = currentSegment.getVelocity(s, s_dot);
-
+//        System.out.println("Got velocity successfully");
         if (heading == AnchorPoint.Heading.CUSTOM) {
             final double alpha_dot = s_dot*(alpha1 - alpha0)/(getEndS() - s0);
             return new Vector3(velocity.x, velocity.y, alpha_dot);
@@ -159,7 +165,9 @@ public class MainSegment extends Segment {
             acceleration = linearSegment.getAcceleration(s, s_dot, s_dot_dot);
         } else if (circleSegment1.inRange(s)) {
             acceleration = circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
-        } else throw new Error("Out of bounds error that REALLY shouldn't be happening");
+        } else {
+            throw new Error("Out of bounds error that REALLY shouldn't be happening");
+        }
 //        acceleration = currentSegment.getAcceleration(s, s_dot, s_dot_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {
@@ -175,8 +183,14 @@ public class MainSegment extends Segment {
         return circleSegment1.getEndS() - s0;
     }
 
-    public double calcMinVelocity() {
-        return Config.MAX_VELOCITY;
+    public MinorSegment.NextVCurVDistS getNextVelocity(final double s) {
+        if (circleSegment0.inRange(s)) {
+            return circleSegment0.getNextVelocity(s);
+        } else if (linearSegment.inRange(s)) {
+            return linearSegment.getNextVelocity(s);
+        } else {
+            return circleSegment1.getNextVelocity(s);
+        }
     }
 
     public double calcS(final double x, final double y) {

@@ -20,7 +20,6 @@ public class Path {
 //    public final List<VelocitySegment> velocitySegments;
 
     protected MainSegment currentMainSegment;
-    protected VelocitySegment currentVelocitySegment;
     protected boolean finished;
 
     public Path(final File foxtrotFile, final int config) {
@@ -159,6 +158,7 @@ public class Path {
         }
         if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.01) { //Condition to finish
             finish();
+            System.out.println("Finished");
             return new RobotState(
                     currentMainSegment.getPosition(endS),
                     currentMainSegment.getVelocity(endS, 0),
@@ -215,6 +215,69 @@ public class Path {
     }
 
     public double calcAccelerationCorrection(final double s, final double s_dot) {
+//        double s_dot_dot = Config.MAX_ACCELERATION;
+        final MinorSegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
+        final double d_s = nextVCurVDistS.s;
+        final double v_f = nextVCurVDistS.nextV;
+        final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
+
+        if (accToVel <= 0.9*Config.MAX_DECELERATION) {
+            System.out.println("Return accToVel: " + accToVel);
+            return accToVel;
+        }
+
+        final double maxAcc = findMaxPossibleAcc(s, s_dot);
+        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
+//        System.out.println("maxAcc: " + maxAcc + "  acc: " + acc);
+        if (acc > maxAcc) {
+            System.out.println("Returned maxAcc: " + maxAcc);
+            return maxAcc;
+        } else if (acc < Config.MAX_DECELERATION) {
+            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
+            return Config.MAX_DECELERATION;
+        } else {
+            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
+            return acc;
+        }
+//        return maxAcc;
+
+//        final MinorSegment.NextVCurVDistS nextVCurVDistS = currentMainSegment.getNextVelocity(s);
+
+
+//        if (accToVel >= 0) {
+//            final double maxPossibleAcc = findMaxPossibleAcc(s, s_dot);
+//            if (accToVel >= Config.MAX_SAFE_ACCELERATION * maxPossibleAcc) {
+//                return accToVel;
+//            } else {
+//                return maxPossibleAcc;
+//            }
+//        } else {
+//            return
+//        }
+//
+//
+//        while (true) {
+//            final RobotState state = evaluate(s, s_dot, s_dot_dot);
+//            final Vector3 vel = state.vel;
+//            final Vector3 acc = state.acc;
+//            final double[] powerSettings = PowerProfile.toRawPowerSettings(acc, vel, state.pos.theta);
+//            boolean optimized = true;
+//            for (double p : powerSettings) {
+//                if (Math.abs(p) >= 1) {
+//                    optimized = false;
+//                }
+//            }
+//            if (optimized) {
+//                return s_dot_dot;
+//            }
+//            if (s_dot_dot < Config.MAX_DECELERATION) {
+//                return 0;
+//            }
+//            s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
+//        }
+    }
+
+    public double findMaxPossibleAcc(final double s, final double s_dot) {
         double s_dot_dot = Config.MAX_ACCELERATION;
         while (true) {
             final RobotState state = evaluate(s, s_dot, s_dot_dot);
@@ -237,50 +300,9 @@ public class Path {
         }
     }
 
-//    protected void nextVelocitySegment() {
-//        if (currentVelocitySegment.index == velocitySegments.size() - 1) {
-//            ;
-//        } else {
-//            System.out.println("Next velocity segment");
-//            currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
-//        }
-//    }
-//
-//    protected void previousVelocitySegment() {
-//        if (currentVelocitySegment.index == 0) {
-//            ;
-//        } else {
-//            System.out.println("Previous segment");
-//            currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
-//        }
-//    }
-//
-//    public double nextVelocity(final double s) {
-//        if (currentVelocitySegment.inRange(s)) {
-//            if (currentVelocitySegment.index == velocitySegments.size() - 1) {
-//                return 0;
-//            } else {
-//                return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
-//            }
-//        } else {
-//            if (s < currentVelocitySegment.s0) {
-//                final double nextVelocity = currentVelocitySegment.minVelocity;
-//                if (currentVelocitySegment.index == 0) {
-//                    return nextVelocity;
-//                } else {
-//                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index - 1);
-//                    return nextVelocity;
-//                }
-//            } else {
-//                if (currentVelocitySegment.index == velocitySegments.size() - 1) {
-//                    return currentVelocitySegment.minVelocity;
-//                } else {
-//                    currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
-//                    return velocitySegments.get(currentVelocitySegment.index + 1).minVelocity;
-//                }
-//            }
-//        }
-//    }
+    public MinorSegment.NextVCurVDistS getNextVelocity(final double s) {
+        return currentMainSegment.getNextVelocity(s);
+    }
 
     public List<AnchorPoint> parseAnchorPoints(final File file, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
