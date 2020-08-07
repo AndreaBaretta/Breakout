@@ -17,9 +17,10 @@ public class Path {
     public final List<MainSegment> mainSegments;
     public final List<ConnectionPoint> connectionPoints;
     public final List<SegmentPoint> segmentPoints;
-//    public final List<VelocitySegment> velocitySegments;
+    public final List<HeadingSegment> headingSegments;
 
     protected MainSegment currentMainSegment;
+    protected HeadingSegment currentHeadingSegment;
     protected boolean finished;
 
     public Path(final File foxtrotFile, final int config) {
@@ -107,21 +108,49 @@ public class Path {
 
 //        segmentPoints = parseSegmentPoints(foxtrotFile, config);
 //
-//        final List<VelocityPoint> velocityPoints = new ArrayList<VelocityPoint>();
-//
-//        segmentPoints.forEach((n) -> velocityPoints.add(n));
-//        connectionPoints.forEach((n) -> velocityPoints.add(n));
-//
-//        velocityPoints.sort(new Comparator<VelocityPoint>() {
-//            @Override
-//            public int compare(final VelocityPoint t0, final VelocityPoint t1) {
-//                if (t0.getS() - t1.getS() <= 0) {
-//                    return -1;
-//                } else {
-//                    return 1;
-//                }
-//            }
-//        });
+        final List<HeadingPoint> headingPoints = new ArrayList<HeadingPoint>();
+
+        segmentPoints.forEach((final SegmentPoint p) -> {
+            if (p.headingState != AnchorPoint.Heading.NONE) {
+                headingPoints.add(p);
+            }
+        });
+
+        connectionPoints.forEach((final ConnectionPoint p) -> {
+            if (p.headingState != AnchorPoint.Heading.NONE) {
+                headingPoints.add(p);
+            }
+        });
+
+        headingPoints.sort(new Comparator<HeadingPoint>() {
+            @Override
+            public int compare(final HeadingPoint t0, final HeadingPoint t1) {
+                if (t0.getS() - t1.getS() <= 0) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+
+        System.out.println("headingPoints: " + Arrays.toString(headingPoints.toArray()));
+
+        headingSegments = new ArrayList<HeadingSegment>();
+        HeadingPoint prevHeadingPoint = null;
+        for (int i = 0; i < headingPoints.size(); i++) {
+            if (i == 0) {
+                prevHeadingPoint = headingPoints.get(i);
+            } else {
+                final HeadingPoint headingPoint = headingPoints.get(i);
+                final HeadingSegment headingSegment = new HeadingSegment(prevHeadingPoint, headingPoint, i - 1);
+                if (!headingSegment.zeroSegment) {
+                    headingSegments.add(headingSegment);
+                }
+                prevHeadingPoint = headingPoint;
+            }
+        }
+
+        currentHeadingSegment = headingSegments.get(0);
 
 //        VelocityPoint prevVelocityPoint = null;
 //        int velocitySegmentCounter = 0;
@@ -145,21 +174,30 @@ public class Path {
 
         System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
         System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+        System.out.println("Heading segments: " + Arrays.toString(headingSegments.toArray()));
         System.out.println();
 //        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
 //        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
+        if (!currentHeadingSegment.inRange(s)) {
+            if (s < currentHeadingSegment.s0) {
+                preiousHeadingSegment();
+            } else {
+                nextMainSegment();
+            }
+        }
         final double endS = currentMainSegment.getEndS();
         if (finished) { //If at end, stay there
+
             return new RobotState(
                     currentMainSegment.getPosition(endS),
                     currentMainSegment.getVelocity(endS, 0),
                     currentMainSegment.getAcceleration(endS, 0, 0)
             );
         }
-        if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.01) { //Condition to finish
+        if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.001) { //Condition to finish
             finish();
             System.out.println("Finished");
             return new RobotState(
@@ -213,6 +251,24 @@ public class Path {
         }
     }
 
+    protected void nextHeadingSegment() {
+        if (currentHeadingSegment.index == headingSegments.size() - 1) {
+            ;
+        } else {
+            System.out.println("Next HeadingSegment");
+            currentHeadingSegment = headingSegments.get(currentHeadingSegment.index + 1);
+        }
+    }
+
+    protected void preiousHeadingSegment() {
+        if (currentHeadingSegment.index == 0) {
+            ;
+        } else {
+            System.out.println("Previous HeadingSegment");
+            currentHeadingSegment = headingSegments.get(currentHeadingSegment.index - 1);
+        }
+    }
+
     protected void finish() {
         finished = true;
     }
@@ -224,10 +280,10 @@ public class Path {
         final double v_f = nextVCurVDistS.nextV;
         final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
 
-        System.out.println("Distance to next velocity: " + d_s);
+//        System.out.println("Distance to next velocity: " + d_s);
 
         if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
-            System.out.println("Return accToVel: " + accToVel);
+//            System.out.println("Return accToVel: " + accToVel);
             return accToVel;
         }
 
@@ -235,13 +291,13 @@ public class Path {
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
 //        System.out.println("maxAcc: " + maxAcc + "  acc: " + acc);
         if (acc > maxAcc) {
-            System.out.println("Returned maxAcc: " + maxAcc);
+//            System.out.println("Returned maxAcc: " + maxAcc);
             return maxAcc;
         } else if (acc < Config.MAX_DECELERATION) {
-            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
+//            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
             return Config.MAX_DECELERATION;
         } else {
-            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
+//            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
             return acc;
         }
 //        return maxAcc;

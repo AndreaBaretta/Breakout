@@ -52,7 +52,7 @@ public abstract class MinorSegment extends Segment {
         for (int i = 0; i < velocitySegments.size(); i++) {
             final VelocitySegment segment = velocitySegments.get(i);
             if (segment.inRange(s)) {
-                System.out.println();
+//                System.out.println();
 //                System.out.println("Current VelocitySegment: " + segment.toString());
                 return new NextVCurVDistS(segment.getNextVelocity(), segment.getSegmentVelocity(), segment.sToNextVelocity(s));
             }

@@ -15,5 +15,5 @@ public class Config {
     public final static double INCHES_TO_METERS = 0.0254;
     public final static double MAX_SAFE_VELOCITY = 0.95;
     public final static double MAX_SAFE_ACCELERATION = 0.95;
-    public final static double ACCELERATION_CORRECTION = Math.PI/3;
+    public final static double ACCELERATION_CORRECTION = Math.PI/2.5;
 }

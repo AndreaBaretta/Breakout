@@ -2,7 +2,7 @@ package org.quixilver8404.feedforward;
 
 import org.quixilver8404.util.Config;
 
-public class ConnectionPoint extends Point2D implements VelocityPoint {
+public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPoint {
     public MinorSegment prevSegment = null;
     public MinorSegment nextSegment = null;
     public boolean complete;
@@ -10,16 +10,22 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
     public double configVelocity;
     protected double s;
     public double index;
+    public final AnchorPoint.Heading headingState;
+    public final double heading;
 
-    ConnectionPoint(final double x, final double y, final double configVelocity) {
+    ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity) {
         super(x, y);
+        this.heading = heading;
+        this.headingState = headingState;
         complete = false;
         minVelocity = configVelocity;
         this.configVelocity = configVelocity;
     }
 
-    ConnectionPoint(final Point2D point, final double configVelocity) {
+    ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity) {
         super(point.x, point.y);
+        this.heading = heading;
+        this.headingState = headingState;
         complete = false;
         minVelocity = configVelocity;
         this.configVelocity = configVelocity;
@@ -58,15 +64,24 @@ public class ConnectionPoint extends Point2D implements VelocityPoint {
         return configVelocity;
     }
 
+    public void setConfigVelocity(final double newConfigVelocity) {
+        configVelocity = newConfigVelocity;
+    }
+
     public double getS() {
         return s;
+    }
+
+    public double getHeading() {
+        return heading;
+    }
+
+    public AnchorPoint.Heading getHeadingState() {
+        return headingState;
     }
 
     public String toString() {
         return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ", configVelocity: " + configVelocity + ", minVelocity: " + minVelocity + ")";
     }
 
-    public void setConfigVelocity(final double newConfigVelocity) {
-        configVelocity = newConfigVelocity;
-    }
 }

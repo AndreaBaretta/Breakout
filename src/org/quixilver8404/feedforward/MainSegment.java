@@ -63,7 +63,7 @@ public class MainSegment extends Segment {
         }
         if (alpha1 > alpha0) {
             if (alpha1 - alpha0 >= Math.PI) {
-                counterClockwise = false;
+                counterClockwise = false; //TODO: Remove this useless variable
                 alpha0_ = alpha0 + 2*Math.PI;
             } else {
                 counterClockwise = true;
@@ -175,7 +175,7 @@ public class MainSegment extends Segment {
 //        acceleration = currentSegment.getAcceleration(s, s_dot, s_dot_dot);
 
         if (heading == AnchorPoint.Heading.CUSTOM) {
-            final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0);
+            final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0); //TODO: Figure out if alpha0_ is necessary at all; use it if it is.
             return new Vector3(acceleration.x, acceleration.y, alpha_dot_dot);
         } else {
             return acceleration;
@@ -188,15 +188,15 @@ public class MainSegment extends Segment {
     }
 
     public MinorSegment.NextVCurVDistS getNextVelocity(final double s) {
-        System.out.println("getNextVelocity(" + s + ")");
+//        System.out.println("getNextVelocity(" + s + ")");
         if (circleSegment0.inRange(s) || s <= s0) {
-            System.out.println("In circle0");
+//            System.out.println("In circle0");
             return circleSegment0.getNextVelocity(s);
         } else if (linearSegment.inRange(s)) {
-            System.out.println("In line");
+//            System.out.println("In line");
             return linearSegment.getNextVelocity(s);
         } else {
-            System.out.println("In circle1: inRange(" + s + ")=" + circleSegment1.inRange(s));
+//            System.out.println("In circle1: inRange(" + s + ")=" + circleSegment1.inRange(s));
             return circleSegment1.getNextVelocity(s);
         }
     }

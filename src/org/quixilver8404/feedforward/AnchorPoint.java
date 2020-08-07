@@ -2,7 +2,7 @@ package org.quixilver8404.feedforward;
 
 public class AnchorPoint extends Point {
     public enum Heading {
-        FRONT, BACK, CUSTOM
+        FRONT, BACK, CUSTOM, NONE
     }
 
     final Heading heading;
@@ -115,9 +115,9 @@ public class AnchorPoint extends Point {
             tanPoint1_ = tanPoint1;
         }
 
-        prevPoint = new ConnectionPoint(tanPoint0_, configVelocity);
-        middlePoint = new ConnectionPoint(x, y, configVelocity);
-        nextPoint = new ConnectionPoint(tanPoint1_, configVelocity);
+        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, configVelocity);
+        middlePoint = new ConnectionPoint(x, y, heading, customHeading, configVelocity);
+        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, configVelocity);
 
         counterClockwise0 = CheckDirection(center0);
         counterClockwise1 = CheckDirection(center1);
