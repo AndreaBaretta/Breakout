@@ -128,14 +128,14 @@ public class MainSegment extends Segment {
         }
 //        position = currentSegment.getPosition(s);
 //        System.out.println("Got position successfully");
-        if (heading == AnchorPoint.Heading.FRONT) {
+//        if (heading == AnchorPoint.Heading.FRONT) {
             return position;
-        } else if (heading == AnchorPoint.Heading.BACK) {
-            return new Vector3(position.x, position.y, position.theta + Math.PI);
-        } else {
-            final double alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(getEndS() - s0);
-            return new Vector3(position.x, position.y, normalizeAlpha(alpha));
-        }
+//        } else if (heading == AnchorPoint.Heading.BACK) {
+//            return new Vector3(position.x, position.y, position.theta + Math.PI);
+//        } else {
+//            final double alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(getEndS() - s0);
+//            return new Vector3(position.x, position.y, normalizeAlpha(alpha));
+//        }
     }
 
     public Vector3 getVelocity(final double s, final double s_dot) {
@@ -153,12 +153,12 @@ public class MainSegment extends Segment {
         }
 //        velocity = currentSegment.getVelocity(s, s_dot);
 //        System.out.println("Got velocity successfully");
-        if (heading == AnchorPoint.Heading.CUSTOM) {
-            final double alpha_dot = s_dot*(alpha1 - alpha0)/(getEndS() - s0);
-            return new Vector3(velocity.x, velocity.y, alpha_dot);
-        } else {
-            return velocity;
-        }
+//        if (heading == AnchorPoint.Heading.CUSTOM) {
+//            final double alpha_dot = s_dot*(alpha1 - alpha0)/(getEndS() - s0);
+//            return new Vector3(velocity.x, velocity.y, alpha_dot);
+//        } else {
+        return velocity;
+//        }
     }
 
     public Vector3 getAcceleration(final double s, final double s_dot, final double s_dot_dot) {
@@ -174,12 +174,12 @@ public class MainSegment extends Segment {
         }
 //        acceleration = currentSegment.getAcceleration(s, s_dot, s_dot_dot);
 
-        if (heading == AnchorPoint.Heading.CUSTOM) {
-            final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0); //TODO: Figure out if alpha0_ is necessary at all; use it if it is.
-            return new Vector3(acceleration.x, acceleration.y, alpha_dot_dot);
-        } else {
-            return acceleration;
-        }
+//        if (heading == AnchorPoint.Heading.CUSTOM) {
+//            final double alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(getEndS() - s0); //TODO: Figure out if alpha0_ is necessary at all; use it if it is.
+//            return new Vector3(acceleration.x, acceleration.y, alpha_dot_dot);
+//        } else {
+        return acceleration;
+//        }
     }
 
     public double getTotalS() {

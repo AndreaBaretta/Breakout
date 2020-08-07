@@ -78,14 +78,16 @@ public class HeadingSegment {
             alpha = pos.theta + Math.PI;
         } else {
             alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(s1 - s0);
+//            System.out.println("Alpha=" + alpha + " s=" + s + " s1=" + s1 + " factor=" + (s - s0)/(s1 - s0));
         }
-        return new Vector3(pos.x, pos.y, alpha);
+        return new Vector3(pos.x, pos.y, MainSegment.normalizeAlpha(alpha));
     }
 
     public Vector3 calcAlphaDot(final double s_dot, final Vector3 vel) {
         final double alpha_dot;
         if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
             alpha_dot = s_dot*(alpha1 - alpha0)/(s1 - s0);
+//            System.out.println("Alpha_dot=" + alpha_dot + " s_dot=" + s_dot);
         } else {
             alpha_dot = vel.theta;
         }
@@ -97,6 +99,7 @@ public class HeadingSegment {
         final double alpha_dot_dot;
         if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
             alpha_dot_dot = s_dot_dot*(alpha1 - alpha0)/(s1 - s0);  //TODO: Figure out if alpha0_ is necessary at all; use it if it is.
+//            System.out.println("Alpha_dot_dot=" + alpha_dot_dot + " s_dot_dot=" + s_dot_dot);
         } else {
             alpha_dot_dot = acc.theta;
         }

@@ -185,37 +185,36 @@ public class Path {
             if (s < currentHeadingSegment.s0) {
                 preiousHeadingSegment();
             } else {
-                nextMainSegment();
+                nextHeadingSegment();
             }
         }
         final double endS = currentMainSegment.getEndS();
         if (finished) { //If at end, stay there
-
             return new RobotState(
-                    currentMainSegment.getPosition(endS),
-                    currentMainSegment.getVelocity(endS, 0),
-                    currentMainSegment.getAcceleration(endS, 0, 0)
+                    currentHeadingSegment.calcAlpha(endS, currentMainSegment.getPosition(endS)),
+                    currentHeadingSegment.calcAlphaDot(0, currentMainSegment.getVelocity(endS, 0)),
+                    currentHeadingSegment.calcAlphaDotDot(0, currentMainSegment.getAcceleration(endS, 0, 0))
             );
         }
         if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.001) { //Condition to finish
             finish();
             System.out.println("Finished");
             return new RobotState(
-                    currentMainSegment.getPosition(endS),
-                    currentMainSegment.getVelocity(endS, 0),
-                    currentMainSegment.getAcceleration(endS, 0, 0)
+                    currentHeadingSegment.calcAlpha(endS, currentMainSegment.getPosition(endS)),
+                    currentHeadingSegment.calcAlphaDot(0, currentMainSegment.getVelocity(endS, 0)),
+                    currentHeadingSegment.calcAlphaDotDot(0, currentMainSegment.getAcceleration(endS, 0, 0))
             );
         } else if (s < 0) {
             return new RobotState(
-                    currentMainSegment.getPosition(currentMainSegment.s0),
-                    currentMainSegment.getVelocity(currentMainSegment.s0, s_dot),
-                    currentMainSegment.getAcceleration(currentMainSegment.s0, s_dot, s_dot_dot)
+                    currentHeadingSegment.calcAlpha(0, currentMainSegment.getPosition(currentMainSegment.s0)),
+                    currentHeadingSegment.calcAlphaDot(0, currentMainSegment.getVelocity(currentMainSegment.s0, s_dot)),
+                    currentHeadingSegment.calcAlphaDotDot(0, currentMainSegment.getAcceleration(currentMainSegment.s0, s_dot, s_dot_dot))
             );
         } else { //Else, do the normal thing
             return new RobotState(
-                    currentMainSegment.getPosition(s),
-                    currentMainSegment.getVelocity(s, s_dot),
-                    currentMainSegment.getAcceleration(s, s_dot, s_dot_dot)
+                    currentHeadingSegment.calcAlpha(s, currentMainSegment.getPosition(s)),
+                    currentHeadingSegment.calcAlphaDot(s_dot, currentMainSegment.getVelocity(s, s_dot)),
+                    currentHeadingSegment.calcAlphaDotDot(s_dot_dot, currentMainSegment.getAcceleration(s, s_dot, s_dot_dot))
                 );
         }
     }
