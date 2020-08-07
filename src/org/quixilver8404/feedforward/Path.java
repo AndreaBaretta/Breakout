@@ -93,6 +93,17 @@ public class Path {
                         curSegmentPoints.add(p);
                     }
                 });
+                curSegmentPoints.sort(new Comparator<SegmentPoint>() {
+                    @Override
+                    public int compare(final SegmentPoint t0, final SegmentPoint t1) {
+                        if (t0.tFromAnchor - t1.tFromAnchor <= 0) {
+                            return -1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                });
+                System.out.println("curSegmentPoints: " + Arrays.toString(curSegmentPoints.toArray()));
                 final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint, curSegmentPoints);
 
                 mainSegments.add(mainSegment);

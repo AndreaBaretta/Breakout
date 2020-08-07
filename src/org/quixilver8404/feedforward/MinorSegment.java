@@ -44,6 +44,8 @@ public abstract class MinorSegment extends Segment {
         System.out.print(Arrays.toString(velocitySegments.toArray()));
         System.out.println(" Segment minVelocity: " + getMinVelocity());
         System.out.println("Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
+        System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+        System.out.println();
     }
 
     public abstract double getMinVelocity();
