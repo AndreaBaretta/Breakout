@@ -116,7 +116,15 @@ public class AnchorPoint extends Point {
         }
 
         prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, configVelocity);
-        middlePoint = new ConnectionPoint(x, y, heading, customHeading, configVelocity);
+        final double pointHeading;
+        if (heading == Heading.CUSTOM) {
+            pointHeading = customHeading;
+        } else if (heading == Heading.FRONT) {
+            pointHeading = tan;
+        } else {
+            pointHeading = MainSegment.normalizeAlpha(tan + Math.PI);
+        }
+        middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity);
         nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, configVelocity);
 
         counterClockwise0 = CheckDirection(center0);
