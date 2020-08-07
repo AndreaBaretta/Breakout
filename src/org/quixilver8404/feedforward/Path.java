@@ -111,8 +111,42 @@ public class Path {
         final List<HeadingPoint> headingPoints = new ArrayList<HeadingPoint>();
 
         segmentPoints.forEach((final SegmentPoint p) -> {
-            if (p.headingState != AnchorPoint.Heading.NONE) {
+            if (p.headingState == AnchorPoint.Heading.CUSTOM) {
                 headingPoints.add(p);
+            } else if (p.headingState == AnchorPoint.Heading.FRONT) {
+                headingPoints.add(new HeadingPoint() {
+                    @Override
+                    public AnchorPoint.Heading getHeadingState() {
+                        return AnchorPoint.Heading.FRONT;
+                    }
+
+                    @Override
+                    public double getHeading() {
+                        return mainSegments.get(p.anchorIndex).getPosition(p.getS()).theta;
+                    }
+
+                    @Override
+                    public double getS() {
+                        return p.getS();
+                    }
+                });
+            } else if (p.headingState == AnchorPoint.Heading.BACK) {
+                headingPoints.add(new HeadingPoint() {
+                    @Override
+                    public AnchorPoint.Heading getHeadingState() {
+                        return AnchorPoint.Heading.BACK;
+                    }
+
+                    @Override
+                    public double getHeading() {
+                        return MainSegment.normalizeAlpha(mainSegments.get(p.anchorIndex).getPosition(p.getS()).theta);
+                    }
+
+                    @Override
+                    public double getS() {
+                        return p.getS();
+                    }
+                });
             }
         });
 
