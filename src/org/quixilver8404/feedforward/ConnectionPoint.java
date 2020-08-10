@@ -2,7 +2,11 @@ package org.quixilver8404.feedforward;
 
 import org.quixilver8404.util.Config;
 
-public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPoint {
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPoint, ActionPoint {
     public MinorSegment prevSegment = null;
     public MinorSegment nextSegment = null;
     public boolean complete;
@@ -12,23 +16,31 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
     public double index;
     public final AnchorPoint.Heading headingState;
     public final double heading;
+    public final List<ActionEventListener> actionEventListeners;
+    public final Set<Integer> actions;
 
-    ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity) {
+    ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
+                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
         super(x, y);
         this.heading = heading;
         this.headingState = headingState;
         complete = false;
         minVelocity = configVelocity;
         this.configVelocity = configVelocity;
+        this.actionEventListeners = actionEventListeners;
+        this.actions = actions;
     }
 
-    ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity) {
+    ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
+                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
         super(point.x, point.y);
         this.heading = heading;
         this.headingState = headingState;
         complete = false;
         minVelocity = configVelocity;
         this.configVelocity = configVelocity;
+        this.actionEventListeners = actionEventListeners;
+        this.actions = actions;
     }
 
     public void setPrevSegment(final MinorSegment segment) {
@@ -80,8 +92,28 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         return headingState;
     }
 
+    public List<ActionEventListener> getActionEventListeners() {
+        return actionEventListeners;
+    }
+
+    public Set<Integer> getActions() {
+        return actions;
+    }
+
+    public void runActions() {
+        for (final ActionEventListener eventListener : actionEventListeners) {
+            eventListener.run();
+        }
+    }
+
     public String toString() {
-        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ", configVelocity: " + configVelocity + ", minVelocity: " + minVelocity + ")";
+        final Object[] actionArray;
+        if (actions == null) {
+            actionArray = new Integer[]{};
+        } else {
+            actionArray = actions.toArray();
+        }
+        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + minVelocity + ", actions=" + Arrays.toString(actionArray) + ")";
     }
 
 }

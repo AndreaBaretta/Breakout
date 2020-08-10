@@ -31,7 +31,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(-1, -1,0),
+                new Vector3(0,0,0), new Vector3(0, 0,0),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -51,7 +51,7 @@ public class Main {
         final double time_limit = 5;
         double maxAccel = 0;
 
-        final Path path = new Path(new File("/home/andrea/Desktop/testing2.foxtrot2"), 0);
+        final Path path = new Path(new File("/home/andrea/Desktop/actions.foxtrot2"), 0);
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -65,16 +65,23 @@ public class Main {
             final double s;
             final double s_dot;
             final double s_dot_dot;
+
+//            t1 = t2;
+
             if (dt == 0) { //Only when running real-time simulation
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = 0;
                 s_dot_dot = 0;
+//                System.out.println("Set to 0: t2=" + t2 + "  t1=" + t1);
             } else {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = (s - prev_s)/dt;
                 s_dot_dot = path.calcAccelerationCorrection(s, s_dot);
+//                System.out.println("Not 0");
             }
+
             t1 = t2;
+
 
             prev_s = s;
 

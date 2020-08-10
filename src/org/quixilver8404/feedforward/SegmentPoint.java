@@ -1,11 +1,12 @@
 package org.quixilver8404.feedforward;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.quixilver8404.util.Config;
 
-import java.util.List;
+import java.util.*;
 
-public class SegmentPoint implements VelocityPoint, HeadingPoint {
+public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
 
     public final int anchorIndex;
     public final double velP;
@@ -14,6 +15,8 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint {
     public final double heading;
     public final int config;
     public final double tFromAnchor;
+    public final Set<Integer> actions;
+    public final List<ActionEventListener> actionEventListeners;
 
     protected double s;
     protected double minSegmentVelocity;
@@ -34,6 +37,21 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint {
         heading = (double)segmentPoint.get("heading");
         config = ((Long)segmentPoint.get("config")).intValue();
         tFromAnchor = (double)segmentPoint.get("tFromAnchor");
+        final JSONArray actionJson = (JSONArray) segmentPoint.get("actions");
+        actions = new HashSet<Integer>();
+        for (final Object actionObj : actionJson) {
+            actions.add((int) ((long) actionObj));
+        }
+        actionEventListeners = new ArrayList<ActionEventListener>();
+        if (!actionEventListeners.isEmpty() && !actions.isEmpty()) {
+            for (final Integer action : actions) {
+                for (final ActionEventListener eventListener : Config.actionEventListeners) {
+                    if (eventListener.action == action) {
+                        actionEventListeners.add(eventListener);
+                    }
+                }
+            }
+        }
     }
 
     public double getMinVelocity() {
@@ -64,7 +82,21 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint {
         return heading;
     }
 
+    public Set<Integer> getActions() {
+        return actions;
+    }
+
+    public List<ActionEventListener> getActionEventListeners() {
+        return actionEventListeners;
+    }
+
+    public void runActions() {
+        for (final ActionEventListener eventListener : actionEventListeners) {
+            eventListener.run();
+        }
+    }
+
     public String toString() {
-        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", headingState=" + headingStateString + ", heading=" + heading + ")";
+        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", headingState=" + headingStateString + ", heading=" + heading + ", actions=" + Arrays.toString(actions.toArray()) + ")";
     }
 }

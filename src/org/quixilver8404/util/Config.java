@@ -1,5 +1,11 @@
 package org.quixilver8404.util;
 
+import org.quixilver8404.feedforward.ActionEventListener;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Config {
     public final static double MAX_ACCELERATION = 11.2;
     public final static double MAX_DECELERATION = -11.2;
@@ -16,4 +22,6 @@ public class Config {
     public final static double MAX_SAFE_VELOCITY = 0.95;
     public final static double MAX_SAFE_ACCELERATION = 0.95;
     public final static double ACCELERATION_CORRECTION = Math.PI/2.5;
+
+    public final static List<ActionEventListener> actionEventListeners = Arrays.asList(new ActionEventListener[]{});
 }

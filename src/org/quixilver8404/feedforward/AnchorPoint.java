@@ -1,5 +1,8 @@
 package org.quixilver8404.feedforward;
 
+import java.util.List;
+import java.util.Set;
+
 public class AnchorPoint extends Point {
     public enum Heading {
         FRONT, BACK, CUSTOM, NONE
@@ -70,8 +73,9 @@ public class AnchorPoint extends Point {
     }
 
     public AnchorPoint(final double x, final double y, final double tangent, final Heading heading, final double customHeading,
-                final double r0, final Point2D center0, final double theta0, final double r1, final Point2D center1, final double theta1,
-                final Point2D tanPoint0, final Point2D tanPoint1, final double configVelocity, final boolean first, final boolean last) {
+                       final double r0, final Point2D center0, final double theta0, final double r1, final Point2D center1, final double theta1,
+                       final Point2D tanPoint0, final Point2D tanPoint1, final double configVelocity, final List<ActionEventListener> actionEventListeners,
+                       final Set<Integer> actions, final boolean first, final boolean last) {
         super(x, y, MainSegment.normalizeAlpha(tangent));
         final double tan = MainSegment.normalizeAlpha(tangent);
         this.heading = heading;
@@ -115,7 +119,7 @@ public class AnchorPoint extends Point {
             tanPoint1_ = tanPoint1;
         }
 
-        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, configVelocity);
+        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, configVelocity, null, null);
         final double pointHeading;
         if (heading == Heading.CUSTOM) {
             pointHeading = customHeading;
@@ -124,8 +128,8 @@ public class AnchorPoint extends Point {
         } else {
             pointHeading = MainSegment.normalizeAlpha(tan + Math.PI);
         }
-        middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity);
-        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, configVelocity);
+        middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions);
+        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, configVelocity, null, null);
 
         counterClockwise0 = CheckDirection(center0);
         counterClockwise1 = CheckDirection(center1);

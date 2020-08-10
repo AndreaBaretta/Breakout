@@ -18,6 +18,7 @@ public class Path {
     public final List<ConnectionPoint> connectionPoints;
     public final List<SegmentPoint> segmentPoints;
     public final List<HeadingSegment> headingSegments;
+    public final List<ActionPoint> actionPoints;
 
     protected MainSegment currentMainSegment;
     protected HeadingSegment currentHeadingSegment;
@@ -28,7 +29,7 @@ public class Path {
         mainSegments = new ArrayList<MainSegment>();
         connectionPoints = new ArrayList<ConnectionPoint>();
         segmentPoints = parseSegmentPoints(foxtrotFile, config);
-//        velocitySegments = new ArrayList<VelocitySegment>();
+        actionPoints = new ArrayList<ActionPoint>();
 
         AnchorPoint curPoint = null;
         AnchorPoint prevPoint = curPoint;
@@ -51,11 +52,6 @@ public class Path {
                 connectionPoints.add(prevPoint.nextPoint);
                 connectionPoints.add(curPoint.prevPoint);
                 connectionPoints.add(curPoint.middlePoint);
-
-//                System.out.println("Connection point 0: " + connection0.toString());
-//                System.out.println("Connection point 1: " + connection1.toString());
-//                System.out.println("Connection point 2: " + connection2.toString());
-//                System.out.println("Connection point 3: " + connection3.toString());
 
                 connection0.index = connectionPointCounter;
                 connectionPointCounter++;
@@ -122,6 +118,11 @@ public class Path {
         final List<HeadingPoint> headingPoints = new ArrayList<HeadingPoint>();
 
         segmentPoints.forEach((final SegmentPoint p) -> {
+            if (p.getActionEventListeners() != null) {
+                if (!p.getActions().isEmpty()) {
+                    actionPoints.add(p);
+                }
+            }
             if (p.headingState == AnchorPoint.Heading.CUSTOM) {
                 headingPoints.add(p);
             } else if (p.headingState == AnchorPoint.Heading.FRONT) {
@@ -162,6 +163,11 @@ public class Path {
         });
 
         connectionPoints.forEach((final ConnectionPoint p) -> {
+            if (p.getActionEventListeners() != null) {
+                if (!p.getActions().isEmpty()) {
+                    actionPoints.add(p);
+                }
+            }
             if (p.headingState != AnchorPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
@@ -179,6 +185,19 @@ public class Path {
         });
 
         System.out.println("headingPoints: " + Arrays.toString(headingPoints.toArray()));
+
+        actionPoints.sort(new Comparator<ActionPoint>() {
+            @Override
+            public int compare(final ActionPoint t0, final ActionPoint t1) {
+                if (t0.getS() - t1.getS() <= 0) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
+
+        System.out.println("actionpoints: " + Arrays.toString(actionPoints.toArray()));
 
         headingSegments = new ArrayList<HeadingSegment>();
         HeadingPoint prevHeadingPoint = null;
@@ -453,20 +472,41 @@ public class Path {
                 }
                 final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
 
+                final JSONArray actionJson = (JSONArray) anchorObj.get("actions");
+                final Set<Integer> actions = new HashSet<Integer>();
+                for (final Object actionObj : actionJson) {
+                    actions.add((int) ((long) actionObj));
+                }
+                final List<ActionEventListener> actionEventListeners = new ArrayList<ActionEventListener>();
+                if (!actionEventListeners.isEmpty() && !actions.isEmpty()) {
+                    for (final Integer action : actions) {
+                        for (final ActionEventListener eventListener : Config.actionEventListeners) {
+                            if (eventListener.action == action) {
+                                actionEventListeners.add(eventListener);
+                            }
+                        }
+                    }
+                }
+
+                System.out.println("AnchorPoint Actions: " + Arrays.toString(actions.toArray()));
+
                 if (first) {
                     curParams = new CurveParameters((JSONObject)curves.get(0));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
-                            curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, first, last);
+                            curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
+                            actions, first, last);
                     anchorPointsList.add(anchorPoint);
                     prevParams = curParams.copy();
                 } else if (last) {
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                            prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, first, last);
+                            prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
+                            actions,first, last);
                     anchorPointsList.add(anchorPoint);
                 } else {
                     curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                            prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, first, last);
+                            prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
+                            actions, first, last);
                     anchorPointsList.add(anchorPoint);
                     prevParams = curParams.copy();
                 }
