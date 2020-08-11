@@ -11,4 +11,8 @@ public class ActionEventListener {
     public void run() {
         actionFunction.run();
     }
+
+    public String toString() {
+        return "action=" + action;
+    }
 }

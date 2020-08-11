@@ -197,7 +197,6 @@ public class Path {
             }
         });
 
-        System.out.println("actionpoints: " + Arrays.toString(actionPoints.toArray()));
 
         headingSegments = new ArrayList<HeadingSegment>();
         HeadingPoint prevHeadingPoint = null;
@@ -242,9 +241,26 @@ public class Path {
         System.out.println();
 //        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
 //        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
+        System.out.println("ActionPoints: " + Arrays.toString(actionPoints.toArray()));
+        System.out.println("ActionEventListeners:");
+        actionPoints.forEach(p -> System.out.println(Arrays.toString(p.getActionEventListeners().toArray())));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
+        while (true) {
+            if (actionPoints.size() == 0) {
+                break;
+            }
+            final ActionPoint actionPoint = actionPoints.get(0);
+            if (s >= actionPoint.getS() - 1e-12) {
+                if (actionPoint.getActionEventListeners() != null) {
+                    actionPoint.runActions();
+                }
+                actionPoints.remove(0);
+            } else {
+                break;
+            }
+        }
         if (!currentHeadingSegment.inRange(s)) {
             if (s < currentHeadingSegment.s0) {
                 preiousHeadingSegment();
@@ -346,7 +362,7 @@ public class Path {
 //        System.out.println("Distance to next velocity: " + d_s);
 
         if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
-            System.out.println("Return accToVel: " + accToVel);
+//            System.out.println("Return accToVel: " + accToVel);
             return accToVel;
         }
 
@@ -354,13 +370,13 @@ public class Path {
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
 //        System.out.println("maxAcc: " + maxAcc + "  acc: " + acc);
         if (acc > maxAcc) {
-            System.out.println("Returned maxAcc: " + maxAcc);
+//            System.out.println("Returned maxAcc: " + maxAcc);
             return maxAcc;
         } else if (acc < Config.MAX_DECELERATION) {
-            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
+//            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
             return Config.MAX_DECELERATION;
         } else {
-            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
+//            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
             return acc;
         }
 //        return maxAcc;
@@ -478,7 +494,7 @@ public class Path {
                     actions.add((int) ((long) actionObj));
                 }
                 final List<ActionEventListener> actionEventListeners = new ArrayList<ActionEventListener>();
-                if (!actionEventListeners.isEmpty() && !actions.isEmpty()) {
+                if (!Config.actionEventListeners.isEmpty() && !actions.isEmpty()) {
                     for (final Integer action : actions) {
                         for (final ActionEventListener eventListener : Config.actionEventListeners) {
                             if (eventListener.action == action) {

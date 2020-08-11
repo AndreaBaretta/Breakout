@@ -43,7 +43,7 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
             actions.add((int) ((long) actionObj));
         }
         actionEventListeners = new ArrayList<ActionEventListener>();
-        if (!actionEventListeners.isEmpty() && !actions.isEmpty()) {
+        if (!Config.actionEventListeners.isEmpty() && !actions.isEmpty()) {
             for (final Integer action : actions) {
                 for (final ActionEventListener eventListener : Config.actionEventListeners) {
                     if (eventListener.action == action) {

@@ -8,6 +8,7 @@ public abstract class MinorSegment extends Segment {
     public final ConnectionPoint firstPoint;
     public final ConnectionPoint lastPoint;
     public final List<VelocitySegment> velocitySegments;
+
     MinorSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
         super(firstPoint, lastPoint, s0, configVelocity);
         this.firstPoint = firstPoint;
@@ -67,7 +68,7 @@ public abstract class MinorSegment extends Segment {
                 return new NextVCurVDistS(segment.getNextVelocity(), segment.getSegmentVelocity(), segment.sToNextVelocity(s));
             }
         }
-//        System.out.println("Shouldn't be happening -----------------------------------");
+//        System.out.println("Should only happen at beginning -----------------------------------");
         return new NextVCurVDistS(velocitySegments.get(0).getNextVelocity(), velocitySegments.get(0).getSegmentVelocity(), velocitySegments.get(0).sToNextVelocity(s));
     }
 
