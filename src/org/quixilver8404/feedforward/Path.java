@@ -13,6 +13,8 @@ import java.util.*;
 
 
 public class Path {
+    public final List<ActionEventListener> configActionEventListeners;
+
     public final List<AnchorPoint> anchorPoints;
     public final List<MainSegment> mainSegments;
     public final List<ConnectionPoint> connectionPoints;
@@ -24,7 +26,8 @@ public class Path {
     protected HeadingSegment currentHeadingSegment;
     protected boolean finished;
 
-    public Path(final File foxtrotFile, final int config) {
+    public Path(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+        this.configActionEventListeners = configActionEventListeners;
         anchorPoints = parseAnchorPoints(foxtrotFile, config);
         mainSegments = new ArrayList<MainSegment>();
         connectionPoints = new ArrayList<ConnectionPoint>();
@@ -494,9 +497,9 @@ public class Path {
                     actions.add((int) ((long) actionObj));
                 }
                 final List<ActionEventListener> actionEventListeners = new ArrayList<ActionEventListener>();
-                if (!Config.actionEventListeners.isEmpty() && !actions.isEmpty()) {
+                if (!configActionEventListeners.isEmpty() && !actions.isEmpty()) {
                     for (final Integer action : actions) {
-                        for (final ActionEventListener eventListener : Config.actionEventListeners) {
+                        for (final ActionEventListener eventListener : configActionEventListeners) {
                             if (eventListener.action == action) {
                                 actionEventListeners.add(eventListener);
                             }
@@ -544,7 +547,7 @@ public class Path {
             final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
             final JSONArray segments = (JSONArray) obj.get("segments");
             for (int i = 0; i < segments.size(); i++) {
-                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i));
+                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
                 if (segment.config == config || segment.config == 0) {
                     segmentPoints.add(segment);
                 }

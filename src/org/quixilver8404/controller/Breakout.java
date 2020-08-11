@@ -1,21 +1,23 @@
 package org.quixilver8404.controller;
 
+import org.quixilver8404.feedforward.ActionEventListener;
 import org.quixilver8404.feedforward.Path;
 import org.quixilver8404.feedforward.RobotState;
 import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
 import java.io.File;
+import java.util.List;
 
 public class Breakout {
     public final Controller controller;
     public final PowerProfile powerProfile;
     public final Path path;
 
-    public Breakout(final File foxtrotFile, final int config) {
+    public Breakout(final File foxtrotFile, final int config, final List<ActionEventListener> actionEventListeners) {
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
-        path = new Path(foxtrotFile, config);
+        path = new Path(foxtrotFile, config, actionEventListeners);
     }
 
     protected double prev_s = 0;

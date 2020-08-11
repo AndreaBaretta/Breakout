@@ -21,7 +21,7 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
     protected double s;
     protected double minSegmentVelocity;
 
-    SegmentPoint(final JSONObject segmentPoint) {
+    SegmentPoint(final JSONObject segmentPoint, final List<ActionEventListener> configActionEventListeners) {
         anchorIndex = ((Long)segmentPoint.get("anchorIndex")).intValue();
         velP = Math.min((double)segmentPoint.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
         headingStateString = (String)segmentPoint.get("headingState");
@@ -43,9 +43,9 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
             actions.add((int) ((long) actionObj));
         }
         actionEventListeners = new ArrayList<ActionEventListener>();
-        if (!Config.actionEventListeners.isEmpty() && !actions.isEmpty()) {
+        if (!configActionEventListeners.isEmpty() && !actions.isEmpty()) {
             for (final Integer action : actions) {
-                for (final ActionEventListener eventListener : Config.actionEventListeners) {
+                for (final ActionEventListener eventListener : configActionEventListeners) {
                     if (eventListener.action == action) {
                         actionEventListeners.add(eventListener);
                     }

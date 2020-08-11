@@ -8,6 +8,8 @@ import org.quixilver8404.controller.PowerProfile;
 import org.quixilver8404.util.Vector3;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 public class Main {
 
@@ -51,7 +53,27 @@ public class Main {
         final double time_limit = 5;
         double maxAccel = 0;
 
-        final Path path = new Path(new File("/home/andrea/Desktop/testing.foxtrot2"), 0);
+        final List<ActionEventListener> actionEventListeners = Arrays.asList(new ActionEventListener[]{
+                new ActionEventListener(1, new ActionFunction() {
+                    @Override
+                    public void run() {
+                        System.out.println("1 executed");
+                    }
+                }),
+                new ActionEventListener(2, new ActionFunction() {
+                    @Override
+                    public void run() {
+                        System.out.println("2 executed");
+                    }
+                }),
+                new ActionEventListener(3, new ActionFunction() {
+                    @Override
+                    public void run() {
+                        System.out.println("3 executed");
+                    }
+                })
+        });
+        final Path path = new Path(new File("/home/andrea/Desktop/testing.foxtrot2"), 0, actionEventListeners);
 
         double prev_s = 0;
         double prev_s_dot = 0;
