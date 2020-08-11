@@ -9,7 +9,7 @@ import java.util.*;
 public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
 
     public final int anchorIndex;
-    public final double velP;
+    protected double velP;
     public final String headingStateString;
     public final AnchorPoint.Heading headingState;
     public final double heading;
@@ -60,6 +60,10 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
 
     public double getConfigVelocity() {
         return velP;
+    }
+
+    public void setConfigVelocity(final double newConfigVelocity) {
+        velP = newConfigVelocity;
     }
 
     public void setMinVelocity(final double minSegmentVelocity) {

@@ -262,7 +262,7 @@ public class Path {
         }
         if (currentMainSegment.index == mainSegments.size() - 1 && s >= endS - 0.001) { //Condition to finish
             finish();
-            System.out.println("Finished");
+            System.out.println("<---------------------------------------- Finished ---------------------------------------->");
             return new RobotState(
                     currentHeadingSegment.calcAlpha(endS, currentMainSegment.getPosition(endS)),
                     currentHeadingSegment.calcAlphaDot(0, currentMainSegment.getVelocity(endS, 0)),
@@ -346,7 +346,7 @@ public class Path {
 //        System.out.println("Distance to next velocity: " + d_s);
 
         if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
-//            System.out.println("Return accToVel: " + accToVel);
+            System.out.println("Return accToVel: " + accToVel);
             return accToVel;
         }
 
@@ -354,13 +354,13 @@ public class Path {
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
 //        System.out.println("maxAcc: " + maxAcc + "  acc: " + acc);
         if (acc > maxAcc) {
-//            System.out.println("Returned maxAcc: " + maxAcc);
+            System.out.println("Returned maxAcc: " + maxAcc);
             return maxAcc;
         } else if (acc < Config.MAX_DECELERATION) {
-//            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
+            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
             return Config.MAX_DECELERATION;
         } else {
-//            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
+            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
             return acc;
         }
 //        return maxAcc;

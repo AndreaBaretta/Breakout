@@ -80,6 +80,10 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         configVelocity = newConfigVelocity;
     }
 
+    public void setMinVelocity(final double newMinVelocity) {
+        minVelocity = newMinVelocity;
+    }
+
     public double getS() {
         return s;
     }

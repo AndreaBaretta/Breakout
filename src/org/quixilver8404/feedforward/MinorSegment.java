@@ -30,6 +30,10 @@ public abstract class MinorSegment extends Segment {
             for (int i = 0; i < segmentPoints.size(); i++) {
                 final VelocityPoint point = segmentPoints.get(i);
                 final VelocitySegment segment = new VelocitySegment(prevPoint.getS(), point.getS(), getMinVelocity(), prevPoint, point);
+                if (segment.zeroSegment) {
+                    prevPoint.setConfigVelocity(point.getConfigVelocity());
+                    prevPoint.setMinVelocity(point.getMinVelocity());
+                }
                 velocitySegments.add(segment);
                 prevPoint = point;
             }
@@ -38,6 +42,10 @@ public abstract class MinorSegment extends Segment {
             lastPoint.setConfigVelocity(prevPoint.getConfigVelocity());
         } else {
             final VelocitySegment segment = new VelocitySegment(firstPoint.getS(), lastPoint.getS(), getMinVelocity(), firstPoint, lastPoint);
+            if (segment.zeroSegment) {
+                firstPoint.setConfigVelocity(lastPoint.getConfigVelocity());
+                firstPoint.setMinVelocity(lastPoint.getMinVelocity());
+            }
             velocitySegments.add(segment);
         }
         System.out.print("Minor segment: ");
