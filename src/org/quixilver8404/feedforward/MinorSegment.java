@@ -14,7 +14,7 @@ public abstract class MinorSegment extends Segment {
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
         velocitySegments = new ArrayList<VelocitySegment>();
-        System.out.println("At start: Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
+//        System.out.println("At start: Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
     }
 
     public void setPointSegment() {
@@ -49,12 +49,12 @@ public abstract class MinorSegment extends Segment {
             }
             velocitySegments.add(segment);
         }
-        System.out.print("Minor segment: ");
-        System.out.print(Arrays.toString(velocitySegments.toArray()));
-        System.out.println(" Segment minVelocity: " + getMinVelocity());
-        System.out.println("Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
-        System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
-        System.out.println();
+//        System.out.print("Minor segment: ");
+//        System.out.print(Arrays.toString(velocitySegments.toArray()));
+//        System.out.println(" Segment minVelocity: " + getMinVelocity());
+//        System.out.println("Firstpoint: " + firstPoint.toString() + "  Lastpoint: " + lastPoint.toString());
+//        System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+//        System.out.println();
     }
 
     public abstract double getMinVelocity();
@@ -62,7 +62,7 @@ public abstract class MinorSegment extends Segment {
     public NextVCurVDistS getNextVelocity(final double s) {
         for (int i = 0; i < velocitySegments.size(); i++) {
             final VelocitySegment segment = velocitySegments.get(i);
-            if (segment.inRange(s)) {
+            if (segment.inRange(s) && !segment.zeroSegment) {
 //                System.out.println();
 //                System.out.println("Current VelocitySegment: " + segment.toString());
                 return new NextVCurVDistS(segment.getNextVelocity(), segment.getSegmentVelocity(), segment.sToNextVelocity(s));

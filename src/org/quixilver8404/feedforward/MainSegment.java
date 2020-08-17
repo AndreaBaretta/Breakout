@@ -13,7 +13,7 @@ public class MainSegment extends Segment {
 
     public final int index;
 
-    protected Segment currentSegment;
+    protected MinorSegment currentSegment;
 
     public final AnchorPoint anchorPoint0;
     public final AnchorPoint anchorPoint1;
@@ -35,8 +35,10 @@ public class MainSegment extends Segment {
             currentSegment = circleSegment0;
         } else if (!linearSegment.zeroSegment) {
             currentSegment = linearSegment;
-        } else {
+        } else if (!circleSegment1.zeroSegment) {
             currentSegment = circleSegment1;
+        } else {
+            throw new Error("Zero mainsegment");
         }
         this.anchorPoint0 = anchorPoint0;
         this.anchorPoint1 = anchorPoint1;
@@ -113,6 +115,12 @@ public class MainSegment extends Segment {
 
     public Vector3 getPosition(final double s) {
 //        System.out.println("s: " + s);
+//        if (s <= s0) {
+//            System.out.println("Less than beginning: s=" + s + "  s0=" + s0);
+//        }
+//        if (s >= getEndS()) {
+//            System.out.println("More than end: s=" + s + "  s1=" + getEndS());
+//        }
         final Vector3 position;
 //        System.out.println("s = " + s + "  linearSegment.inRange(s) = " + linearSegment.inRange(s) + " linearSegment bounds: s0 = " + linearSegment.s0 + " getEndsS() = " + linearSegment.getEndS());
         if (circleSegment0.inRange(s)) {
@@ -123,12 +131,16 @@ public class MainSegment extends Segment {
         } else if (circleSegment1.inRange(s)) {
 //            System.out.println(circleSegment1.zeroSegment);
             position = circleSegment1.getPosition(s);
+        } else if (s <= s0) {
+            position = currentSegment.getPosition(s);
         } else {
+//            if (Double.isNaN(s)) System.out.println("Crashed 'cuz NaN");
             throw new Error("Out of bounds error that REALLY shouldn't be happening");
         }
 //        position = currentSegment.getPosition(s);
 //        System.out.println("Got position successfully");
 //        if (heading == AnchorPoint.Heading.FRONT) {
+//        System.out.println("s= " + s + " Returning position: " + position.toString());
             return position;
 //        } else if (heading == AnchorPoint.Heading.BACK) {
 //            return new Vector3(position.x, position.y, position.theta + Math.PI);
@@ -148,6 +160,8 @@ public class MainSegment extends Segment {
             velocity = linearSegment.getVelocity(s, s_dot);
         } else if (circleSegment1.inRange(s)) {
             velocity = circleSegment1.getVelocity(s, s_dot);
+        } else if (s <= s0) {
+            velocity = new Vector3(0,0,0);
         } else {
             throw new Error("Out of bounds error that REALLY shouldn't be happening");
         }
@@ -169,6 +183,8 @@ public class MainSegment extends Segment {
             acceleration = linearSegment.getAcceleration(s, s_dot, s_dot_dot);
         } else if (circleSegment1.inRange(s)) {
             acceleration = circleSegment1.getAcceleration(s, s_dot, s_dot_dot);
+        } else if (s <= s0) {
+            acceleration = new Vector3(0,0,0);
         } else {
             throw new Error("Out of bounds error that REALLY shouldn't be happening");
         }
@@ -189,7 +205,10 @@ public class MainSegment extends Segment {
 
     public MinorSegment.NextVCurVDistS getNextVelocity(final double s) {
 //        System.out.println("getNextVelocity(" + s + ")");
-        if (circleSegment0.inRange(s) || s <= s0) {
+        if (s <= s0) {
+            return currentSegment.getNextVelocity(s);
+        }
+        if (circleSegment0.inRange(s)) {
 //            System.out.println("In circle0");
             return circleSegment0.getNextVelocity(s);
         } else if (linearSegment.inRange(s)) {
@@ -202,6 +221,7 @@ public class MainSegment extends Segment {
     }
 
     public double calcS(final double x, final double y) {
+//        System.out.println("About to calcS");
         if (currentSegment == circleSegment0) {
             if (circleSegment0.calcS(x, y) >= circleSegment0.getEndS()) {
                 if (linearSegment.zeroSegment) {
@@ -210,6 +230,15 @@ public class MainSegment extends Segment {
                     currentSegment = linearSegment;
                 }
             }
+//            if (currentSegment == circleSegment0) {
+//                System.out.println("Calculating s at circlesegment0: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == linearSegment) {
+//                System.out.println("Calculating s at linearsegment: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == circleSegment1) {
+//                System.out.println("Calculating s at circlesegment1: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else {
+//                System.out.println("Guga gagag");
+//            }
             return currentSegment.calcS(x, y);
         } else if (currentSegment == linearSegment) {
             if (linearSegment.calcS(x, y) >= linearSegment.getEndS()) {
@@ -217,8 +246,26 @@ public class MainSegment extends Segment {
                     currentSegment = circleSegment1;
                 }
             }
+//            if (currentSegment == circleSegment0) {
+//                System.out.println("Calculating s at circlesegment0: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == linearSegment) {
+//                System.out.println("Calculating s at linearsegment: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == circleSegment1) {
+//                System.out.println("Calculating s at circlesegment1: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else {
+//                System.out.println("Guga gagag");
+//            }
             return currentSegment.calcS(x, y);
         } else {
+//            if (currentSegment == circleSegment0) {
+//                System.out.println("Calculating s at circlesegment0: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == linearSegment) {
+//                System.out.println("Calculating s at linearsegment: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else if (currentSegment == circleSegment1) {
+//                System.out.println("Calculating s at circlesegment1: s=" + currentSegment.calcS(x, y) + " (x,y)=(" + x + "," + y + ")");
+//            } else {
+//                System.out.println("Guga gagag");
+//            }
             return currentSegment.calcS(x, y);
         }
     }

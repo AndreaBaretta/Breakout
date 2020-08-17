@@ -46,6 +46,7 @@ public class CircleSegment extends MinorSegment {
     }
 
     public Vector3 getPosition(final double s) {
+        System.out.println("getPosition in circle");
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
@@ -113,6 +114,7 @@ public class CircleSegment extends MinorSegment {
     }
 
     public double calcS(final double x, final double y) {
+        System.out.println("CalcS in circle");
         final double gamma = MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
         final double theta;
         if (counterClockwise) {

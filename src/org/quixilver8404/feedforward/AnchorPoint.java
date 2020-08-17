@@ -17,6 +17,9 @@ public class AnchorPoint extends Point {
     final Point2D center1;
     final double theta1;
 
+    final Point2D tanPoint0;
+    final Point2D tanPoint1;
+
     final ConnectionPoint prevPoint;
     final ConnectionPoint middlePoint;
     final ConnectionPoint nextPoint;
@@ -26,8 +29,8 @@ public class AnchorPoint extends Point {
 
     public final double configVelocity;
 
-    final boolean first;
-    final boolean last;
+    protected boolean first;
+    protected boolean last;
 
     public boolean CheckDirection(final Point2D center) {
 //        System.out.println(1/Math.tan(Math.atan2(1, 0)));
@@ -78,6 +81,8 @@ public class AnchorPoint extends Point {
                        final Set<Integer> actions, final boolean first, final boolean last) {
         super(x, y, MainSegment.normalizeAlpha(tangent));
         final double tan = MainSegment.normalizeAlpha(tangent);
+        this.tanPoint0 = tanPoint0;
+        this.tanPoint1 = tanPoint1;
         this.heading = heading;
         if (heading == Heading.CUSTOM) {
             this.customHeading = customHeading;
@@ -138,5 +143,10 @@ public class AnchorPoint extends Point {
 
         this.first = first;
         this.last = last;
+    }
+
+    public AnchorPoint copy() {
+        return new AnchorPoint(x, y, tan, heading, customHeading, r0, center0, theta0, r1, center1, theta1, tanPoint0, tanPoint1, configVelocity,
+                middlePoint.getActionEventListeners(), middlePoint.getActions(), first, last);
     }
 }

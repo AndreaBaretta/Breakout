@@ -5,6 +5,7 @@ import org.quixilver8404.feedforward.*;
 import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.controller.PowerProfile;
+import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(0, 0,0),
+                new Vector3(0,0,0), new Vector3(0* Config.INCHES_TO_METERS, 0*Config.INCHES_TO_METERS,0),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -73,7 +74,7 @@ public class Main {
                     }
                 })
         });
-        final Path path = new Path(new File("/home/andrea/Desktop/testing.foxtrot2"), 0, actionEventListeners);
+        final NewPath path = new NewPath(new File("/home/andrea/Desktop/testing.foxtrot2"), 0, actionEventListeners);
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -109,6 +110,8 @@ public class Main {
 
             final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
 
+//            System.out.println();
+
             final double[] correction;
             if (counter == updateControllerEveryHz) {
                 correction = controller.correction(Vector3.subtractVector2(kinematics.getFieldPos(), state.pos),
@@ -119,15 +122,25 @@ public class Main {
                 correction = prevCorrection;
             }
 
+
             final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, kinematics.getFieldPos().theta);
+
+            for (final double p : powerSettings) {
+                if (Double.isNaN(p)) {
+                    System.out.println("state.vel: " + state.vel.toString());
+                    System.out.println("state.acc: " + state.acc.toString());
+                    System.out.println("NaN power setting");
+                    break;
+                }
+            }
 
             kinematics.update(powerSettings, dt);
 
-            for (int i = 0; i < path.segmentPoints.size(); i++) { //Draw segmentpoints
-                final SegmentPoint segmentPoint = path.segmentPoints.get(i);
-                final Vector3 pointPos = path.mainSegments.get(segmentPoint.anchorIndex).getPosition(segmentPoint.getS());
-                kinematics.ui.drawCircle(pointPos.x, pointPos.y, 0.05, 100, new double[]{255,255,0});
-            }
+//            for (int i = 0; i < path.segmentPoints.size(); i++) { //Draw segmentpoints
+//                final SegmentPoint segmentPoint = path.segmentPoints.get(i);
+//                final Vector3 pointPos = path.mainSegments.get(segmentPoint.anchorIndex).getPosition(segmentPoint.getS());
+//                kinematics.ui.drawCircle(pointPos.x, pointPos.y, 0.05, 100, new double[]{255,255,0});
+//            }
 
             kinematics.ui.drawCircle(state.pos.x, state.pos.y, 0.05, 100, new double[]{255,0,0});
             kinematics.ui.drawCircle(0, 0, 0.05, 100, new double[]{0,255,0});
