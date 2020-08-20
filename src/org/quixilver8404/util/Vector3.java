@@ -27,6 +27,9 @@ public class Vector3 {
         final double sin = Math.sin(v1.theta)*Math.cos(v2.theta) - Math.cos(v1.theta)*Math.sin(v2.theta);
         final double cos = Math.cos(v1.theta)*Math.cos(v2.theta) + Math.sin(v1.theta)*Math.sin(v2.theta);
         final double theta = MainSegment.angleFromSinCos(sin, cos);
+        if (Math.abs(theta) >= Math.PI) {
+            throw new Error("Weee woo: theta="+theta);
+        }
         return new Vector3(v1.x - v2.x, v1.y - v2.y, theta);
     }
 

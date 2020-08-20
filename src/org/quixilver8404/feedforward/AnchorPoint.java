@@ -124,7 +124,7 @@ public class AnchorPoint extends Point {
             tanPoint1_ = tanPoint1;
         }
 
-        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, configVelocity, null, null);
+        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, Double.NaN, null, null);
         final double pointHeading;
         if (heading == Heading.CUSTOM) {
             pointHeading = customHeading;
@@ -134,7 +134,7 @@ public class AnchorPoint extends Point {
             pointHeading = MainSegment.normalizeAlpha(tan + Math.PI);
         }
         middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions);
-        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, configVelocity, null, null);
+        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, Double.NaN, null, null);
 
         counterClockwise0 = CheckDirection(center0);
         counterClockwise1 = CheckDirection(center1);
@@ -148,5 +148,9 @@ public class AnchorPoint extends Point {
     public AnchorPoint copy() {
         return new AnchorPoint(x, y, tan, heading, customHeading, r0, center0, theta0, r1, center1, theta1, tanPoint0, tanPoint1, configVelocity,
                 middlePoint.getActionEventListeners(), middlePoint.getActions(), first, last);
+    }
+
+    public String toString() {
+        return "(" + x + ", " + y + ")";
     }
 }

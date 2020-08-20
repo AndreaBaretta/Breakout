@@ -3,9 +3,7 @@ package org.quixilver8404.feedforward;
 import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
-import java.util.List;
-
-public class CircleSegment extends MinorSegment {
+public class CircleSegment extends Segment {
 
     public final Point2D center;
     public final double r;
@@ -16,9 +14,9 @@ public class CircleSegment extends MinorSegment {
     public final double theta0_;
     public final double theta1_;
 
-    CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity,
+    CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index,
                   final Point2D center, final double r, final double theta0, final double theta1, final boolean counterClockwise) {
-        super(firstPoint, lastPoint, s0, configVelocity);
+        super(firstPoint, lastPoint, s0, index);
 //        System.out.println("Theta0 in circle: " + theta0);
 //        System.out.println("Theta1 in circle: " + theta1);
         this.center = center;
@@ -42,11 +40,12 @@ public class CircleSegment extends MinorSegment {
             }
             theta1_ = theta1;
         }
-        setPointSegment();
+        configurePoints();
     }
 
     public Vector3 getPosition(final double s) {
-        System.out.println("getPosition in circle");
+//        System.out.println("getPosition in circle");
+//        System.out.println("GetPosition in circle");
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
@@ -108,15 +107,17 @@ public class CircleSegment extends MinorSegment {
         }
     }
 
-    public double getMinVelocity() {
+    public double getMaxVelocity() {
 //        System.out.println("In circle: r=" + r + " max_a=" + Config.MAX_ACCELERATION);
         return Math.min(Math.sqrt(r * Config.MAX_ACCELERATION), Config.MAX_SAFE_VELOCITY*Config.MAX_VELOCITY);
     }
 
+
+    protected double lastTheta = 0.0;
     public double calcS(final double x, final double y) {
-        System.out.println("CalcS in circle");
+//        System.out.println("CalcS in circle");
         final double gamma = MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
-        final double theta;
+        double theta;
         if (counterClockwise) {
             final double sin = Math.sin(gamma)*Math.cos(theta0) - Math.cos(gamma)*Math.sin(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
@@ -127,6 +128,20 @@ public class CircleSegment extends MinorSegment {
             theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
         }
 
-        return theta*r + s0;
+        final double deltaTheta = theta - lastTheta;
+        if (deltaTheta > Math.PI) theta -= 2*Math.PI;
+        lastTheta = theta;
+
+        final double result = theta*r + s0;
+        System.out.println("CircleSegment.calcS("+x+", " + y + "), theta=" + theta + ", theta0=" + theta0 +", gamma=" + gamma + ", r=" + r + ", s0=" + s0 + " = " + result);
+        return result;
+    }
+
+    public boolean isPointSegment() {
+        return r <= 1e-12;
+    }
+
+    public String toString() {
+        return "(type=circle, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ")";
     }
 }

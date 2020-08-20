@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPoint, ActionPoint {
-    public MinorSegment prevSegment = null;
-    public MinorSegment nextSegment = null;
     public boolean complete;
-    protected double minVelocity;
-    public double configVelocity;
+    protected double configVelocity;
+    protected double maxVelocity;
     protected double s;
-    public double index;
+    public int index;
     public final AnchorPoint.Heading headingState;
     public final double heading;
     public final List<ActionEventListener> actionEventListeners;
@@ -25,7 +23,6 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.heading = heading;
         this.headingState = headingState;
         complete = false;
-        minVelocity = configVelocity;
         this.configVelocity = configVelocity;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
@@ -37,39 +34,15 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.heading = heading;
         this.headingState = headingState;
         complete = false;
-        minVelocity = configVelocity;
+        maxVelocity = configVelocity;
         this.configVelocity = configVelocity;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
     }
 
-    public void setPrevSegment(final MinorSegment segment) {
-        if (complete) {
-            throw new Error("Error parsing: Connector point already complete when setting prevSegment at index: " + index);
-        }
-        prevSegment = segment;
-        if (prevSegment != null && nextSegment != null) {
-            complete = true;
-        }
-//        System.out.println("Set prevSegment at index: " + index + "  s = " + segment.getEndS());
-        s = segment.getEndS();
-    }
 
-    public void setNextSegment(final MinorSegment segment) {
-        if (complete) {
-            throw new Error("Error parsing: Connector point already complete when setting nextSegment at index: " + index);
-        }
-        nextSegment = segment;
-        if (prevSegment != null && nextSegment != null) {
-            complete = true;
-        }
-        minVelocity = Math.min(minVelocity, nextSegment.getMinVelocity());
-//        System.out.println("Set nextSegment at index: " + index + "  s = " + segment.s0);
-        s = segment.s0;
-    }
-
-    public double getMinVelocity() {
-        return minVelocity;
+    public double getMaxVelocity() {
+        return maxVelocity;
     }
 
     public double getConfigVelocity() {
@@ -80,12 +53,16 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         configVelocity = newConfigVelocity;
     }
 
-    public void setMinVelocity(final double newMinVelocity) {
-        minVelocity = newMinVelocity;
+    public void setMaxVelocity(final double newMinVelocity) {
+        maxVelocity = newMinVelocity;
     }
 
     public double getS() {
         return s;
+    }
+
+    public void setS(final double s) {
+        this.s = s;
     }
 
     public double getHeading() {
@@ -117,7 +94,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         } else {
             actionArray = actions.toArray();
         }
-        return "(" + x/Config.INCHES_TO_METERS + ", " + y/Config.INCHES_TO_METERS + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + minVelocity + ", actions=" + Arrays.toString(actionArray) + ")";
+        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", actions=" + Arrays.toString(actionArray) + ")";
     }
 
 }

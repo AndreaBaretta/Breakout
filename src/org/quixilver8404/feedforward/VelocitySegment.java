@@ -3,15 +3,14 @@ package org.quixilver8404.feedforward;
 public class VelocitySegment {
     public final double s0;
     public final double s1;
-    public final double velocity;
     public final boolean zeroSegment;
     public final VelocityPoint p0;
     public final VelocityPoint p1;
+    public final int index;
 
-    VelocitySegment(final double s0, final double s1, final double segmentMinVelocity, final VelocityPoint p0, final VelocityPoint p1) {
-        this.s0 = s0;
-        this.s1 = s1;
-        this.velocity = Math.min(segmentMinVelocity, p0.getConfigVelocity());
+    VelocitySegment(final VelocityPoint p0, final VelocityPoint p1, final int index) {
+        s0 = p0.getS();
+        s1 = p1.getS();
         if (s1 - s0 <= 1e-12) {
             zeroSegment = true;
         } else {
@@ -19,10 +18,11 @@ public class VelocitySegment {
         }
         this.p0 = p0;
         this.p1 = p1;
+        this.index = index;
     }
 
     public String toString() {
-        return "(s0=" + s0 + ", s1=" + s1 + ", v=" + velocity + ", nextV=" + getNextVelocity() + ")";
+        return "(s0=" + s0 + ", s1=" + s1 + ", v=" + Math.min(p0.getMaxVelocity(), p0.getConfigVelocity()) + ", nextV=" + Math.min(p1.getMaxVelocity(), p1.getConfigVelocity()) + ")";
     }
 
     public boolean inRange(final double s) {
@@ -33,15 +33,27 @@ public class VelocitySegment {
         }
     }
 
-    public double getSegmentVelocity() {
-        return velocity;
+//    public double getSegmentVelocity() {
+//        return velocity;
+//    }
+
+    public NextVCurVDistS getNextVelocity(final double s) {
+//        return Math.min(p1.getMaxVelocity(), p1.getConfigVelocity());
+        return new NextVCurVDistS(Math.min(p1.getMaxVelocity(), p1.getConfigVelocity()), Math.min(p0.getMaxVelocity(), p0.getConfigVelocity()), s1 - s);
     }
 
-    public double getNextVelocity() {
-        return Math.min(p1.getMinVelocity(), p1.getConfigVelocity());
-    }
+//    public double sToNextVelocity(final double s) {
+//        return s1 - s;
+//    }
 
-    public double sToNextVelocity(final double s) {
-        return s1 - s;
+    public class NextVCurVDistS {
+        final double nextV;
+        final double curV;
+        final double distS;
+        public NextVCurVDistS(final double nextV, final double curV, final double distS) {
+            this.curV = curV;
+            this.nextV = nextV;
+            this.distS = distS;
+        }
     }
 }

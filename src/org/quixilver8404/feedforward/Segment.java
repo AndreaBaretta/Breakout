@@ -7,8 +7,9 @@ public abstract class Segment {
     public final ConnectionPoint lastPoint;
     public final double s0;
     public final boolean zeroSegment;
+    public final int index;
 
-    Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
+    Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index) {
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
         this.s0 = s0;
@@ -17,6 +18,7 @@ public abstract class Segment {
         } else {
             zeroSegment = false;
         }
+        this.index = index;
     }
 
     public abstract Vector3 getPosition(final double s);
@@ -28,9 +30,6 @@ public abstract class Segment {
     public abstract double getTotalS();
 
     public double getEndS() {
-//        if (zeroSegment) {
-//            return s0;
-//        }
         return s0 + getTotalS();
     }
 
@@ -47,5 +46,15 @@ public abstract class Segment {
 
     public double calcS(final Vector3 pos) {
         return calcS(pos.x, pos.y);
+    }
+
+    public abstract boolean isPointSegment();
+
+    public abstract double getMaxVelocity();
+
+    public void configurePoints() {
+        firstPoint.setMaxVelocity(getMaxVelocity());
+        firstPoint.setS(s0);
+        lastPoint.setS(getEndS());
     }
 }

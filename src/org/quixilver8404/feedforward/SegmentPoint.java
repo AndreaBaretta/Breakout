@@ -12,14 +12,14 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
     protected double velP;
     public final String headingStateString;
     public final AnchorPoint.Heading headingState;
-    public final double heading;
+    protected double heading;
     public final int config;
     public final double tFromAnchor;
     public final Set<Integer> actions;
     public final List<ActionEventListener> actionEventListeners;
 
     protected double s;
-    protected double minSegmentVelocity;
+    protected double maxVelocity;
 
     SegmentPoint(final JSONObject segmentPoint, final List<ActionEventListener> configActionEventListeners) {
         anchorIndex = ((Long)segmentPoint.get("anchorIndex")).intValue();
@@ -54,8 +54,8 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
         }
     }
 
-    public double getMinVelocity() {
-        return minSegmentVelocity;
+    public double getMaxVelocity() {
+        return maxVelocity;
     }
 
     public double getConfigVelocity() {
@@ -66,8 +66,8 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
         velP = newConfigVelocity;
     }
 
-    public void setMinVelocity(final double minSegmentVelocity) {
-        this.minSegmentVelocity = minSegmentVelocity;
+    public void setMaxVelocity(final double maxVelocity) {
+        this.maxVelocity = maxVelocity;
     }
 
     public void setS(final double s0, final double totalS) {
@@ -84,6 +84,10 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
 
     public double getHeading() {
         return heading;
+    }
+
+    public void setHeading(final double heading) {
+        this.heading = heading;
     }
 
     public Set<Integer> getActions() {

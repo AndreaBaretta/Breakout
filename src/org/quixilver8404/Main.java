@@ -34,7 +34,7 @@ public class Main {
 
         final MecanumKinematics kinematics = new MecanumKinematics(
                 50, m, 0.5, 0.5,
-                new Vector3(0,0,0), new Vector3(0* Config.INCHES_TO_METERS, 0*Config.INCHES_TO_METERS,0),
+                new Vector3(0,0,0), new Vector3(8.5* Config.INCHES_TO_METERS, 32.5*Config.INCHES_TO_METERS,Math.PI),
                 window1,
                 J, rX, rY, Tmax, R, omegamax);
 
@@ -74,7 +74,7 @@ public class Main {
                     }
                 })
         });
-        final NewPath path = new NewPath(new File("/home/andrea/Desktop/testing.foxtrot2"), 0, actionEventListeners);
+        final Path path = new Path(new File("/home/andrea/Desktop/foxtrotFiles/three_stone_close_auton_blue.foxtrot2"), 0, actionEventListeners);
 
         double prev_s = 0;
         double prev_s_dot = 0;

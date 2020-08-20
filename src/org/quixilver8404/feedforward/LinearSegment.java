@@ -1,22 +1,16 @@
 package org.quixilver8404.feedforward;
 
+import org.quixilver8404.util.Config;
 import org.quixilver8404.util.Vector3;
 
-import java.util.List;
-
-public class LinearSegment extends MinorSegment {
+public class LinearSegment extends Segment {
 
     public final double theta;
 
-    LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final double configVelocity) {
-        super(firstPoint, lastPoint, s0, configVelocity);
+    LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index) {
+        super(firstPoint, lastPoint, s0, index);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
-        setPointSegment();
-    }
-
-    @Override
-    public void setVelocitySegments(final List<SegmentPoint> segmentPoints) {
-        super.setVelocitySegments(segmentPoints);
+        configurePoints();
     }
 
     public Vector3 getPosition(final double s) {
@@ -47,14 +41,22 @@ public class LinearSegment extends MinorSegment {
         return Math.hypot(lastPoint.x-firstPoint.x, lastPoint.y-firstPoint.y);
     }
 
-    public double getMinVelocity() {
-        return firstPoint.minVelocity;
+    public double getMaxVelocity() {
+        return Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY;
     }
 
     public double calcS(final double x, final double y) {
         final double[] pos = new double[]{x - firstPoint.x, y - firstPoint.y};
         final double[] u_s = new double[]{(lastPoint.x - firstPoint.x)/getTotalS(), (lastPoint.y - firstPoint.y)/getTotalS()};
-//        System.out.println("");
+        System.out.println("S calcul");
         return pos[0]*u_s[0] + pos[1]*u_s[1] + s0;
+    }
+
+    public boolean isPointSegment() {
+        return false;
+    }
+
+    public String toString() {
+        return "(type=line, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ")";
     }
 }
