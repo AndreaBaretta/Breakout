@@ -284,22 +284,6 @@ public class MainSegment {
         } else {
             return angle_from_minus_pi_to_pi + 2*Math.PI;
         }
-//        return angleFromSinCos(sin, cos) + Math.PI;
-//        final double arcsin = Math.asin(sin);
-//        System.out.println("sin: " + sin + " cos: " + cos + " arcsin: " + arcsin);
-//        if (sin >= 0) {
-//            if (cos >= 0) { //Q1
-//                return arcsin;
-//            } else { //Q2
-//                return Math.PI - arcsin;
-//            }
-//        } else {
-//            if (cos >= 0) { //Q4
-//                return arcsin + 2*Math.PI;
-//            } else { //Q3
-//                return Math.PI - arcsin;
-//            }
-//        }
     }
 
     public static double angleFromSinCos(final double sin, final double cos) {

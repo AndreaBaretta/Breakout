@@ -74,7 +74,7 @@ public class Main {
                     }
                 })
         });
-        final Path path = new Path(new File("/home/andrea/Desktop/foxtrotFiles/three_stone_close_auton_blue.foxtrot2"), 0, actionEventListeners);
+        final Path path = new Path(new File("/home/andrea/Desktop/foxtrotFiles/test3.foxtrot2"), 0, actionEventListeners); //three_stone_close_auton_blue
 
         double prev_s = 0;
         double prev_s_dot = 0;

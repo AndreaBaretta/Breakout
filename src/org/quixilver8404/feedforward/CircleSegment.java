@@ -133,7 +133,7 @@ public class CircleSegment extends Segment {
         lastTheta = theta;
 
         final double result = theta*r + s0;
-        System.out.println("CircleSegment.calcS("+x+", " + y + "), theta=" + theta + ", theta0=" + theta0 +", gamma=" + gamma + ", r=" + r + ", s0=" + s0 + " = " + result);
+//        System.out.println("CircleSegment.calcS("+x+", " + y + "), theta=" + theta + ", theta0=" + theta0 +", gamma=" + gamma + ", r=" + r + ", s0=" + s0 + " = " + result);
         return result;
     }
 

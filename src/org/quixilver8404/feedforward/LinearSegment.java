@@ -48,7 +48,7 @@ public class LinearSegment extends Segment {
     public double calcS(final double x, final double y) {
         final double[] pos = new double[]{x - firstPoint.x, y - firstPoint.y};
         final double[] u_s = new double[]{(lastPoint.x - firstPoint.x)/getTotalS(), (lastPoint.y - firstPoint.y)/getTotalS()};
-        System.out.println("S calcul");
+//        System.out.println("S calcul");
         return pos[0]*u_s[0] + pos[1]*u_s[1] + s0;
     }
 
