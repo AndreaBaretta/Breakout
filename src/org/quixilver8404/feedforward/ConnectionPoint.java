@@ -94,7 +94,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         } else {
             actionArray = actions.toArray();
         }
-        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", actions=" + Arrays.toString(actionArray) + ")";
+        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", headingState=" + getHeadingState() + ", heading=" + getHeading() + ", actions=" + Arrays.toString(actionArray) + ")";
     }
 
 }

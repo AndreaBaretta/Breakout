@@ -98,7 +98,7 @@ public class Path {
 
                 final double anchorIndex = i;
                 segmentPoints.forEach(p -> {
-                    if (p.anchorIndex - 1 == anchorIndex) {
+                    if (p.anchorIndex == anchorIndex - 1) {
                         System.out.println("setS of segmentPoint");
                         p.setS(segment0.s0, segment2.getEndS() - segment0.s0);
                         if (p.getHeadingState() != AnchorPoint.Heading.CUSTOM && p.getHeadingState() != AnchorPoint.Heading.NONE) {
@@ -199,10 +199,12 @@ public class Path {
         headingPoints.sort(new Comparator<HeadingPoint>() {
             @Override
             public int compare(final HeadingPoint t0, final HeadingPoint t1) {
-                if (t0.getS() - t1.getS() <= 0) {
+                if (t0.getS() - t1.getS() < 0) {
                     return -1;
-                } else {
+                } else if (t0.getS() - t1.getS() > 0) {
                     return 1;
+                } else {
+                    return 0;
                 }
             }
         });
@@ -325,13 +327,20 @@ public class Path {
 //
 //        currentVelocitySegment = velocitySegments.get(0);
 
+        System.out.println();
+
         System.out.println("End S: " + segments.get(segments.size() - 1).getEndS());
 
-        System.out.println("Connection points: " + Arrays.toString(connectionPoints.toArray()));
+        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
+        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
+        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
+        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
+
         System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
+        System.out.println("Heading points: " + Arrays.toString(headingPoints.toArray()));
         System.out.println("Heading segments: " + Arrays.toString(headingSegments.toArray()));
-        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
-        System.out.println("Segments: " + Arrays.toString(segments.toArray()));
+//        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
+//        System.out.println("Segments: " + Arrays.toString(segments.toArray()));
         System.out.println();
 //        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
 //        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
@@ -407,9 +416,9 @@ public class Path {
         final double curSegmentS = currentSegment.calcS(x, y);
         final double s;
         if (curSegmentS >= currentSegment.getEndS()) {
-            System.out.println("Before nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
+//            System.out.println("Before nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
             nextSegment();
-            System.out.println("After  nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
+//            System.out.println("After  nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
             s = currentSegment.calcS(x, y);
         } else if (curSegmentS < currentSegment.s0) {
             //Do nothing
