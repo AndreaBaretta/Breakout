@@ -77,8 +77,8 @@ public class MecanumKinematics {
     public void update(final double[] newPowerSetting, final double delta_t) {
 
         final double P_1_ = newPowerSetting[0];
-        final double P_2_ = newPowerSetting[1];
-        final double P_3_ = newPowerSetting[2];
+        final double P_2_ = -newPowerSetting[1];
+        final double P_3_ = -newPowerSetting[2];
         final double P_4_ = newPowerSetting[3];
 
         final double P_1, P_2, P_3, P_4;
