@@ -27,6 +27,7 @@ public class BreakoutTest {
         while (true) {
             final double[] powerSettings = breakout.iterate(kinematics.getFieldPos(), kinematics.getFieldVel(), 0.001);
             kinematics.update(powerSettings, 0.001);
+            kinematics.ui.update();
         }
     }
 }

@@ -461,6 +461,10 @@ public class Path {
         finished = true;
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
     public double calcAccelerationCorrection(final double s, final double s_dot) {
 //        double s_dot_dot = Config.MAX_ACCELERATION;
 //        if (currentVelocitySegment.)

@@ -39,4 +39,8 @@ public class Breakout {
 
         return powerSettings;
     }
+
+    public boolean isFinished() {
+        return path.isFinished();
+    }
 }
