@@ -125,6 +125,6 @@ public class PowerProfile {
             P_4 = P_4_;
         }
 
-        return new double[]{P_1, -P_2, -P_3, P_4};
+        return new double[]{P_1, P_2, P_3, P_4};
     }
 }

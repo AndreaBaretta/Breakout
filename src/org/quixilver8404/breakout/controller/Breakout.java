@@ -15,10 +15,10 @@ public class Breakout {
     public final Path path;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+        robotConfig.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = new Path(foxtrotFile, foxtrotConfig, actionEventListeners);
-        robotConfig.set();
     }
 
     protected double prev_s = 0;
