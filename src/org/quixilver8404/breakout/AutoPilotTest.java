@@ -9,6 +9,7 @@ import org.quixilver8404.breakout.util.Vector3;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AutoPilotTest {
 
@@ -26,7 +27,7 @@ public class AutoPilotTest {
 //                        0.95, Math.PI/2.5)
         );
 
-        autoPilot.setDesiredPos(new Vector3(0, 0, Math.PI+0.1));
+        autoPilot.setDesiredPos(new Vector3(1, 1, Math.PI/2));
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
                 new Vector3(0, 0,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
@@ -34,6 +35,7 @@ public class AutoPilotTest {
 
         while (true) {
             final double[] powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel());
+            System.out.println(Arrays.toString(powerSettings));
             kinematics.update(powerSettings, 0.001);
             kinematics.ui.update();
         }

@@ -62,7 +62,7 @@ public class MecanumKinematics {
      * @param l - Length of the surface in meters.
      * @param m - Mass of the object in kilograms.
      * */
-    public static double FindMomentOfInertia(final double w, final double l, final double m) {
+    public static double  FindMomentOfInertia(final double w, final double l, final double m) {
         final double sigma = m/(w*l);
         final double I = sigma*(1d/12d)*(Math.pow(w,3)*l + w*Math.pow(l,3));
         System.out.println("Inertia: " + I);
