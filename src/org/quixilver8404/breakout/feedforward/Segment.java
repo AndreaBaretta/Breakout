@@ -13,7 +13,7 @@ public abstract class Segment {
         this.firstPoint = firstPoint;
         this.lastPoint = lastPoint;
         this.s0 = s0;
-        if (Math.abs(firstPoint.x - lastPoint.x) < 1e-12 && Math.abs(firstPoint.y - lastPoint.y) < 1e-12) {
+        if (Math.abs(firstPoint.x - lastPoint.x) < 1e-12 && Math.abs(firstPoint.y - lastPoint.y) < 1e-12) { //TODO: Potential bug here for circles that go all the way around
             zeroSegment = true;
         } else {
             zeroSegment = false;

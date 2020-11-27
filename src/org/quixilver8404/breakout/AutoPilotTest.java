@@ -1,5 +1,7 @@
 package org.quixilver8404.breakout;
 
+import org.apache.commons.math3.linear.ArrayRealVector;
+import org.apache.commons.math3.linear.RealVector;
 import org.quixilver8404.breakout.controller.AutoPilot;
 import org.quixilver8404.breakout.controller.Breakout;
 import org.quixilver8404.breakout.simulator.Display;
@@ -27,17 +29,45 @@ public class AutoPilotTest {
 //                        0.95, Math.PI/2.5)
         );
 
-        autoPilot.setDesiredPos(new Vector3(1, 1, Math.PI/2));
+        autoPilot.setDesiredPos(new Vector3(0, 0, 3), new Vector3(0,0,0));
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
                 new Vector3(0, 0,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
                 Config.WHEEL_RADIUS, Config.OMEGA_MAX);
 
         while (true) {
-            final double[] powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel());
-            System.out.println(Arrays.toString(powerSettings));
+            final double[] powerSettings;
+            if (kinematics.getFieldAcc() == null) {
+                System.out.println(":");
+                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(), new Vector3(0,0,0),0.001);
+            } else {
+                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(), kinematics.getFieldAcc(),0.001);
+            }
+//            if (kinematics.getFieldAcc() == null) {
+//                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
+//            } else {
+//                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
+//            }
+//            System.out.println(Arrays.toString(powerSettings));
             kinematics.update(powerSettings, 0.001);
             kinematics.ui.update();
+//
+//            autoPilot.controller.integral = Vector3.addVector(autoPilot.controller.integral, new Vector3(0.001,0.000,0.000));
+//            final double[] dwArray = new double[] {
+//                    0,0,0,0,0,0,
+//                    autoPilot.controller.integral.x,
+//                    autoPilot.controller.integral.y,
+//                    autoPilot.controller.integral.theta
+//            };
+//            final ArrayRealVector dw = new ArrayRealVector(dwArray);
+//            final double[] du = autoPilot.controller.K.operate(dw).toArray();
+//            for (double p : du) {
+//                if (p>=0.5) {
+//                    System.out.println("Integral: " + autoPilot.controller.integral.x);
+//                    System.exit(0);
+//                }
+//            }
+
         }
     }
 }

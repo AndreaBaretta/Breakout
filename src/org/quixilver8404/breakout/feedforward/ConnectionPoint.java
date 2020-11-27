@@ -15,7 +15,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
     public final List<ActionEventListener> actionEventListeners;
     public final Set<Integer> actions;
 
-    ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
+    public ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
                     final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
         super(x, y);
         this.heading = heading;
@@ -26,7 +26,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.actions = actions;
     }
 
-    ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
+    public ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
                     final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
         super(point.x, point.y);
         this.heading = heading;

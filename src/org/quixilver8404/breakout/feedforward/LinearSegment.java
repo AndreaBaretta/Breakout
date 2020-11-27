@@ -7,7 +7,7 @@ public class LinearSegment extends Segment {
 
     public final double theta;
 
-    LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index) {
+    public LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index) {
         super(firstPoint, lastPoint, s0, index);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
         configurePoints();
