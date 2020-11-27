@@ -29,14 +29,14 @@ public class HeadingSegment {
         if (headingPoint0.getHeadingState() == AnchorPoint.Heading.FRONT) {
             alpha0 = headingPoint0.getHeading();
         } else if (headingPoint0.getHeadingState() == AnchorPoint.Heading.BACK) {
-            alpha0 = MainSegment.normalizeAlpha(Math.PI + headingPoint0.getHeading());
+            alpha0 = Vector3.normalizeAlpha(Math.PI + headingPoint0.getHeading());
         } else {
             alpha0 = headingPoint0.getHeading();
         }
         if (headingPoint1.getHeadingState() == AnchorPoint.Heading.FRONT) {
             alpha1 = headingPoint1.getHeading();
         } else if (headingPoint1.getHeadingState() == AnchorPoint.Heading.BACK) {
-            alpha1 = MainSegment.normalizeAlpha(Math.PI + headingPoint1.getHeading());
+            alpha1 = Vector3.normalizeAlpha(Math.PI + headingPoint1.getHeading());
         } else {
             alpha1 = headingPoint1.getHeading();
         }
@@ -78,20 +78,17 @@ public class HeadingSegment {
             alpha = pos.theta + Math.PI;
         } else {
             alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(s1 - s0);
-//            System.out.println("Alpha=" + alpha + " s=" + s + " s1=" + s1 + " factor=" + (s - s0)/(s1 - s0));
         }
-        return new Vector3(pos.x, pos.y, MainSegment.normalizeAlpha(alpha));
+        return new Vector3(pos.x, pos.y, Vector3.normalizeAlpha(alpha));
     }
 
     public Vector3 calcAlphaDot(final double s_dot, final Vector3 vel) {
         final double alpha_dot;
         if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
             alpha_dot = s_dot*(alpha1 - alpha0_)/(s1 - s0);
-//            System.out.println("Alpha_dot=" + alpha_dot + " s_dot=" + s_dot);
         } else {
             alpha_dot = vel.theta;
         }
-
         return new Vector3(vel.x, vel.y, alpha_dot);
     }
 
@@ -99,11 +96,9 @@ public class HeadingSegment {
         final double alpha_dot_dot;
         if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
             alpha_dot_dot = s_dot_dot*(alpha1 - alpha0_)/(s1 - s0);
-//            System.out.println("Alpha_dot_dot=" + alpha_dot_dot + " s_dot_dot=" + s_dot_dot);
         } else {
             alpha_dot_dot = acc.theta;
         }
-
         return new Vector3(acc.x, acc.y, alpha_dot_dot);
     }
 

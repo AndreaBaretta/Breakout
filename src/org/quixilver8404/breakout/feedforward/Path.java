@@ -54,8 +54,6 @@ public class Path {
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
 
-//                System.out.println("Current connections: " + prevPoint.nextPoint.toString() + curPoint.prevPoint.toString() + curPoint.middlePoint.toString());
-
                 connectionPoints.add(prevPoint.nextPoint);
                 connectionPoints.add(curPoint.prevPoint);
                 connectionPoints.add(curPoint.middlePoint);
@@ -69,11 +67,8 @@ public class Path {
                 connection3.index = connectionPointCounter;
                 connectionPointCounter++;
 
-
-
-//                System.out.println("toString: (" + curPoint.middlePoint.x/Config.INCHES_TO_METERS + ", " + curPoint.middlePoint.y/Config.INCHES_TO_METERS + ")");
-                final double prevAnchorTheta = MainSegment.normalizeAlpha(Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x));
-                final double curAnchorTheta = MainSegment.normalizeAlpha(Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x));
+                final double prevAnchorTheta = Vector3.normalizeAlpha(Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x));
+                final double curAnchorTheta = Vector3.normalizeAlpha(Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x));
 
                 final CircleSegment segment0 = new CircleSegment(connection0, connection1, s0, segmentCounter, prevPoint.center1, prevPoint.r1, prevAnchorTheta, prevPoint.theta1, prevPoint.counterClockwise1);
                 s0 = segment0.getEndS();
@@ -89,17 +84,9 @@ public class Path {
                 if (!segment1.zeroSegment) { segments.add(segment1); }
                 if (!segment2.zeroSegment) { segments.add(segment2); }
 
-                System.out.println("zeroSegment circle1: " + segment0.zeroSegment + " firstpoint: " + segment0.firstPoint.toString() + "  " + "lastpoint: " + segment0.lastPoint.toString() + "  counterclockwise: " + segment0.counterClockwise + "  center: " + segment0.center.toString() + " s0: " + segment0.s0 + " s1:" + segment0.getEndS());
-                System.out.println("zeroSegment linear: " + segment1.zeroSegment + " firstpoint: " + segment1.firstPoint.toString() + "  " + "lastpoint: " + segment1.lastPoint.toString() + " s0: " + segment1.s0 + " s1:" + segment1.getEndS());
-                System.out.println("zeroSegment circle2: " + segment2.zeroSegment + " firstpoint: " + segment2.firstPoint.toString() + "  " + "lastpoint: " + segment2.lastPoint.toString() + "  counterclockwise: " + segment2.counterClockwise + "  center: " + segment2.center.toString() + " s0: " + segment2.s0 + " s1:" + segment2.getEndS());
-                System.out.println("Test: s=0.8790616921214678 : " + segment2.getPosition(0.8790616921214678).toString());
-                System.out.println("Test: s=1 : " + segment2.getPosition(1).toString());
-                System.out.println();
-
                 final double anchorIndex = i;
                 segmentPoints.forEach(p -> {
                     if (p.anchorIndex == anchorIndex - 1) {
-                        System.out.println("setS of segmentPoint");
                         p.setS(segment0.s0, segment2.getEndS() - segment0.s0);
                         if (p.getHeadingState() != AnchorPoint.Heading.CUSTOM && p.getHeadingState() != AnchorPoint.Heading.NONE) {
                             final double heading;
@@ -113,50 +100,21 @@ public class Path {
                             if (p.getHeadingState() == AnchorPoint.Heading.FRONT) {
                                 p.setHeading(heading);
                             } else {
-                                p.setHeading(MainSegment.normalizeAlpha(heading + Math.PI));
+                                p.setHeading(Vector3.normalizeAlpha(heading + Math.PI));
                             }
                         }
                     }
                 });
 
-//                System.out.println(co);
-//                final List<SegmentPoint> curSegmentPoints = new ArrayList<SegmentPoint>();
-//                segmentPoints.forEach((final SegmentPoint p) -> {
-//                    if (p.anchorIndex == mainSegments.size()) {
-//                        curSegmentPoints.add(p);
-//                    }
-//                });
-//                curSegmentPoints.sort(new Comparator<SegmentPoint>() {
-//                    @Override
-//                    public int compare(final SegmentPoint t0, final SegmentPoint t1) {
-//                        if (t0.tFromAnchor - t1.tFromAnchor <= 0) {
-//                            return -1;
-//                        } else {
-//                            return 1;
-//                        }
-//                    }
-//                });
-//                System.out.println("curSegmentPoints: " + Arrays.toString(curSegmentPoints.toArray()));
-//                final MainSegment mainSegment = new MainSegment(segment0, segment1, segment2, i - 1, prevPoint, curPoint, curSegmentPoints);
-
-//                mainSegments.add(mainSegment);
-//                System.out.println("Domain mainsegment: " + mainSegment.getEndS());
-//                System.out.println("Domain circlesegment1: " + mainSegment.circleSegment1.getEndS());
-
                 prevPoint = curPoint;
             }
         }
 
-//        connectionPoints.get(connectionPoints.size() - 1).setConfigVelocity(0);
-
         System.out.println("ConnectionPoints: " + Arrays.toString(connectionPoints.toArray()));
-//        System.out.println("Testing the thing: " + (connectionPoints.get(2).getS() == connectionPoints.get(3).getS()));
 
         currentSegment = segments.get(0);
         finished = false;
 
-//        segmentPoints = parseSegmentPoints(foxtrotFile, config);
-//
         final List<HeadingPoint> headingPoints = new ArrayList<HeadingPoint>();
         final List<VelocityPoint> velocityPoints_ = new ArrayList<VelocityPoint>();
 
@@ -169,7 +127,6 @@ public class Path {
             if (p.getHeadingState() != AnchorPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
-//            if (segments.size() != p.)
             velocityPoints_.add(p);
         });
 
@@ -183,13 +140,6 @@ public class Path {
             if (p.headingState != AnchorPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
-//            if (connectionPoints.size() != p.index + 1) {
-//                if (connectionPoints.get(p.index + 1).getS() - p.getS() >= 1e-12) {
-//                    velocityPoints_.add(p);
-//                }
-//            } else {
-//                velocityPoints_.add(p);
-//            }
             velocityPoints_.add(p);
         });
 
@@ -236,25 +186,17 @@ public class Path {
             }
         });
 
-        //-------------------------------------------------------------Velocity
-
         for (int i = 0; i < velocityPoints_.size(); i++) {
             if (i != 0) {
                 final VelocityPoint velocityPoint = velocityPoints_.get(i);
-//                System.out.println("Cur velocity point: " + velocityPoint.toString());
                 if (Double.isNaN(velocityPoint.getMaxVelocity())) {
                     velocityPoint.setMaxVelocity(velocityPoints_.get(i - 1).getMaxVelocity());
-//                    System.out.println("Set max velocity");
                 }
                 if (Double.isNaN(velocityPoint.getConfigVelocity())) {
                     velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getMaxVelocity());
-//                    System.out.println("Set config velocity");
                 }
             }
         }
-
-        System.out.println("VelocityPoints_ after thing: " + Arrays.toString(velocityPoints_.toArray()));
-
 
         final List<VelocityPoint> velocityPoints = new ArrayList<>();
         for (int i = 0; i < velocityPoints_.size(); i++) {
@@ -263,8 +205,6 @@ public class Path {
                     velocityPoints.add(velocityPoints_.get(i));
                 }
             } else {
-                System.out.println("This is being done, right? I'm not crazy, RIGHT?Q??DWA?E?F?F?");
-                System.out.println("Last point added: " + velocityPoints_.get(i).toString());
                 velocityPoints.add(velocityPoints_.get(i));
             }
         }
@@ -282,15 +222,7 @@ public class Path {
 
         currentVelocitySegment = velocitySegments.get(0);
 
-        System.out.println("VelocityPoints_: " + Arrays.toString(velocityPoints_.toArray()));
-        System.out.println("VelocityPoints: " + Arrays.toString(velocityPoints.toArray()));
-        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
-
-        //-------------------------------------------------------------Heading
-
-
         headingSegments = new ArrayList<HeadingSegment>();
-        System.out.println("Headingsegment points: " + Arrays.toString(headingPoints.toArray()));
         HeadingPoint prevHeadingPoint = null;
         int headingSegmentIndex = 0;
         for (int i = 0; i < headingPoints.size(); i++) {
@@ -306,52 +238,19 @@ public class Path {
                 prevHeadingPoint = headingPoint;
             }
         }
-        System.out.println("headingpoints length: " + headingPoints.size());
         currentHeadingSegment = headingSegments.get(0);
-
-//        VelocityPoint prevVelocityPoint = null;
-//        int velocitySegmentCounter = 0;
-//        for (int i = 0; i < velocityPoints.size(); i++) {
-//            if (i == 0) {
-//                prevVelocityPoint = velocityPoints.get(i);
-//            } else {
-//                final VelocityPoint velocityPoint = velocityPoints.get(i);
-//                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint.getS(), velocityPoint.getS(), Math.min(velocityPoint.getMinVelocity(), prevVelocityPoint.getMinVelocity()), velocitySegmentCounter, prevVelocityPoint, velocityPoint);
-//                if (!velocitySegment.zeroSegment) {
-//                    velocitySegments.add(velocitySegment);
-//                    velocitySegmentCounter++;
-//                }
-//                prevVelocityPoint = velocityPoint;
-//            }
-//        }
-//
-//        currentVelocitySegment = velocitySegments.get(0);
 
         System.out.println();
 
         System.out.println("End S: " + segments.get(segments.size() - 1).getEndS());
 
-        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
-        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
-        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
-        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
-
-        System.out.println("Segment points: " + Arrays.toString(segmentPoints.toArray()));
-        System.out.println("Heading points: " + Arrays.toString(headingPoints.toArray()));
-        System.out.println("Heading segments: " + Arrays.toString(headingSegments.toArray()));
-//        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
-//        System.out.println("Segments: " + Arrays.toString(segments.toArray()));
-        System.out.println();
-//        System.out.println("Velocity points: " + Arrays.toString(velocityPoints.toArray()));
-//        System.out.println("Velocity segments: " + Arrays.toString(velocitySegments.toArray()));
-//        System.out.println("ActionPoints: " + Arrays.toString(actionPoints.toArray()));
-//        System.out.println("ActionEventListeners:");
-//        actionPoints.forEach(p -> System.out.println(Arrays.toString(p.getActionEventListeners().toArray())));
+//        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
+//        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
+//        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
+//        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
-//        System.out.println("index: " + currentSegment.index);
-
         while (true) {
             if (actionPoints.size() == 0) {
                 break;
@@ -397,11 +296,6 @@ public class Path {
                     currentHeadingSegment.calcAlphaDotDot(0, currentSegment.getAcceleration(currentSegment.s0, s_dot, s_dot_dot))
             );
         } else { //Else, do the normal thing
-//            System.out.println("Normal: " + currentMainSegment.getPosition(s).toString() + "  calcAlpha: " + currentHeadingSegment.calcAlpha(s, currentMainSegment.getPosition(s)));
-//            System.out.println("Normal: " + currentMainSegment.getVelocity(s, s_dot).toString() + "  calcAlphaDot: " + currentHeadingSegment.calcAlphaDot(s_dot, currentMainSegment.getVelocity(s, s_dot)));
-//            System.out.println("Normal: " + currentMainSegment.getAcceleration(s, s_dot, s_dot_dot).toString() + "  calcAlphaDotDot: " + currentHeadingSegment.calcAlphaDotDot(s_dot_dot, currentMainSegment.getAcceleration(s, s_dot, s_dot_dot)));
-//            System.out.println("Normal thing");
-//            System.out.println("s = " + s + " endS = " + endS + " index = " + currentSegment.index + " end index = " + (segments.size() - 1));
             return new RobotState(
                     currentHeadingSegment.calcAlpha(s, currentSegment.getPosition(s)),
                     currentHeadingSegment.calcAlphaDot(s_dot, currentSegment.getVelocity(s, s_dot)),
@@ -411,14 +305,11 @@ public class Path {
     }
 
     public double calcS(final double x, final double y) {
-//        System.out.println("About to CalcS in Path");
         if (Double.isNaN(x)) System.out.println("Nan values");
         final double curSegmentS = currentSegment.calcS(x, y);
         final double s;
         if (curSegmentS >= currentSegment.getEndS()) {
-//            System.out.println("Before nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
             nextSegment();
-//            System.out.println("After  nextSegment: CurSegmentS: " + curSegmentS + "  currentSegment.getEndS(): " + currentSegment.getEndS());
             s = currentSegment.calcS(x, y);
         } else if (curSegmentS < currentSegment.s0) {
             //Do nothing
@@ -434,7 +325,6 @@ public class Path {
             ;
         } else {
             currentSegment = segments.get(currentSegment.index + 1);
-            System.out.println("Next segment: " + currentSegment.toString());
         }
     }
 
@@ -443,7 +333,6 @@ public class Path {
             ;
         } else {
             currentHeadingSegment = headingSegments.get(currentHeadingSegment.index + 1);
-            System.out.println("Next HeadingSegment: " + currentHeadingSegment.toString());
         }
     }
 
@@ -451,13 +340,11 @@ public class Path {
         if (currentVelocitySegment.index == velocitySegments.size() - 1) {
             ;
         } else {
-//            System.out.println("Next VelocitySegment");
             currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
         }
     }
 
     protected void finish() {
-//        System.out.println("Finished -------------------------------------------------------------------------------------------->");
         finished = true;
     }
 
@@ -466,13 +353,10 @@ public class Path {
     }
 
     public double calcAccelerationCorrection(final double s, final double s_dot) {
-//        double s_dot_dot = Config.MAX_ACCELERATION;
-//        if (currentVelocitySegment.)
-
         if (s > currentVelocitySegment.s1) {
             nextVelocitySegment();
         }
-//        System.out.println("currentVelocitySegment.index=" + currentVelocitySegment.index);
+
         final VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
 
         if (nextVCurVDistS.nextV <= 1e-12 && currentVelocitySegment.index != velocitySegments.size() - 1 && currentVelocitySegment.s1 - s <= 1e-12) {
@@ -484,62 +368,19 @@ public class Path {
         final double v_f = nextVCurVDistS.nextV;
         final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
 
-//        System.out.println("Distance to next velocity: " + d_s);
-
         if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
-//            System.out.println("Return accToVel: " + accToVel);
             return accToVel;
         }
 
         final double maxAcc = findMaxPossibleAcc(s, s_dot);
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
-//        System.out.println("maxAcc: " + maxAcc + "  acc: " + acc);
         if (acc > maxAcc) {
-//            System.out.println("Returned maxAcc: " + maxAcc);
             return maxAcc;
         } else if (acc < Config.MAX_DECELERATION) {
-//            System.out.println("Returned MAX_DECELERATION: " + Config.MAX_DECELERATION);
             return Config.MAX_DECELERATION;
         } else {
-//            System.out.println("Returned acc: " + acc + "  curV: " + nextVCurVDistS.curV);
             return acc;
         }
-//        return maxAcc;
-
-//        final MinorSegment.NextVCurVDistS nextVCurVDistS = currentMainSegment.getNextVelocity(s);
-
-
-//        if (accToVel >= 0) {
-//            final double maxPossibleAcc = findMaxPossibleAcc(s, s_dot);
-//            if (accToVel >= Config.MAX_SAFE_ACCELERATION * maxPossibleAcc) {
-//                return accToVel;
-//            } else {
-//                return maxPossibleAcc;
-//            }
-//        } else {
-//            return
-//        }
-//
-//
-//        while (true) {
-//            final RobotState state = evaluate(s, s_dot, s_dot_dot);
-//            final Vector3 vel = state.vel;
-//            final Vector3 acc = state.acc;
-//            final double[] powerSettings = PowerProfile.toRawPowerSettings(acc, vel, state.pos.theta);
-//            boolean optimized = true;
-//            for (double p : powerSettings) {
-//                if (Math.abs(p) >= 1) {
-//                    optimized = false;
-//                }
-//            }
-//            if (optimized) {
-//                return s_dot_dot;
-//            }
-//            if (s_dot_dot < Config.MAX_DECELERATION) {
-//                return 0;
-//            }
-//            s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
-//        }
     }
 
     public double findMaxPossibleAcc(final double s, final double s_dot) {
@@ -588,9 +429,7 @@ public class Path {
             for (int i = 0; i < anchorPoints.size(); i++) {
                 final JSONObject anchorObj = (JSONObject) anchorPoints.get(i);
 
-//                System.out.println("config: " + anchorObj.get("config") + "  type: " + anchorObj.get("config").getClass());
                 if (((Long)anchorObj.get("config")).intValue() != config && ((Long)anchorObj.get("config")).intValue() != 0) {
-//                    throw new Error("Nein");
                     continue;
                 }
 
@@ -630,21 +469,17 @@ public class Path {
                     }
                 }
 
-//                System.out.println("AnchorPoint Actions: " + Arrays.toString(actions.toArray()));;
-
                 if (first) {
                     curParams = new CurveParameters((JSONObject)curves.get(0));
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
                             curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
                             actions, first, last);
                     anchorPointsList.add(anchorPoint);
-                    System.out.println("New AnchorPoint: " + anchorPoint.toString());
                     prevParams = curParams.copy();
                 } else if (last) {
                     final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
                             prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
                             actions,first, last);
-                    System.out.println("New AnchorPoint: " + anchorPoint.toString());
                     anchorPointsList.add(anchorPoint);
                 } else {
                     curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
@@ -652,7 +487,6 @@ public class Path {
                             prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
                             actions, first, last);
                     anchorPointsList.add(anchorPoint);
-                    System.out.println("New AnchorPoint: " + anchorPoint.toString());
                     prevParams = curParams.copy();
                 }
             }

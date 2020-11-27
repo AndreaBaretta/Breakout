@@ -33,18 +33,9 @@ public class VelocitySegment {
         }
     }
 
-//    public double getSegmentVelocity() {
-//        return velocity;
-//    }
-
     public NextVCurVDistS getNextVelocity(final double s) {
-//        return Math.min(p1.getMaxVelocity(), p1.getConfigVelocity());
         return new NextVCurVDistS(Math.min(p1.getMaxVelocity(), p1.getConfigVelocity()), Math.min(p0.getMaxVelocity(), p0.getConfigVelocity()), s1 - s);
     }
-
-//    public double sToNextVelocity(final double s) {
-//        return s1 - s;
-//    }
 
     public class NextVCurVDistS {
         final double nextV;

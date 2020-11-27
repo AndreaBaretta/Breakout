@@ -1,5 +1,7 @@
 package org.quixilver8404.breakout.feedforward;
 
+import org.quixilver8404.breakout.util.Vector3;
+
 import java.util.List;
 import java.util.Set;
 
@@ -33,41 +35,13 @@ public class AnchorPoint extends Point {
     protected boolean last;
 
     public boolean CheckDirection(final Point2D center) {
-//        System.out.println(1/Math.tan(Math.atan2(1, 0)));
         if (center == null) {
             return false;
         }
-//        if (x > center.x && y >= center.y) { //Q1
-//            if (Math.PI/2 <= tan && tan <= Math.PI) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else if (x <= center.x && y > center.y) { //Q2
-//            if (Math.PI <= tan && tan <= 3*Math.PI/2) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else if (x <= center.x && y <= center.y) { //Q3
-//            if (tan == 0) return true;
-//            if (3*Math.PI/2 <= tan && tan <= 2*Math.PI) {
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            if (0 <= tan && tan <= Math.PI/2) { //Q4
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        }
-        final double counterClockTheta = MainSegment.normalizeAlpha(MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x)) + Math.PI/2);
+        final double counterClockTheta = Vector3.normalizeAlpha(Vector3.normalizeAlpha(Math.atan2(y - center.y, x - center.x)) + Math.PI/2);
         final double sin = Math.sin(tan)*Math.cos(counterClockTheta) - Math.cos(tan)*Math.sin(counterClockTheta);
         final double cos = Math.cos(tan)*Math.cos(counterClockTheta) + Math.sin(tan)*Math.sin(counterClockTheta);
-        final double theta = MainSegment.angleFromSinCos(sin, cos);
-//        System.out.println("CheckDirection  tan: " + tan + "  counterClockTheta: " + counterClockTheta);
+        final double theta = Vector3.angleFromSinCos(sin, cos);
         if (Math.abs(theta) <= 1e-12) {
             return true;
         } else {
@@ -79,8 +53,8 @@ public class AnchorPoint extends Point {
                        final double r0, final Point2D center0, final double theta0, final double r1, final Point2D center1, final double theta1,
                        final Point2D tanPoint0, final Point2D tanPoint1, final double configVelocity, final List<ActionEventListener> actionEventListeners,
                        final Set<Integer> actions, final boolean first, final boolean last) {
-        super(x, y, MainSegment.normalizeAlpha(tangent));
-        final double tan = MainSegment.normalizeAlpha(tangent);
+        super(x, y, Vector3.normalizeAlpha(tangent));
+        final double tan = Vector3.normalizeAlpha(tangent);
         this.tanPoint0 = tanPoint0;
         this.tanPoint1 = tanPoint1;
         this.heading = heading;
@@ -131,7 +105,7 @@ public class AnchorPoint extends Point {
         } else if (heading == Heading.FRONT) {
             pointHeading = tan;
         } else {
-            pointHeading = MainSegment.normalizeAlpha(tan + Math.PI);
+            pointHeading = Vector3.normalizeAlpha(tan + Math.PI);
         }
         middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions);
         nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, Double.NaN, null, null);

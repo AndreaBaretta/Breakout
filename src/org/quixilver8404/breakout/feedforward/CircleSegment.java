@@ -44,8 +44,6 @@ public class CircleSegment extends Segment {
     }
 
     public Vector3 getPosition(final double s) {
-//        System.out.println("getPosition in circle");
-//        System.out.println("GetPosition in circle");
         if (counterClockwise) {
             final double x = center.x + r*Math.cos(theta0_ + (s - s0)/r);
             final double y = center.y + r*Math.sin(theta0_ + (s - s0)/r);
@@ -108,24 +106,22 @@ public class CircleSegment extends Segment {
     }
 
     public double getMaxVelocity() {
-//        System.out.println("In circle: r=" + r + " max_a=" + Config.MAX_ACCELERATION);
         return Math.min(Math.sqrt(r * Config.MAX_ACCELERATION), Config.MAX_SAFE_VELOCITY*Config.MAX_VELOCITY);
     }
 
 
     protected double lastTheta = 0.0;
     public double calcS(final double x, final double y) {
-//        System.out.println("CalcS in circle");
-        final double gamma = MainSegment.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
+        final double gamma = Vector3.normalizeAlpha(Math.atan2(y - center.y, x - center.x));
         double theta;
         if (counterClockwise) {
             final double sin = Math.sin(gamma)*Math.cos(theta0) - Math.cos(gamma)*Math.sin(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
-            theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
+            theta = Vector3.normalizeAlpha(Vector3.angleFromSinCos(sin, cos));
         } else {
             final double sin = Math.cos(gamma)*Math.sin(theta0) - Math.sin(gamma)*Math.cos(theta0);
             final double cos = Math.cos(gamma)*Math.cos(theta0) + Math.sin(gamma)*Math.sin(theta0);
-            theta = MainSegment.normalizeAlpha(MainSegment.angleFromSinCos(sin, cos));
+            theta = Vector3.normalizeAlpha(Vector3.angleFromSinCos(sin, cos));
         }
 
         final double deltaTheta = theta - lastTheta;
@@ -133,7 +129,6 @@ public class CircleSegment extends Segment {
         lastTheta = theta;
 
         final double result = theta*r + s0;
-//        System.out.println("CircleSegment.calcS("+x+", " + y + "), theta=" + theta + ", theta0=" + theta0 +", gamma=" + gamma + ", r=" + r + ", s0=" + s0 + " = " + result);
         return result;
     }
 

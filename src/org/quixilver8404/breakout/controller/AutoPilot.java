@@ -5,7 +5,6 @@ import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.TreeSet;
 
 public class AutoPilot {
@@ -31,7 +30,6 @@ public class AutoPilot {
         prev_s = 0;
         reachedEnd = false;
         this.desiredPos = desiredPos;
-        System.out.println(segment.toString());
     }
 
     public double[] correction(final Vector3 pos, final Vector3 vel, final Vector3 acc, final double dt) {
@@ -39,10 +37,8 @@ public class AutoPilot {
         if (segment.zeroSegment) { return correction2(pos, vel, dt); }
 
         final double s = segment.calcS(pos);
-        System.out.println("cur s: " + s);
         final double s_dot = (s - prev_s)/dt;
         final double s_dot_dot = calcAccelerationCorrection(s, s_dot);
-        System.out.println("desired s_dot_dot: " + s_dot_dot);
 
         prev_s = s;
 
@@ -54,8 +50,8 @@ public class AutoPilot {
 
             final Vector3 xyPos = segment.getPosition(s);
 
-            final double alpha0 = MainSegment.normalizeAlpha(segment.firstPoint.heading);
-            final double alpha1 = MainSegment.normalizeAlpha(desiredPos.theta);
+            final double alpha0 = Vector3.normalizeAlpha(segment.firstPoint.heading);
+            final double alpha1 = Vector3.normalizeAlpha(desiredPos.theta);
             final double alpha0_;
             if (alpha1 > alpha0) {
                 if (alpha1 - alpha0 >= Math.PI) {
@@ -75,22 +71,10 @@ public class AutoPilot {
 
             final RobotState state = new RobotState(new Vector3(xyPos.x, xyPos.y, alpha), segment.getVelocity(s, s_dot), segment.getAcceleration(s, s_dot, s_dot_dot));
 
-//            System.out.println(state.);
-
             final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
                     Vector3.subtractVector(vel, state.vel), Vector3.subtractVector(acc, state.acc), dt);
 
-            System.out.println("Diff in pos: " + Vector3.subtractVector2(pos, state.pos).toString());
-            System.out.println("Diff in vel: " + Vector3.subtractVector2(vel, state.vel).toString());
-            System.out.println("Diff in acc: " + Vector3.subtractVector2(acc, state.acc).toString());
-
-            System.out.println("correction: " + Arrays.toString(correction));
-
-
             final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, pos.theta);
-
-            System.out.println(Arrays.toString(powerSettings));
-            System.out.println("");
 
             return powerSettings;
         } else {

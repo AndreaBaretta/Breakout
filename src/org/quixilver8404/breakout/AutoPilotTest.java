@@ -29,7 +29,7 @@ public class AutoPilotTest {
 //                        0.95, Math.PI/2.5)
         );
 
-        autoPilot.setDesiredPos(new Vector3(0, 0, 3), new Vector3(0,0,0));
+        autoPilot.setDesiredPos(new Vector3(1, 2, 3), new Vector3(0,0,0));
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
                 new Vector3(0, 0,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,

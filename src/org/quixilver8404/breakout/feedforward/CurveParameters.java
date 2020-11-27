@@ -2,6 +2,7 @@ package org.quixilver8404.breakout.feedforward;
 
 import org.json.simple.JSONObject;
 import org.quixilver8404.breakout.util.Config;
+import org.quixilver8404.breakout.util.Vector3;
 
 public class CurveParameters {
     protected final double circle1Radius;
@@ -18,8 +19,8 @@ public class CurveParameters {
         circle2Radius = (double)curve.get("circle2Radius")*Config.INCHES_TO_METERS;
         circle1Center = new Point2D((double)curve.get("circle1X")*Config.INCHES_TO_METERS, (double)curve.get("circle1Y")*Config.INCHES_TO_METERS);
         circle2Center = new Point2D((double)curve.get("circle2X")*Config.INCHES_TO_METERS, (double)curve.get("circle2Y")*Config.INCHES_TO_METERS);
-        endTheta1 = MainSegment.normalizeAlpha((double)curve.get("endTheta1"));
-        endTheta2 = MainSegment.normalizeAlpha((double)curve.get("endTheta2"));
+        endTheta1 = Vector3.normalizeAlpha((double)curve.get("endTheta1"));
+        endTheta2 = Vector3.normalizeAlpha((double)curve.get("endTheta2"));
         p1 = new Point2D((double)curve.get("p1X")*Config.INCHES_TO_METERS, (double)curve.get("p1Y")*Config.INCHES_TO_METERS);
         p2 = new Point2D((double)curve.get("p2X")*Config.INCHES_TO_METERS, (double)curve.get("p2Y")*Config.INCHES_TO_METERS);
     }
