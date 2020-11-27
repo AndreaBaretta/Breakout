@@ -1,10 +1,7 @@
 package org.quixilver8404.breakout.controller;
 
 import org.apache.commons.math3.linear.*;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.quixilver8404.breakout.util.Vector3;
-
-import java.util.Arrays;
 
 public class Controller {
 
@@ -14,6 +11,11 @@ public class Controller {
     final double maxY = 0.095;
     final double maxAlpha = 0.932;
 
+    protected int prevSignumDeltaX = 0;
+    protected int prevSignumDeltaY = 0;
+    protected int prevSignumDeltaAlpha = 0;
+
+
     public Vector3 integral;
     public Controller(final RealMatrix K) {
         this.K = K;
@@ -21,7 +23,36 @@ public class Controller {
     }
 
     public double[] correction(final Vector3 deltaPosition, final Vector3 deltaVelocity, final Vector3 deltaAcceleration, final double dt) {
-        integral = Vector3.addVector(integral, deltaPosition.scalarMultiply(dt));
+        if (prevSignumDeltaX == 0) { prevSignumDeltaX = (int)Math.signum(deltaPosition.x); }
+        if (prevSignumDeltaY == 0) { prevSignumDeltaY = (int)Math.signum(deltaPosition.y); }
+        if (prevSignumDeltaAlpha == 0) { prevSignumDeltaAlpha = (int)Math.signum(deltaPosition.theta); }
+
+        final Vector3 integratedError = deltaPosition.scalarMultiply(dt);
+        double xdt = integratedError.x;
+        double ydt = integratedError.y;
+        double alphadt = integratedError.theta;
+
+        final int signumDeltaX = (int)Math.signum(deltaPosition.x);
+        final int signumDeltaY = (int)Math.signum(deltaPosition.y);
+        final int signumDeltaAlpha = (int)Math.signum(deltaPosition.theta);
+
+        if (prevSignumDeltaX != signumDeltaX) {
+            xdt = 0;
+            prevSignumDeltaX = signumDeltaX;
+            System.out.println("Reset x integral");
+        }
+        if (prevSignumDeltaY != signumDeltaY) {
+            ydt = 0;
+            prevSignumDeltaY = signumDeltaY;
+            System.out.println("Reset y integral");
+        }
+        if (prevSignumDeltaAlpha != signumDeltaAlpha) {
+            alphadt = 0;
+            prevSignumDeltaAlpha = signumDeltaAlpha;
+            System.out.println("Reset alpha integral");
+        }
+
+        integral = Vector3.addVector(integral, new Vector3(xdt,ydt,alphadt));
         integral = new Vector3(Math.max(Math.min(integral.x, maxX), -maxX), Math.max(Math.min(integral.y, maxY), -maxY), Math.max(Math.min(integral.theta, maxAlpha), -maxAlpha));
         final double[] dwArray = new double[] {
                 deltaVelocity.x,
