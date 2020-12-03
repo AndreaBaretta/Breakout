@@ -29,9 +29,9 @@ public class AutoPilotTest {
 //                        0.95, Math.PI/2.5)
         );
 
-        final Vector3 desiredPos = new Vector3(1, 2, 3);
+        final Vector3 desiredPos = new Vector3(1, 0, 0*Math.PI/180);
 
-        autoPilot.setDesiredPos(desiredPos, new Vector3(0,0,0));
+        autoPilot.setDesiredPos(desiredPos);
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
                 new Vector3(0, 0,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
@@ -41,9 +41,9 @@ public class AutoPilotTest {
             final double[] powerSettings;
 //            if (kinematics.getFieldAcc() == null) {
 //                System.out.println(":");
-//                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(), new Vector3(0,0,0),0.001);
+//                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(), new Vector3(0,0,0),0.001);
 //            } else {
-//                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(), kinematics.getFieldAcc(),0.001);
+//                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(), kinematics.getFieldAcc(),0.001);
 //            }
             if (kinematics.getFieldAcc() == null) {
                 powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
@@ -53,6 +53,7 @@ public class AutoPilotTest {
 //            System.out.println(Arrays.toString(powerSettings));
             kinematics.update(powerSettings, 0.001);
             kinematics.ui.drawCircle(desiredPos.x, desiredPos.y, 0.03, 100, new double[]{0,255,0});
+            kinematics.ui.drawCircle(0, 0, 0.03, 100, new double[]{255,0,0});
             kinematics.ui.update();
 //
 //            autoPilot.controller.integral = Vector3.addVector(autoPilot.controller.integral, new Vector3(0.001,0.000,0.000));

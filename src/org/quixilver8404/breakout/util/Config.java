@@ -16,6 +16,14 @@ public class Config {
     public static double MAX_SAFE_ACCELERATION = 0.95;
     public static double ACCELERATION_CORRECTION = Math.PI/2.5;
     public final static double INCHES_TO_METERS = 0.0254;
+    public final static double P_static = 0.35;
+    public final static double P_dynamic = 0.1;
+    public final static double P_static_physics = 0.30;
+    public final static double P_dynamic_physics = 0.1;
+//    public final static double P_static = 0;
+//    public final static double P_dynamic = 0;
+//    public final static double P_static_physics = 0;
+//    public final static double P_dynamic_physics = 0;
 
     public final double max_acceleration;
     public final double max_deceleration;

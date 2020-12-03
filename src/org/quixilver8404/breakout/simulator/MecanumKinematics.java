@@ -1,8 +1,10 @@
 package org.quixilver8404.breakout.simulator;
 
 import org.lwjgl.opengl.GL11;
+import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class MecanumKinematics {
@@ -76,6 +78,8 @@ public class MecanumKinematics {
      * */
     public void update(final double[] newPowerSetting, final double delta_t) {
 
+        System.out.println("Received power settings: " + Arrays.toString(newPowerSetting));
+
         final double P_1_ = newPowerSetting[0];
         final double P_2_ = newPowerSetting[1];
         final double P_3_ = newPowerSetting[2];
@@ -83,36 +87,48 @@ public class MecanumKinematics {
 
         final double P_1, P_2, P_3, P_4;
 
+        final double P_static = Config.P_static_physics;
+        final double P_dynamic = Config.P_dynamic_physics;
 
-        if (Math.abs(P_1_) > 1) {
-            P_1 = Math.abs(P_1_) / P_1_;
+        final double vel_1 = velWheel(rX, rY, -Math.PI/4, R);
+        final double vel_2 = velWheel(-rX, rY, Math.PI/4, R);
+        final double vel_3 = velWheel(-rX, -rY, -Math.PI/4, R);
+        final double vel_4 = velWheel(rX, -rY, Math.PI/4, R);
+        if (Math.abs(vel_1) <= 1e-9 && Math.abs(P_1_) < P_static) {
+            P_1 = 0;
         } else {
-            P_1 = P_1_;
+            P_1 = Math.min(Math.max(P_1_, -1),1) - Math.signum(vel_1)*P_dynamic;
         }
-        if (Math.abs(P_2_) > 1) {
-            P_2 = Math.abs(P_2_) / P_2_;
+        if (Math.abs(vel_2) <= 1e-9 && Math.abs(P_2_) < P_static) {
+            P_2 = 0;
         } else {
-            P_2 = P_2_;
+            P_2 = Math.min(Math.max(P_2_, -1),1) - Math.signum(vel_2)*P_dynamic;
         }
-        if (Math.abs(P_3_) > 1) {
-            P_3 = Math.abs(P_3_) / P_3_;
+        if (Math.abs(vel_3) <= 1e-9 && Math.abs(P_3_) < P_static) {
+            P_3 = 0;
         } else {
-            P_3 = P_3_;
+            P_3 = Math.min(Math.max(P_3_, -1),1) - Math.signum(vel_3)*P_dynamic;
         }
-        if (Math.abs(P_4_) > 1) {
-            P_4 = Math.abs(P_4_) / P_4_;
+        if (Math.abs(vel_4) <= 1e-9 && Math.abs(P_4_) < P_static) {
+            P_4 = 0;
         } else {
-            P_4 = P_4_;
+            P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
         }
+
+        System.out.println("Final power 1: " + P_1 + ", velocity of wheel: " + vel_1 + ", initial power: " + P_1_);
+        System.out.println("Final power 2: " + P_2 + ", velocity of wheel: " + vel_2 + ", initial power: " + P_2_);
+        System.out.println("Final power 3: " + P_3 + ", velocity of wheel: " + vel_3 + ", initial power: " + P_3_);
+        System.out.println("Final power 4: " + P_4 + ", velocity of wheel: " + vel_4 + ", initial power: " + P_4_);
+//        System.out.println("Net pwower: [" + P_1 + ", " + P_2 + ", " + P_3 + ", " + P_4 + "]");
 
         double noise_x = 0;
         double noise_y = 0;
         double noise_alpha = 0;
 
         final Random rand = new Random();
-        noise_x += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
-        noise_y += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
-        noise_alpha += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*5;
+//        noise_x += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
+//        noise_y += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
+//        noise_alpha += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*5;
 //        System.out.println("noise_alpha: " + noise_alpha + " noise_x: " + noise_x + " noise_y: " + noise_y + " random_int: " + Math.pow(-1, rand.nextInt(2)));
 
         final double[] P = newPowerSetting;
@@ -138,12 +154,25 @@ public class MecanumKinematics {
         fieldVel = Vector3.addVector(fieldVel, fieldAcc.scalarMultiply(delta_t));
         fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
 
+        System.out.println(fieldVel.toString());
+
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
         ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta, width, length);
 //        ui.update();
+        System.out.println();
     }
 
+    protected double velWheel(final double rX, final double rY, final double phi, final double r) {
+        final Vector3 vel = getFieldVel();
+        final double alpha = getFieldPos().theta;
+        final double sin_a = Math.sin(alpha);
+        final double cos_a = Math.cos(alpha);
+        final double vdX = -alpha*rY + (vel.x*cos_a + vel.y*sin_a);
+        final double vdY = alpha*rX + (-vel.x*sin_a + vel.y*cos_a);
+        final double vw = -vdY - vdX*Math.tan(phi);
+        return vw/r;
+    }
 
     /**
      * Updates the system with the preset frequency.
