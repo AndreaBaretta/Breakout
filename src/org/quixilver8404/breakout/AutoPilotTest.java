@@ -23,13 +23,13 @@ public class AutoPilotTest {
                 new Config(18.512,-18.512,5.625,0.01,2.1,
                     31.4,12.1,(75d/2d)/1000,
                         MecanumKinematics.FindMomentOfInertia(44d/100d, 44d/100d, 12.1),44d/200d - 0.05, 44d/200d - 0.073,
-                    0.95,0.95,Math.PI/2.5)
+                    0.95,0.95,Math.PI/2.5), true
 //                new Config(11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                        37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
 //                        0.95, Math.PI/2.5)
         );
 
-        final Vector3 desiredPos = new Vector3(1, 0, 0*Math.PI/180);
+        final Vector3 desiredPos = new Vector3(1, 1, 90*Math.PI/180);
 
         autoPilot.setDesiredPos(desiredPos);
 
@@ -46,9 +46,9 @@ public class AutoPilotTest {
 //                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(), kinematics.getFieldAcc(),0.001);
 //            }
             if (kinematics.getFieldAcc() == null) {
-                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
+                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
             } else {
-                powerSettings = autoPilot.correction2(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
+                powerSettings = autoPilot.correction(kinematics.getFieldPos(), kinematics.getFieldVel(),0.001);
             }
 //            System.out.println(Arrays.toString(powerSettings));
             kinematics.update(powerSettings, 0.001);
