@@ -17,9 +17,13 @@ public class AutoPilot {
     protected LinearSegment segment;
     protected Vector3 desiredPos;
 
-    public AutoPilot(final Config robotConfig) {
+    public AutoPilot(final Config robotConfig, final boolean v1) {
         robotConfig.set();
-        controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
+        if (v1) {
+            controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
+        } else {
+            controller = new Controller(Controller.computeK2(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
+        }
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, false);
     }
 
@@ -88,7 +92,7 @@ public class AutoPilot {
 //        }
 //    }
 
-    public double[] correction2(final Vector3 pos, final Vector3 vel, final double dt) {
+    public double[] correction(final Vector3 pos, final Vector3 vel, final double dt) {
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, desiredPos),
                 Vector3.subtractVector(vel, new Vector3(0,0,0)), dt);
 
@@ -99,6 +103,19 @@ public class AutoPilot {
 //        System.out.println("Friction adjusted power: " + Arrays.toString(frictionAdjustedPowerSettings));
         return frictionAdjustedPowerSettings;
 //        return powerSettings;
+    }
+
+    public double[] correction2(final Vector3 pos, final Vector3 vel, final double dt) { //Integral
+        final double[] correction = controller.correction2(Vector3.subtractVector2(pos, desiredPos),
+                Vector3.subtractVector(vel, new Vector3(0,0,0)), dt);
+
+        final double[] powerSettings = powerProfile.powerSetting(new Vector3(0,0,0), new Vector3(0,0,0), correction, pos.theta);
+
+//        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, desiredPos), pos.theta, powerSettings);
+
+//        System.out.println("Friction adjusted power: " + Arrays.toString(frictionAdjustedPowerSettings));
+//        return frictionAdjustedPowerSettings;
+        return powerSettings;
     }
 
     public double calcAccelerationCorrection(final double s, final double s_dot) {

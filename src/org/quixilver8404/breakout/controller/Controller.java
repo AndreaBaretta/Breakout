@@ -87,6 +87,57 @@ public class Controller {
         return du.toArray();
     }
 
+    public double[] correction2(final Vector3 deltaPosition, final Vector3 deltaVelocity, final double dt) { //With integral
+        if (prevSignumDeltaX == 0) { prevSignumDeltaX = (int)Math.signum(deltaPosition.x); }
+        if (prevSignumDeltaY == 0) { prevSignumDeltaY = (int)Math.signum(deltaPosition.y); }
+        if (prevSignumDeltaAlpha == 0) { prevSignumDeltaAlpha = (int)Math.signum(deltaPosition.theta); }
+
+        final Vector3 integratedError = deltaPosition.scalarMultiply(dt);
+        double xdt = integratedError.x;
+        double ydt = integratedError.y;
+        double alphadt = integratedError.theta;
+
+        final int signumDeltaX = (int)Math.signum(deltaPosition.x);
+        final int signumDeltaY = (int)Math.signum(deltaPosition.y);
+        final int signumDeltaAlpha = (int)Math.signum(deltaPosition.theta);
+
+        if (prevSignumDeltaX != signumDeltaX) {
+            xdt = -integral.x;
+            prevSignumDeltaX = signumDeltaX;
+            System.out.println("Reset x integral");
+        }
+        if (prevSignumDeltaY != signumDeltaY) {
+            ydt = -integral.y;
+            prevSignumDeltaY = signumDeltaY;
+            System.out.println("Reset y integral");
+        }
+        if (prevSignumDeltaAlpha != signumDeltaAlpha) {
+            alphadt = -integral.theta;
+            prevSignumDeltaAlpha = signumDeltaAlpha;
+            System.out.println("Reset alpha integral");
+        }
+
+        integral = Vector3.addVector(integral, new Vector3(xdt,ydt,alphadt));
+        System.out.println(integral.theta);
+        integral = new Vector3(Math.max(Math.min(integral.x, maxX), -maxX), Math.max(Math.min(integral.y, maxY), -maxY), Math.max(Math.min(integral.theta, maxAlpha), -maxAlpha));
+        final double[] dwArray = new double[] {
+                deltaVelocity.x,
+                deltaVelocity.y,
+                deltaVelocity.theta,
+                deltaPosition.x,
+                deltaPosition.y,
+                deltaPosition.theta,
+                integral.x,
+                integral.y,
+                integral.theta
+        };
+
+        final ArrayRealVector dw = new ArrayRealVector(dwArray);
+        final RealVector du = K.operate(dw);
+
+        return du.toArray();
+    }
+
     public static RealMatrix computeK(final double m, final double R, final double J, final double omegamax,
                                       final double Tmax, final double rX, final double rY) {
 
@@ -137,6 +188,40 @@ public class Controller {
 //                {0,        k_dy,     0,        0,        k_y,      0,        0,        k_iy,     0},
 //                {0,        0,        k_dalpha, 0,        0,        k_alpha,  0,        0,        k_ialpha}
 //        };
+
+        final RealMatrix K = new Array2DRowRealMatrix(KArray);
+        return K;
+    }
+
+    public static RealMatrix computeK2(final double m, final double R, final double J, final double omegamax,
+                                       final double Tmax, final double rX, final double rY) { //Integral
+        final double k_dalpha = -(0.25*J*R*(-13.815+(4*Tmax*Math.pow(rX+rY,2))/(J*Math.pow(R,2)*omegamax)))/(Tmax*(rX+rY));
+        final double k_alpha = 15.9045*J*R/(Tmax*(rX+rY));
+        final double k_ialpha = 24.4134*J*R/(Tmax*(rX+rY));
+
+        final double k_dx = -(0.25*m*R*(-13.815 + (4*Tmax)/(m*Math.pow(R,2)*omegamax)))/(Tmax);
+        final double k_x = 15.9045*m*R/Tmax;
+        final double k_ix = 24.4134*m*R/Tmax;
+
+        final double k_dy = k_dx;
+        final double k_y = k_x;
+        final double k_iy = k_ix;
+
+        System.out.println("k_dalpha: " + k_dalpha);
+        System.out.println("k_alpha: " + k_alpha);
+        System.out.println("k_ialpha: " + k_ialpha);
+        System.out.println("k_dx: " + k_dx);
+        System.out.println("k_x: " + k_x);
+        System.out.println("k_ix: " + k_ix);
+        System.out.println("k_dy: " + k_dy);
+        System.out.println("k_y: " + k_y);
+        System.out.println("k_iy: " + k_iy);
+
+        final double[][] KArray = new double[][] {
+                {k_dx,     0,        0,        k_x,      0,        0,        k_ix,     0,        0},
+                {0,        k_dy,     0,        0,        k_y,      0,        0,        k_iy,     0},
+                {0,        0,        k_dalpha, 0,        0,        k_alpha,  0,        0,        k_ialpha}
+        };
 
         final RealMatrix K = new Array2DRowRealMatrix(KArray);
         return K;
