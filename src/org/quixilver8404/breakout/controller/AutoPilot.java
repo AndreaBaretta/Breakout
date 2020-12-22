@@ -92,17 +92,18 @@ public class AutoPilot {
 //        }
 //    }
 
-    public double[] correction(final Vector3 pos, final Vector3 vel, final double dt) {
+    public double[] correction(final Vector3 pos, final Vector3 vel) {
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, desiredPos),
-                Vector3.subtractVector(vel, new Vector3(0,0,0)), dt);
+                Vector3.subtractVector(vel, new Vector3(0,0,0)));
 
         final double[] powerSettings = powerProfile.powerSetting(new Vector3(0,0,0), new Vector3(0,0,0), correction, pos.theta);
 
-        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, desiredPos), pos.theta, powerSettings);
+//        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, desiredPos), pos.theta, powerSettings);
 
 //        System.out.println("Friction adjusted power: " + Arrays.toString(frictionAdjustedPowerSettings));
-        return frictionAdjustedPowerSettings;
-//        return powerSettings;
+//        return frictionAdjustedPowerSettings;
+        return powerSettings;
+//        return new double[]{-1,-1,-1,-1};
     }
 
     public double[] correction2(final Vector3 pos, final Vector3 vel, final double dt) { //Integral

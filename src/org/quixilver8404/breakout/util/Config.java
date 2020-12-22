@@ -10,16 +10,16 @@ public class Config {
     public static double MASS = 20;
     public static double WHEEL_RADIUS = 37.5/1000;
     public static double J = 0.8333333333333333;
-    public static double r_X = 0.4572/2;
-    public static double r_Y = 0.4572/2;
+    public static double r_X = 0.4572/2d;
+    public static double r_Y = 0.4572/2d;
     public static double MAX_SAFE_VELOCITY = 0.95;
     public static double MAX_SAFE_ACCELERATION = 0.95;
     public static double ACCELERATION_CORRECTION = Math.PI/2.5;
     public final static double INCHES_TO_METERS = 0.0254;
-    public final static double P_static = 0.35;
-    public final static double P_dynamic = 0.1;
-    public final static double P_static_physics = 0.30;
-    public final static double P_dynamic_physics = 0.1;
+    public static double P_STATIC = 0.2;
+    public static double P_DYNAMIC = 0.1;
+    public final static double P_static_physics = 0.17;
+    public final static double P_dynamic_physics = 0.09;
 //    public final static double P_static = 0;
 //    public final static double P_dynamic = 0;
 //    public final static double P_static_physics = 0;
@@ -39,10 +39,12 @@ public class Config {
     public final double max_safe_velocity;
     public final double max_safe_acceleration;
     public final double acceleration_correction;
+    public final double P_static;
+    public final double P_dynamic;
 
     public Config(final double max_acceleration, final double max_deceleration, final double max_velocity, final double acceleration_correction_step,
                   final double t_max, final double omega_max, final double mass, final double wheel_radius, final double J, final double r_X, final double r_Y,
-                  final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction) {
+                  final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction, final double P_static, final double P_dynamic) {
         this.max_acceleration = max_acceleration;
         this.max_deceleration = max_deceleration;
         this.max_velocity = max_velocity;
@@ -57,6 +59,8 @@ public class Config {
         this.max_safe_velocity = max_safe_velocity;
         this.max_safe_acceleration = max_safe_acceleration;
         this.acceleration_correction = acceleration_correction;
+        this.P_static = P_static;
+        this.P_dynamic = P_dynamic;
     }
 
     public void set() {
@@ -74,5 +78,7 @@ public class Config {
         MAX_SAFE_VELOCITY = max_safe_velocity;
         MAX_SAFE_ACCELERATION = max_safe_acceleration;
         ACCELERATION_CORRECTION = acceleration_correction;
+        P_STATIC = P_static;
+        P_DYNAMIC = P_dynamic;
     }
 }

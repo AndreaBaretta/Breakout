@@ -24,51 +24,7 @@ public class Controller {
         integral = new Vector3(0,0,0);
     }
 
-    public double[] correction(final Vector3 deltaPosition, final Vector3 deltaVelocity, final double dt) {
-//        if (prevSignumDeltaX == 0) { prevSignumDeltaX = (int)Math.signum(deltaPosition.x); }
-//        if (prevSignumDeltaY == 0) { prevSignumDeltaY = (int)Math.signum(deltaPosition.y); }
-//        if (prevSignumDeltaAlpha == 0) { prevSignumDeltaAlpha = (int)Math.signum(deltaPosition.theta); }
-//
-//        final Vector3 integratedError = deltaPosition.scalarMultiply(dt);
-//        double xdt = integratedError.x;
-//        double ydt = integratedError.y;
-//        double alphadt = integratedError.theta;
-//
-//        final int signumDeltaX = (int)Math.signum(deltaPosition.x);
-//        final int signumDeltaY = (int)Math.signum(deltaPosition.y);
-//        final int signumDeltaAlpha = (int)Math.signum(deltaPosition.theta);
-//
-//        if (prevSignumDeltaX != signumDeltaX) {
-//            xdt = -integral.x;
-//            prevSignumDeltaX = signumDeltaX;
-//            System.out.println("Reset x integral");
-//        }
-//        if (prevSignumDeltaY != signumDeltaY) {
-//            ydt = -integral.y;
-//            prevSignumDeltaY = signumDeltaY;
-//            System.out.println("Reset y integral");
-//        }
-//        if (prevSignumDeltaAlpha != signumDeltaAlpha) {
-//            alphadt = -integral.theta;
-//            prevSignumDeltaAlpha = signumDeltaAlpha;
-//            System.out.println("Reset alpha integral");
-//        }
-//
-//        integral = Vector3.addVector(integral, new Vector3(xdt,ydt,alphadt));
-//        System.out.println(integral.theta);
-//        integral = new Vector3(Math.max(Math.min(integral.x, maxX), -maxX), Math.max(Math.min(integral.y, maxY), -maxY), Math.max(Math.min(integral.theta, maxAlpha), -maxAlpha));
-//        final double[] dwArray = new double[] {
-//                deltaVelocity.x,
-//                deltaVelocity.y,
-//                deltaVelocity.theta,
-//                deltaPosition.x,
-//                deltaPosition.y,
-//                deltaPosition.theta,
-//                integral.x,
-//                integral.y,
-//                integral.theta
-//        };
-
+    public double[] correction(final Vector3 deltaPosition, final Vector3 deltaVelocity) {
         final double[] dwArray = new double[] {
                 deltaVelocity.x,
                 deltaVelocity.y,
@@ -78,13 +34,24 @@ public class Controller {
                 deltaPosition.theta
         };
 
-//        System.out.println("Error: " + Arrays.toString(dwArray));
+        if (deltaPosition.y < 0) {
+            System.exit(0);
+        }
+
+        System.out.println("Error in Velocity: " + deltaVelocity);
+        System.out.println("Error in Position: " + deltaPosition);
 
         final ArrayRealVector dw = new ArrayRealVector(dwArray);
         final RealVector du = K.operate(dw);
 
 //        System.out.println("Controller: " + Arrays.toString(du.toArray()));
-        return du.toArray();
+        System.out.println("Controller calculated correction: " + Arrays.toString(du.toArray()));
+
+        if (Math.signum(deltaPosition.y) == Math.signum(deltaVelocity.y)) {
+            System.exit(0);
+        }
+
+            return du.toArray();
     }
 
     public double[] correction2(final Vector3 deltaPosition, final Vector3 deltaVelocity, final double dt) { //With integral
@@ -93,9 +60,21 @@ public class Controller {
         if (prevSignumDeltaAlpha == 0) { prevSignumDeltaAlpha = (int)Math.signum(deltaPosition.theta); }
 
         final Vector3 integratedError = deltaPosition.scalarMultiply(dt);
-        double xdt = integratedError.x;
-        double ydt = integratedError.y;
-        double alphadt = integratedError.theta;
+        double xdt;
+        double ydt;
+        double alphadt;
+
+        if (Math.abs(integratedError.x) <= 0.001) { xdt = 0; }
+        else { xdt = integratedError.x; }
+
+        if (Math.abs(integratedError.y) <= 0.001) { ydt = 0; }
+        else { ydt = integratedError.y; }
+
+        if (Math.abs(integratedError.theta) <= 0.00001) { alphadt = 0; }
+        else { alphadt = integratedError.theta; }
+//        xdt = integratedError.x;
+//        ydt = integratedError.y;
+//        alphadt = integratedError.theta;
 
         final int signumDeltaX = (int)Math.signum(deltaPosition.x);
         final int signumDeltaY = (int)Math.signum(deltaPosition.y);

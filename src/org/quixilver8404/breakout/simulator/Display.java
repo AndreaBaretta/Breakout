@@ -41,8 +41,7 @@ public class Display {
         GLFW.glfwMakeContextCurrent(window);
         GL.createCapabilities();
         GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
-        GLFW.glfwSwapInterval(1);
+        GLFW.glfwSwapInterval(0);
 
         glfwShowWindow(window);
 

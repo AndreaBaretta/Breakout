@@ -115,7 +115,7 @@ public class Main {
             final double[] correction;
             if (counter == updateControllerEveryHz) {
                 correction = controller.correction(Vector3.subtractVector2(kinematics.getFieldPos(), state.pos),
-                        Vector3.subtractVector(kinematics.getFieldVel(), state.vel), dt);
+                        Vector3.subtractVector(kinematics.getFieldVel(), state.vel));
                 prevCorrection = correction;
                 counter = 0;
             } else {

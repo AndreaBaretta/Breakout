@@ -1,6 +1,7 @@
 package org.quixilver8404.breakout.simulator;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.CallbackI;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
@@ -94,24 +95,39 @@ public class MecanumKinematics {
         final double vel_2 = velWheel(-rX, rY, Math.PI/4, R);
         final double vel_3 = velWheel(-rX, -rY, -Math.PI/4, R);
         final double vel_4 = velWheel(rX, -rY, Math.PI/4, R);
-        if (Math.abs(vel_1) <= 1e-9 && Math.abs(P_1_) < P_static) {
+
+//        P_1 = P_1_;
+//        P_2 = P_2_;
+//        P_3 = P_3_;
+//        P_4 = P_4_;
+
+
+        if (Math.abs(vel_1) <= 1e-9 && Math.abs(P_1_) < P_static) { //Check if P_dynamic causes change in sign of velocity of wheel
+            System.out.println("1 did not overcome static");
             P_1 = 0;
         } else {
+            System.out.println("1 overcame static");
             P_1 = Math.min(Math.max(P_1_, -1),1) - Math.signum(vel_1)*P_dynamic;
         }
         if (Math.abs(vel_2) <= 1e-9 && Math.abs(P_2_) < P_static) {
+            System.out.println("2 did not overcome static");
             P_2 = 0;
         } else {
+            System.out.println("2 overcame static");
             P_2 = Math.min(Math.max(P_2_, -1),1) - Math.signum(vel_2)*P_dynamic;
         }
         if (Math.abs(vel_3) <= 1e-9 && Math.abs(P_3_) < P_static) {
+            System.out.println("3 did not overcome static");
             P_3 = 0;
         } else {
+            System.out.println("3 overcame static");
             P_3 = Math.min(Math.max(P_3_, -1),1) - Math.signum(vel_3)*P_dynamic;
         }
         if (Math.abs(vel_4) <= 1e-9 && Math.abs(P_4_) < P_static) {
+            System.out.println("4 did not overcome static");
             P_4 = 0;
         } else {
+            System.out.println("4 overcame static");
             P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
         }
 
@@ -160,7 +176,7 @@ public class MecanumKinematics {
         ui.setBackground(new double[]{255,255,255});
         ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta, width, length);
 //        ui.update();
-        System.out.println();
+//        System.out.println();
     }
 
     protected double velWheel(final double rX, final double rY, final double phi, final double r) {
@@ -168,8 +184,8 @@ public class MecanumKinematics {
         final double alpha = getFieldPos().theta;
         final double sin_a = Math.sin(alpha);
         final double cos_a = Math.cos(alpha);
-        final double vdX = -alpha*rY + (vel.x*cos_a + vel.y*sin_a);
-        final double vdY = alpha*rX + (-vel.x*sin_a + vel.y*cos_a);
+        final double vdX = -vel.theta*rY + (vel.x*cos_a + vel.y*sin_a);
+        final double vdY = vel.theta*rX + (-vel.x*sin_a + vel.y*cos_a);
         final double vw = -vdY - vdX*Math.tan(phi);
         return vw/r;
     }
