@@ -28,7 +28,18 @@ public class Path {
     protected boolean finished;
     protected double lastKnownS;
 
-    public Path(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+    public static Path fromFile(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+        try {
+            System.out.println("File exists: " + (foxtrotFile!=null));
+            return new Path(new FileInputStream(foxtrotFile), config, configActionEventListeners);
+        } catch (final FileNotFoundException e) {
+            System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            return null;
+        }
+    }
+
+    public Path(final InputStream foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+//        System.out.println("Stream exists: " + (foxtrotFile=null));
         this.configActionEventListeners = configActionEventListeners;
         anchorPoints = parseAnchorPoints(foxtrotFile, config);
         connectionPoints = new ArrayList<ConnectionPoint>();

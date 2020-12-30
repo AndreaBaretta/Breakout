@@ -7,6 +7,8 @@ import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 public class Breakout {
@@ -16,6 +18,14 @@ public class Breakout {
     protected Vector3 lastKnownPos;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+        robotConfig.set();
+        controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
+        powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
+        path = Path.fromFile(foxtrotFile, foxtrotConfig, actionEventListeners);
+        lastKnownPos = new Vector3(0,0,0);
+    }
+
+    public Breakout(final InputStream foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
         robotConfig.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
@@ -40,7 +50,9 @@ public class Breakout {
 
         final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, pos.theta);
 
-        return powerSettings;
+        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(1,1,1), pos.theta, powerSettings);
+
+        return frictionAdjustedPowerSettings;
     }
 
     public boolean isFinished() {

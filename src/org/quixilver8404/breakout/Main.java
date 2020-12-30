@@ -74,7 +74,7 @@ public class Main {
                     }
                 })
         });
-        final Path path = new Path(new File("/home/andrea/Desktop/foxtrotFiles/five_stone_auton_blue.foxtrot2"), 1, actionEventListeners); //three_stone_close_auton_blue
+        final Path path = Path.fromFile(new File("/home/andrea/Desktop/foxtrotFiles/five_stone_auton_blue.foxtrot2"), 1, actionEventListeners); //three_stone_close_auton_blue
 
         double prev_s = 0;
         double prev_s_dot = 0;
