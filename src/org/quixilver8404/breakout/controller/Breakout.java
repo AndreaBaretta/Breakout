@@ -13,12 +13,14 @@ public class Breakout {
     public final Controller controller;
     public final PowerProfile powerProfile;
     public final Path path;
+    protected Vector3 lastKnownPos;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
         robotConfig.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = new Path(foxtrotFile, foxtrotConfig, actionEventListeners);
+        lastKnownPos = new Vector3(0,0,0);
     }
 
     protected double prev_s = 0;
@@ -31,6 +33,7 @@ public class Breakout {
         prev_s = s;
 
         final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
+        lastKnownPos = state.pos;
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
                 Vector3.subtractVector(vel, state.vel));
@@ -42,5 +45,9 @@ public class Breakout {
 
     public boolean isFinished() {
         return path.isFinished();
+    }
+
+    public Vector3 getLastKnownPos() {
+        return lastKnownPos;
     }
 }

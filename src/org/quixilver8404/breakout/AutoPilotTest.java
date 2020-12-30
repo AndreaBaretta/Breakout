@@ -23,18 +23,18 @@ public class AutoPilotTest {
                 new Config(18.512,-18.512,5.625,0.01,2.1,
                     31.4,12.1,(75d/2d)/1000d,
                         MecanumKinematics.FindMomentOfInertia(44d/100d, 44d/100d, 12.1),44d/200d - 0.05, 44d/200d - 0.073,
-                    0.95,0.95,Math.PI/2.5, 0.2, 0.1), true
+                    0.95,0.95,Math.PI/2.5, 0.17, 0.09), true
 //                new Config(11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                        37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
 //                        0.95, Math.PI/2.5)
         );
 
-        final Vector3 desiredPos = new Vector3(0, 0, 0*Math.PI/180);
+        final Vector3 desiredPos = new Vector3(0, 0, 90*Math.PI/180);
 
         autoPilot.setDesiredPos(desiredPos);
 
-        final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,-0.0000000001,0),
-                new Vector3(0, 1,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
+        final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
+                new Vector3(0, 0,0), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
                 Config.WHEEL_RADIUS, Config.OMEGA_MAX);
 
         long t1 = System.currentTimeMillis();

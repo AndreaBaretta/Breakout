@@ -21,15 +21,16 @@ public class FrictionCorrection {
         for (int i = 0; i < 4; i++) {
             final double dynamicCorrection = Math.signum(vel_w[i])*Config.P_DYNAMIC;
 
-            if (Math.abs(deltaPos.x) <= 1e-3 && Math.abs(deltaPos.y) <= 1e-3 && Math.abs(deltaPos.theta) <= 1e-3) {
-//                System.out.println("Error at 0");
+            if (Math.abs(deltaPos.x) <= 0.07 && Math.abs(deltaPos.y) <= 0.07 && Math.abs(deltaPos.theta)*180/Math.PI <= 2) {
+                System.out.println("Error at 0");
 //                System.exit(0);
-                finalPowerSettings[i] = powerSettings[i];
+//                finalPowerSettings[i] = powerSettings[i];
+                finalPowerSettings[i] = 0;
             } else if (Math.abs(vel_w[i]) <= 1e-4 && Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC) {
-//                System.out.println("Can't overcome static");
+                System.out.println("Can't overcome static");
                 finalPowerSettings[i] = Math.signum(powerSettings[i])*Config.P_STATIC;
             } else {
-//                System.out.println("Dynamic");
+                System.out.println("Dynamic");
                 finalPowerSettings[i] = dynamicCorrection + powerSettings[i];
             }
 //            System.out.println("Math.abs(vel_w[i]) <= 1e-4: " + (Math.abs(vel_w[i]) <= 1e-4));
@@ -39,9 +40,9 @@ public class FrictionCorrection {
         }
 //        System.out.println("Robot velocity: " + vel.toString());
 
-        if (deltaPos.theta > 0) {
-            System.exit(0);
-        }
+//        if (deltaPos.theta > 0) {
+//            System.exit(0);
+//        }
 
 
         return finalPowerSettings;

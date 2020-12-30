@@ -9,6 +9,7 @@ import org.quixilver8404.breakout.util.Vector3;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.util.*;
 
 
@@ -27,6 +28,7 @@ public class Path {
     protected HeadingSegment currentHeadingSegment;
     protected VelocitySegment currentVelocitySegment;
     protected boolean finished;
+    protected double lastKnownS;
 
     public Path(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
         this.configActionEventListeners = configActionEventListeners;
@@ -36,6 +38,7 @@ public class Path {
         actionPoints = new ArrayList<ActionPoint>();
         segments = new ArrayList<Segment>();
         velocitySegments = new ArrayList<VelocitySegment>();
+        lastKnownS = 0;
 
         AnchorPoint curPoint = null;
         AnchorPoint prevPoint = curPoint;
@@ -317,6 +320,7 @@ public class Path {
         } else {
             s = curSegmentS;
         }
+        lastKnownS = s;
         return s;
     }
 
@@ -350,6 +354,10 @@ public class Path {
 
     public boolean isFinished() {
         return finished;
+    }
+
+    public double getLastKnownS() {
+        return lastKnownS;
     }
 
     public double calcAccelerationCorrection(final double s, final double s_dot) {
@@ -499,6 +507,7 @@ public class Path {
 
         return anchorPointsList;
     }
+
 
     public List<SegmentPoint> parseSegmentPoints(final File file, final int config) {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();

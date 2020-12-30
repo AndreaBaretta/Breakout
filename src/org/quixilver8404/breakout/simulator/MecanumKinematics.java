@@ -101,31 +101,36 @@ public class MecanumKinematics {
 //        P_3 = P_3_;
 //        P_4 = P_4_;
 
+        int threshold = 0;
 
-        if (Math.abs(vel_1) <= 1e-9 && Math.abs(P_1_) < P_static) { //Check if P_dynamic causes change in sign of velocity of wheel
+        if (Math.abs(vel_1) <= 1e-3 && Math.abs(P_1_) < P_static) { //Check if P_dynamic causes change in sign of velocity of wheel
             System.out.println("1 did not overcome static");
             P_1 = 0;
+            threshold += 1;
         } else {
             System.out.println("1 overcame static");
             P_1 = Math.min(Math.max(P_1_, -1),1) - Math.signum(vel_1)*P_dynamic;
         }
-        if (Math.abs(vel_2) <= 1e-9 && Math.abs(P_2_) < P_static) {
+        if (Math.abs(vel_2) <= 1e-3 && Math.abs(P_2_) < P_static) {
             System.out.println("2 did not overcome static");
             P_2 = 0;
+            threshold += 1;
         } else {
             System.out.println("2 overcame static");
             P_2 = Math.min(Math.max(P_2_, -1),1) - Math.signum(vel_2)*P_dynamic;
         }
-        if (Math.abs(vel_3) <= 1e-9 && Math.abs(P_3_) < P_static) {
+        if (Math.abs(vel_3) <= 1e-3 && Math.abs(P_3_) < P_static) {
             System.out.println("3 did not overcome static");
             P_3 = 0;
+            threshold += 1;
         } else {
             System.out.println("3 overcame static");
             P_3 = Math.min(Math.max(P_3_, -1),1) - Math.signum(vel_3)*P_dynamic;
         }
-        if (Math.abs(vel_4) <= 1e-9 && Math.abs(P_4_) < P_static) {
+        if (Math.abs(vel_4) <= 1e-3 && Math.abs(P_4_) < P_static) {
             System.out.println("4 did not overcome static");
             P_4 = 0;
+            threshold += 1;
         } else {
             System.out.println("4 overcame static");
             P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
@@ -166,9 +171,14 @@ public class MecanumKinematics {
         final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
         final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
 
-        fieldAcc = new Vector3(F_x/mass, F_y/mass, tau/J);
-        fieldVel = Vector3.addVector(fieldVel, fieldAcc.scalarMultiply(delta_t));
-        fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
+        if (threshold >= 3) {
+            fieldAcc = new Vector3(0,0,0);
+            fieldVel = new Vector3(0,0,0);
+        } else {
+            fieldAcc = new Vector3(F_x / mass, F_y / mass, tau / J);
+            fieldVel = Vector3.addVector(fieldVel, fieldAcc.scalarMultiply(delta_t));
+            fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
+        }
 
         System.out.println(fieldVel.toString());
 
