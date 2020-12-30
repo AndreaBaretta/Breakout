@@ -43,7 +43,7 @@ public class AutoPilot {
 
         final double[] powerSettings = powerProfile.powerSetting(new Vector3(0,0,0), new Vector3(0,0,0), correction, pos.theta);
 
-        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, desiredPos), pos.theta, powerSettings);
+        final double[] frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, desiredPos), pos.theta, powerSettings, true);
 
 //        System.out.println("Friction adjusted power: " + Arrays.toString(frictionAdjustedPowerSettings));
         System.out.println(frictionAdjustedPowerSettings);

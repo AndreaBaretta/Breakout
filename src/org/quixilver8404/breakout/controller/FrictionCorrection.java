@@ -5,7 +5,7 @@ import org.quixilver8404.breakout.util.Vector3;
 
 public class FrictionCorrection {
 
-    public static double[] correction(final Vector3 vel, final Vector3 deltaPos, final double alpha, final double[] powerSettings) {
+    public static double[] correction(final Vector3 vel, final Vector3 deltaPos, final double alpha, final double[] powerSettings, final boolean stopAtZero) {
 //        System.out.println("rX: " + Config.r_X + " rY: " + Config.r_Y);
         final double[] vel_w = new double[]{
                 getWheelVel(vel, Config.r_X, Config.r_Y, -Math.PI / 4, Config.WHEEL_RADIUS, alpha),
@@ -21,10 +21,7 @@ public class FrictionCorrection {
         for (int i = 0; i < 4; i++) {
             final double dynamicCorrection = Math.signum(vel_w[i])*Config.P_DYNAMIC;
 
-            if (Math.abs(deltaPos.x) <= 0.07 && Math.abs(deltaPos.y) <= 0.07 && Math.abs(deltaPos.theta)*180/Math.PI <= 2) {
-                System.out.println("Error at 0");
-//                System.exit(0);
-//                finalPowerSettings[i] = powerSettings[i];
+            if (Math.abs(deltaPos.x) <= 0.07 && Math.abs(deltaPos.y) <= 0.07 && Math.abs(deltaPos.theta)*180/Math.PI <= 2 && stopAtZero) {
                 finalPowerSettings[i] = 0;
             } else if (Math.abs(vel_w[i]) <= 1e-4 && Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC) {
                 System.out.println("Can't overcome static");
@@ -33,18 +30,7 @@ public class FrictionCorrection {
                 System.out.println("Dynamic");
                 finalPowerSettings[i] = dynamicCorrection + powerSettings[i];
             }
-//            System.out.println("Math.abs(vel_w[i]) <= 1e-4: " + (Math.abs(vel_w[i]) <= 1e-4));
-//            System.out.println("Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC: " + (Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC));
-//            System.out.println("i: " + i + " power setting: " + powerSettings[i] + " correction: " + (finalPowerSettings[i] - powerSettings[i]) + " total: " + finalPowerSettings[i] + " wheel velocity: " + vel_w[i] + " powerSetting + dynamicCorrection: " + (powerSettings[i] + dynamicCorrection));
-
         }
-//        System.out.println("Robot velocity: " + vel.toString());
-
-//        if (deltaPos.theta > 0) {
-//            System.exit(0);
-//        }
-
-
         return finalPowerSettings;
     }
 
