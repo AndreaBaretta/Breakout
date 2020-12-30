@@ -7,9 +7,7 @@ import org.quixilver8404.breakout.controller.PowerProfile;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 
@@ -419,10 +417,32 @@ public class Path {
     }
 
     public List<AnchorPoint> parseAnchorPoints(final File file, final int config) {
+        try {
+            return parseAnchorPoints(new FileInputStream(file), config);
+        } catch (final Exception e) {
+            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
+            System.out.println(e);
+            e.printStackTrace();
+        }
+
+        return new ArrayList<AnchorPoint>();
+    }
+
+
+    public List<SegmentPoint> parseSegmentPoints(final File file, final int config) {
+        try {
+            return parseSegmentPoints(new FileInputStream(file), config);
+        } catch (Exception e) {
+            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
+        }
+        return new ArrayList<SegmentPoint>();
+    }
+
+    public List<AnchorPoint> parseAnchorPoints(final InputStream stream, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
         final JSONParser jsonParser = new JSONParser();
-        try (final FileReader fileReader = new FileReader(file)) {
-            final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
+        try {
+            final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
             final JSONArray anchorPoints = (JSONArray) obj.get("anchors");
 
             final JSONObject output = (JSONObject) obj.get("output");
@@ -500,7 +520,7 @@ public class Path {
             }
             anchorPointsList.get(anchorPointsList.size() - 1).middlePoint.setConfigVelocity(0);
         } catch (final Exception e) {
-            System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");
+            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
             System.out.println(e);
             e.printStackTrace();
         }
@@ -509,11 +529,11 @@ public class Path {
     }
 
 
-    public List<SegmentPoint> parseSegmentPoints(final File file, final int config) {
+    public List<SegmentPoint> parseSegmentPoints(final InputStream inputStream, final int config) {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
         final JSONParser jsonParser = new JSONParser();
-        try (final FileReader fileReader = new FileReader(file)) {
-            final JSONObject obj = (JSONObject) jsonParser.parse(fileReader);
+        try {
+            final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(inputStream));
             final JSONArray segments = (JSONArray) obj.get("segments");
             for (int i = 0; i < segments.size(); i++) {
                 final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
@@ -522,7 +542,7 @@ public class Path {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Failed to open " + file.getPath() + ". The file is not in the right format or is corrupted.");
+            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
             System.out.println(e);
             e.printStackTrace();
         }
