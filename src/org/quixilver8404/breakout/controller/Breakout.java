@@ -42,7 +42,7 @@ public class Breakout {
 
         prev_s = s;
 
-        final RobotState state = path.evaluate(s, s_dot, s_dot_dot);
+        final RobotState state = toFoxtrotCoords(path.evaluate(s, s_dot, s_dot_dot));
         lastKnownPos = state.pos;
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
@@ -61,5 +61,13 @@ public class Breakout {
 
     public Vector3 getLastKnownPos() {
         return lastKnownPos;
+    }
+
+    protected RobotState toFoxtrotCoords(final RobotState state) {
+        return new RobotState(
+                new Vector3(state.pos.x, state.pos.y, state.pos.theta-Math.PI/2),
+                state.vel,
+                state.acc
+        );
     }
 }
