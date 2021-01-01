@@ -35,19 +35,19 @@ public class Path {
     public static Path fromFile(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
         try {
             System.out.println("File exists: " + (foxtrotFile!=null));
-            return new Path(new FileInputStream(foxtrotFile), config, configActionEventListeners);
+            return new Path(new FileInputStream(foxtrotFile), new FileInputStream(foxtrotFile), config, configActionEventListeners);
         } catch (final FileNotFoundException e) {
             System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEE");
             return null;
         }
     }
 
-    public Path(final InputStream foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+    public Path(final InputStream anchorPointStream, final InputStream segmentPointStream, final int config, final List<ActionEventListener> configActionEventListeners) {
 //        System.out.println("Stream exists: " + (foxtrotFile=null));
         this.configActionEventListeners = configActionEventListeners;
-        anchorPoints = parseAnchorPoints(foxtrotFile, config);
+        anchorPoints = parseAnchorPoints(anchorPointStream, config);
         connectionPoints = new ArrayList<ConnectionPoint>();
-        segmentPoints = parseSegmentPoints(foxtrotFile, config);
+        segmentPoints = parseSegmentPoints(segmentPointStream, config);
         actionPoints = new ArrayList<ActionPoint>();
         segments = new ArrayList<Segment>();
         velocitySegments = new ArrayList<VelocitySegment>();
@@ -451,28 +451,6 @@ public class Path {
         return currentVelocitySegment.getNextVelocity(s);
     }
 
-    public List<AnchorPoint> parseAnchorPoints(final File file, final int config) {
-        try {
-            return parseAnchorPoints(new FileInputStream(file), config);
-        } catch (final Exception e) {
-            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
-            System.out.println(e);
-            e.printStackTrace();
-        }
-
-        return new ArrayList<AnchorPoint>();
-    }
-
-
-    public List<SegmentPoint> parseSegmentPoints(final File file, final int config) {
-        try {
-            return parseSegmentPoints(new FileInputStream(file), config);
-        } catch (Exception e) {
-            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
-        }
-        return new ArrayList<SegmentPoint>();
-    }
-
     public List<AnchorPoint> parseAnchorPoints(final InputStream stream, final int config) {
         final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
         final JSONParser jsonParser = new JSONParser();
@@ -563,12 +541,12 @@ public class Path {
     }
 
 
-    public List<SegmentPoint> parseSegmentPoints(final InputStream inputStream, final int config) {
+    public List<SegmentPoint> parseSegmentPoints(final InputStream stream, final int config) {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
         final JSONParser jsonParser = new JSONParser();
         try {
             System.out.println("Parsing file");
-            final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(inputStream));
+            final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
             System.out.println("JSON file: " + obj.toJSONString());
             final JSONArray segments = (JSONArray) obj.get("segments");
             for (int i = 0; i < segments.size(); i++) {
@@ -577,7 +555,6 @@ public class Path {
                     segmentPoints.add(segment);
                 }
             }
-            inputStream.close();
         } catch (Exception e) {
             System.out.println("Failed to open file. It is not in the right format or is corrupted.");
             System.out.println(e);
