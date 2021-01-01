@@ -24,10 +24,10 @@ public class FrictionCorrection {
             if (Math.abs(deltaPos.x) <= 0.07 && Math.abs(deltaPos.y) <= 0.07 && Math.abs(deltaPos.theta)*180/Math.PI <= 2 && stopAtZero) {
                 finalPowerSettings[i] = 0;
             } else if (Math.abs(vel_w[i]) <= 1e-4 && Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC) {
-                System.out.println("Can't overcome static");
+//                System.out.println("Can't overcome static");
                 finalPowerSettings[i] = Math.signum(powerSettings[i])*Config.P_STATIC;
             } else {
-                System.out.println("Dynamic");
+//                System.out.println("Dynamic");
                 finalPowerSettings[i] = dynamicCorrection + powerSettings[i];
             }
         }

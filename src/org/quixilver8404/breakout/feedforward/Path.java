@@ -28,6 +28,10 @@ public class Path {
     protected boolean finished;
     protected double lastKnownS;
 
+    public final double startX;
+    public final double startY;
+    public final double startHeading;
+
     public static Path fromFile(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
         try {
             System.out.println("File exists: " + (foxtrotFile!=null));
@@ -183,7 +187,9 @@ public class Path {
                 }
             }
         });
-        System.out.println("velocityPoints_ after sort: " + Arrays.toString(velocityPoints_.toArray()));
+
+        System.out.println("velocityPoints_ after sort: ");
+        velocityPoints_.forEach(p -> System.out.println(p.toString()));
 
         System.out.println("headingPoints: " + Arrays.toString(headingPoints.toArray()));
 
@@ -198,6 +204,9 @@ public class Path {
             }
         });
 
+        System.out.println("---------------------------");
+        System.out.println("VelocityPoint i=1: " + velocityPoints_.get(1).toString());
+
         for (int i = 0; i < velocityPoints_.size(); i++) {
             if (i != 0) {
                 final VelocityPoint velocityPoint = velocityPoints_.get(i);
@@ -205,10 +214,14 @@ public class Path {
                     velocityPoint.setMaxVelocity(velocityPoints_.get(i - 1).getMaxVelocity());
                 }
                 if (Double.isNaN(velocityPoint.getConfigVelocity())) {
-                    velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getMaxVelocity());
+                    System.out.println("Reset config velocity at i=" + i);
+                    velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
                 }
             }
         }
+
+        System.out.println("velocityPoints_ after setting velocities: ");
+        velocityPoints_.forEach(p -> System.out.println(p.toString()));
 
         final List<VelocityPoint> velocityPoints = new ArrayList<>();
         for (int i = 0; i < velocityPoints_.size(); i++) {
@@ -232,6 +245,9 @@ public class Path {
             }
         }
 
+        System.out.println("velocityPoints: ");
+        velocityPoints.forEach(p -> System.out.println(p.toString()));
+
         currentVelocitySegment = velocitySegments.get(0);
 
         headingSegments = new ArrayList<HeadingSegment>();
@@ -252,12 +268,20 @@ public class Path {
         }
         currentHeadingSegment = headingSegments.get(0);
 
+        final ConnectionPoint firstPoint = segments.get(0).firstPoint;
+        startX = firstPoint.x;
+        startY = firstPoint.y;
+        startHeading = evaluate(0,0,0).pos.theta;
+
         System.out.println();
 
         System.out.println("End S: " + segments.get(segments.size() - 1).getEndS());
 
+        segments.forEach(p -> System.out.println("Segment: " + p.toString()));
+        velocitySegments.forEach(p -> System.out.println("Velocity segment: " + p.toString()));
+
 //        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
-//        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
+        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
 //        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
 //        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
     }
@@ -535,7 +559,6 @@ public class Path {
             System.out.println(e);
             e.printStackTrace();
         }
-
         return anchorPointsList;
     }
 
@@ -544,7 +567,9 @@ public class Path {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
         final JSONParser jsonParser = new JSONParser();
         try {
+            System.out.println("Parsing file");
             final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(inputStream));
+            System.out.println("JSON file: " + obj.toJSONString());
             final JSONArray segments = (JSONArray) obj.get("segments");
             for (int i = 0; i < segments.size(); i++) {
                 final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
@@ -552,6 +577,7 @@ public class Path {
                     segmentPoints.add(segment);
                 }
             }
+            inputStream.close();
         } catch (Exception e) {
             System.out.println("Failed to open file. It is not in the right format or is corrupted.");
             System.out.println(e);

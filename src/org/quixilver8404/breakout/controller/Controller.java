@@ -38,14 +38,14 @@ public class Controller {
 //            System.exit(0);
 //        }
 
-        System.out.println("Error in Velocity: " + deltaVelocity);
-        System.out.println("Error in Position: " + deltaPosition);
+//        System.out.println("Error in Velocity: " + deltaVelocity);
+//        System.out.println("Error in Position: " + deltaPosition);
 
         final ArrayRealVector dw = new ArrayRealVector(dwArray);
         final RealVector du = K.operate(dw);
 
 //        System.out.println("Controller: " + Arrays.toString(du.toArray()));
-        System.out.println("Controller calculated correction: " + Arrays.toString(du.toArray()));
+//        System.out.println("Controller calculated correction: " + Arrays.toString(du.toArray()));
 
 //        if (Math.signum(deltaPosition.y) == Math.signum(deltaVelocity.y)) {
 //            System.exit(0);

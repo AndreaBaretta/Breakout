@@ -137,6 +137,6 @@ public class CircleSegment extends Segment {
     }
 
     public String toString() {
-        return "(type=circle, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ")";
+        return "(type=circle, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ", theta0=" + theta0 + ", theta1=" + theta1 + ", r=" + r + ")";
     }
 }

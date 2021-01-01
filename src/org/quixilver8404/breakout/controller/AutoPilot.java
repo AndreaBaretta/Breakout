@@ -36,7 +36,7 @@ public class AutoPilot {
 
     public double[] correction(final Vector3 pos, final Vector3 vel) {
 
-        System.out.println("Robot Position: " + pos.toString());
+//        System.out.println("Robot Position: " + pos.toString());
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, desiredPos),
                 Vector3.subtractVector(vel, new Vector3(0,0,0)));

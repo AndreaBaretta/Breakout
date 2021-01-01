@@ -79,7 +79,7 @@ public class MecanumKinematics {
      * */
     public void update(final double[] newPowerSetting, final double delta_t) {
 
-        System.out.println("Received power settings: " + Arrays.toString(newPowerSetting));
+//        System.out.println("Received power settings: " + Arrays.toString(newPowerSetting));
 
         final double P_1_ = newPowerSetting[0];
         final double P_2_ = newPowerSetting[1];
@@ -104,42 +104,42 @@ public class MecanumKinematics {
         int threshold = 0;
 
         if (Math.abs(vel_1) <= 1e-3 && Math.abs(P_1_) < P_static) { //Check if P_dynamic causes change in sign of velocity of wheel
-            System.out.println("1 did not overcome static");
+//            System.out.println("1 did not overcome static");
             P_1 = 0;
             threshold += 1;
         } else {
-            System.out.println("1 overcame static");
+//            System.out.println("1 overcame static");
             P_1 = Math.min(Math.max(P_1_, -1),1) - Math.signum(vel_1)*P_dynamic;
         }
         if (Math.abs(vel_2) <= 1e-3 && Math.abs(P_2_) < P_static) {
-            System.out.println("2 did not overcome static");
+//            System.out.println("2 did not overcome static");
             P_2 = 0;
             threshold += 1;
         } else {
-            System.out.println("2 overcame static");
+//            System.out.println("2 overcame static");
             P_2 = Math.min(Math.max(P_2_, -1),1) - Math.signum(vel_2)*P_dynamic;
         }
         if (Math.abs(vel_3) <= 1e-3 && Math.abs(P_3_) < P_static) {
-            System.out.println("3 did not overcome static");
+//            System.out.println("3 did not overcome static");
             P_3 = 0;
             threshold += 1;
         } else {
-            System.out.println("3 overcame static");
+//            System.out.println("3 overcame static");
             P_3 = Math.min(Math.max(P_3_, -1),1) - Math.signum(vel_3)*P_dynamic;
         }
         if (Math.abs(vel_4) <= 1e-3 && Math.abs(P_4_) < P_static) {
-            System.out.println("4 did not overcome static");
+//            System.out.println("4 did not overcome static");
             P_4 = 0;
             threshold += 1;
         } else {
-            System.out.println("4 overcame static");
+//            System.out.println("4 overcame static");
             P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
         }
 
-        System.out.println("Final power 1: " + P_1 + ", velocity of wheel: " + vel_1 + ", initial power: " + P_1_);
-        System.out.println("Final power 2: " + P_2 + ", velocity of wheel: " + vel_2 + ", initial power: " + P_2_);
-        System.out.println("Final power 3: " + P_3 + ", velocity of wheel: " + vel_3 + ", initial power: " + P_3_);
-        System.out.println("Final power 4: " + P_4 + ", velocity of wheel: " + vel_4 + ", initial power: " + P_4_);
+//        System.out.println("Final power 1: " + P_1 + ", velocity of wheel: " + vel_1 + ", initial power: " + P_1_);
+//        System.out.println("Final power 2: " + P_2 + ", velocity of wheel: " + vel_2 + ", initial power: " + P_2_);
+//        System.out.println("Final power 3: " + P_3 + ", velocity of wheel: " + vel_3 + ", initial power: " + P_3_);
+//        System.out.println("Final power 4: " + P_4 + ", velocity of wheel: " + vel_4 + ", initial power: " + P_4_);
 //        System.out.println("Net pwower: [" + P_1 + ", " + P_2 + ", " + P_3 + ", " + P_4 + "]");
 
         double noise_x = 0;
@@ -180,7 +180,7 @@ public class MecanumKinematics {
             fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
         }
 
-        System.out.println(fieldVel.toString());
+//        System.out.println(fieldVel.toString());
 
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
