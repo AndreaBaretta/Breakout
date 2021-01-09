@@ -29,14 +29,14 @@ public class HeadingSegment {
         if (headingPoint0.getHeadingState() == AnchorPoint.Heading.FRONT) {
             alpha0 = headingPoint0.getHeading();
         } else if (headingPoint0.getHeadingState() == AnchorPoint.Heading.BACK) {
-            alpha0 = Vector3.normalizeAlpha(Math.PI + headingPoint0.getHeading());
+            alpha0 = Vector3.normalizeAlpha(/*Math.PI + */headingPoint0.getHeading());
         } else {
             alpha0 = headingPoint0.getHeading();
         }
         if (headingPoint1.getHeadingState() == AnchorPoint.Heading.FRONT) {
             alpha1 = headingPoint1.getHeading();
         } else if (headingPoint1.getHeadingState() == AnchorPoint.Heading.BACK) {
-            alpha1 = Vector3.normalizeAlpha(Math.PI + headingPoint1.getHeading());
+            alpha1 = Vector3.normalizeAlpha(/*Math.PI + */headingPoint1.getHeading());
         } else {
             alpha1 = headingPoint1.getHeading();
         }

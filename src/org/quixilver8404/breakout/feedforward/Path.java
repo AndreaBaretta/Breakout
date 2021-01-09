@@ -3,6 +3,8 @@ package org.quixilver8404.breakout.feedforward;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.quixilver8404.breakout.controller.Breakout;
 import org.quixilver8404.breakout.controller.PowerProfile;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
@@ -32,22 +34,24 @@ public class Path {
     public final double startY;
     public final double startHeading;
 
+    public Vector3 holdPos;
+
     public static Path fromFile(final File foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
         try {
             System.out.println("File exists: " + (foxtrotFile!=null));
-            return new Path(new FileInputStream(foxtrotFile), new FileInputStream(foxtrotFile), config, configActionEventListeners);
+            return new Path(new FileInputStream(foxtrotFile), config, configActionEventListeners);
         } catch (final FileNotFoundException e) {
             System.out.println("EEEEEEEEEEEEEEEEEEEEEEEEEEE");
             return null;
         }
     }
 
-    public Path(final InputStream anchorPointStream, final InputStream segmentPointStream, final int config, final List<ActionEventListener> configActionEventListeners) {
-//        System.out.println("Stream exists: " + (foxtrotFile=null));
+    public Path(final InputStream foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
         this.configActionEventListeners = configActionEventListeners;
-        anchorPoints = parseAnchorPoints(anchorPointStream, config);
+        final JSONObject obj = parseJSON(foxtrotFile);
+        anchorPoints = parseAnchorPoints(obj, config);
         connectionPoints = new ArrayList<ConnectionPoint>();
-        segmentPoints = parseSegmentPoints(segmentPointStream, config);
+        segmentPoints = parseSegmentPoints(obj, config);
         actionPoints = new ArrayList<ActionPoint>();
         segments = new ArrayList<Segment>();
         velocitySegments = new ArrayList<VelocitySegment>();
@@ -82,6 +86,12 @@ public class Path {
                 connectionPointCounter++;
                 connection3.index = connectionPointCounter;
                 connectionPointCounter++;
+
+                System.out.println("Connection Point: " + connection0.toString());
+                System.out.println("Connection Point: " + connection1.toString());
+                System.out.println("Connection Point: " + connection2.toString());
+                System.out.println("Connection Point: " + connection3.toString());
+
 
                 final double prevAnchorTheta = Vector3.normalizeAlpha(Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x));
                 final double curAnchorTheta = Vector3.normalizeAlpha(Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x));
@@ -271,19 +281,21 @@ public class Path {
         final ConnectionPoint firstPoint = segments.get(0).firstPoint;
         startX = firstPoint.x;
         startY = firstPoint.y;
-        startHeading = evaluate(0,0,0).pos.theta;
+        startHeading = currentHeadingSegment.calcAlpha(0, currentSegment.getPosition(0)).theta;
+
+        holdPos = new Vector3(startX, startY, startHeading);
 
         System.out.println();
 
         System.out.println("End S: " + segments.get(segments.size() - 1).getEndS());
 
-        segments.forEach(p -> System.out.println("Segment: " + p.toString()));
-        velocitySegments.forEach(p -> System.out.println("Velocity segment: " + p.toString()));
+//        segments.forEach(p -> System.out.println("Segment: " + p.toString()));
+//        velocitySegments.forEach(p -> System.out.println("Velocity segment: " + p.toString()));
 
 //        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
-        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
-//        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
-//        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
+//        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
+        headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
+        headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
@@ -294,6 +306,11 @@ public class Path {
             final ActionPoint actionPoint = actionPoints.get(0);
             if (s >= actionPoint.getS() - 1e-12) {
                 if (actionPoint.getActionEventListeners() != null) {
+//                    System.out.println("About to run an action");
+                    final Vector3 holdPos_ = currentHeadingSegment.calcAlpha(s, currentSegment.getPosition(actionPoint.getS()));
+//                  holdPos = new Vector3(holdPos_.x, holdPos_.y, holdPos_.theta + Math.PI/2);
+                    holdPos = holdPos_;
+                    System.out.println("Running an action: " + actionPoint.toString());
                     actionPoint.runActions();
                 }
                 actionPoints.remove(0);
@@ -451,114 +468,116 @@ public class Path {
         return currentVelocitySegment.getNextVelocity(s);
     }
 
-    public List<AnchorPoint> parseAnchorPoints(final InputStream stream, final int config) {
-        final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
+    public JSONObject parseJSON(final InputStream stream) {
         final JSONParser jsonParser = new JSONParser();
         try {
             final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
-            final JSONArray anchorPoints = (JSONArray) obj.get("anchors");
-
-            final JSONObject output = (JSONObject) obj.get("output");
-            final JSONObject configObj = (JSONObject) output.get(Integer.toString(config));
-            final JSONArray curves = (JSONArray) configObj.get("curves");
-
-//            System.out.println("Read file");
-
-            CurveParameters curParams = null;
-            CurveParameters prevParams = null;
-
-            for (int i = 0; i < anchorPoints.size(); i++) {
-                final JSONObject anchorObj = (JSONObject) anchorPoints.get(i);
-
-                if (((Long)anchorObj.get("config")).intValue() != config && ((Long)anchorObj.get("config")).intValue() != 0) {
-                    continue;
-                }
-
-                final boolean first = i == 0;
-                final boolean last = i == anchorPoints.size() - 1;
-
-                final double x = ((double)anchorObj.get("x"))*Config.INCHES_TO_METERS;
-                final double y = ((double)anchorObj.get("y"))*Config.INCHES_TO_METERS;
-                final double tan = (double)anchorObj.get("tangent");
-                final AnchorPoint.Heading heading;
-                final double customHeading;
-                if (((String) anchorObj.get("headingState")).equals("FRONT")) {
-                    heading = AnchorPoint.Heading.FRONT;
-                    customHeading = 0d;
-                } else if (((String) anchorObj.get("headingState")).equals("BACK")) {
-                    heading = AnchorPoint.Heading.BACK;
-                    customHeading = 0d;
-                } else {
-                    heading = AnchorPoint.Heading.CUSTOM;
-                    customHeading = (double)anchorObj.get("heading");
-                }
-                final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
-
-                final JSONArray actionJson = (JSONArray) anchorObj.get("actions");
-                final Set<Integer> actions = new HashSet<Integer>();
-                for (final Object actionObj : actionJson) {
-                    actions.add((int) ((long) actionObj));
-                }
-                final List<ActionEventListener> actionEventListeners = new ArrayList<ActionEventListener>();
-                if (!configActionEventListeners.isEmpty() && !actions.isEmpty()) {
-                    for (final Integer action : actions) {
-                        for (final ActionEventListener eventListener : configActionEventListeners) {
-                            if (eventListener.action == action) {
-                                actionEventListeners.add(eventListener);
-                            }
-                        }
-                    }
-                }
-
-                if (first) {
-                    curParams = new CurveParameters((JSONObject)curves.get(0));
-                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
-                            curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
-                            actions, first, last);
-                    anchorPointsList.add(anchorPoint);
-                    prevParams = curParams.copy();
-                } else if (last) {
-                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                            prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
-                            actions,first, last);
-                    anchorPointsList.add(anchorPoint);
-                } else {
-                    curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
-                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                            prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
-                            actions, first, last);
-                    anchorPointsList.add(anchorPoint);
-                    prevParams = curParams.copy();
-                }
-            }
-            anchorPointsList.get(anchorPointsList.size() - 1).middlePoint.setConfigVelocity(0);
+            return obj;
         } catch (final Exception e) {
             System.out.println("Failed to open file. It is not in the right format or is corrupted.");
             System.out.println(e);
             e.printStackTrace();
+            return null;
         }
+    }
+
+    public List<AnchorPoint> parseAnchorPoints(final JSONObject obj, final int config) {
+        final List<AnchorPoint> anchorPointsList = new ArrayList<AnchorPoint>();
+        final JSONArray anchorPoints = (JSONArray) obj.get("anchors");
+
+        final JSONObject output = (JSONObject) obj.get("output");
+        final JSONObject configObj = (JSONObject) output.get(Integer.toString(config));
+        final JSONArray curves = (JSONArray) configObj.get("curves");
+
+//            System.out.println("Read file");
+
+        CurveParameters curParams = null;
+        CurveParameters prevParams = null;
+
+        System.out.println("Number of anchorPoints: " + anchorPoints.size());
+
+        for (int i = 0; i < anchorPoints.size(); i++) {
+            final JSONObject anchorObj = (JSONObject) anchorPoints.get(i);
+
+            System.out.println("i = " + i);
+
+            if (((Long)anchorObj.get("config")).intValue() != config && ((Long)anchorObj.get("config")).intValue() != 0) {
+                continue;
+            }
+
+            final boolean first = (i == 0);
+            final boolean last = (i == anchorPoints.size() - 1);
+
+            final double x = ((double)anchorObj.get("x"))*Config.INCHES_TO_METERS;
+            final double y = ((double)anchorObj.get("y"))*Config.INCHES_TO_METERS;
+            final double tan = (double)anchorObj.get("tangent");
+            final AnchorPoint.Heading heading;
+            final double customHeading;
+            if (((String) anchorObj.get("headingState")).equals("FRONT")) {
+                heading = AnchorPoint.Heading.FRONT;
+                customHeading = 0d;
+            } else if (((String) anchorObj.get("headingState")).equals("BACK")) {
+                heading = AnchorPoint.Heading.BACK;
+                customHeading = 0d;
+            } else {
+                heading = AnchorPoint.Heading.CUSTOM;
+                customHeading = (double)anchorObj.get("heading");
+            }
+            final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
+
+            final JSONArray actionJson = (JSONArray) anchorObj.get("actions");
+            final Set<Integer> actions = new HashSet<Integer>();
+            for (final Object actionObj : actionJson) {
+                actions.add((int) ((long) actionObj));
+            }
+            final List<ActionEventListener> actionEventListeners = new ArrayList<ActionEventListener>();
+            if (!configActionEventListeners.isEmpty() && !actions.isEmpty()) {
+                for (final Integer action : actions) {
+                    for (final ActionEventListener eventListener : configActionEventListeners) {
+                        if (eventListener.action == action) {
+                            actionEventListeners.add(eventListener);
+                        }
+                    }
+                }
+            }
+
+            System.out.println("AnchorPoints list size: " + anchorPointsList.size());
+
+            if (first) {
+                curParams = new CurveParameters((JSONObject)curves.get(0));
+                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
+                        curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
+                        actions, first, last);
+                anchorPointsList.add(anchorPoint);
+                prevParams = curParams.copy();
+            } else if (last) {
+                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                        prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
+                        actions,first, last);
+                anchorPointsList.add(anchorPoint);
+            } else {
+//                System.out.println("Last: " + last);
+                curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
+                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                        prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
+                        actions, first, last);
+                anchorPointsList.add(anchorPoint);
+                prevParams = curParams.copy();
+            }
+        }
+        anchorPointsList.get(anchorPointsList.size() - 1).middlePoint.setConfigVelocity(0);
         return anchorPointsList;
     }
 
 
-    public List<SegmentPoint> parseSegmentPoints(final InputStream stream, final int config) {
+    public List<SegmentPoint> parseSegmentPoints(final JSONObject obj, final int config) {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
-        final JSONParser jsonParser = new JSONParser();
-        try {
-            System.out.println("Parsing file");
-            final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
-            System.out.println("JSON file: " + obj.toJSONString());
-            final JSONArray segments = (JSONArray) obj.get("segments");
-            for (int i = 0; i < segments.size(); i++) {
-                final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
-                if (segment.config == config || segment.config == 0) {
-                    segmentPoints.add(segment);
-                }
+        final JSONArray segments = (JSONArray) obj.get("segments");
+        for (int i = 0; i < segments.size(); i++) {
+            final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
+            if (segment.config == config || segment.config == 0) {
+                segmentPoints.add(segment);
             }
-        } catch (Exception e) {
-            System.out.println("Failed to open file. It is not in the right format or is corrupted.");
-            System.out.println(e);
-            e.printStackTrace();
         }
 
         return segmentPoints;

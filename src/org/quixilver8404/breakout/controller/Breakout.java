@@ -7,7 +7,6 @@ import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -15,22 +14,28 @@ public class Breakout {
     public final Controller controller;
     public final PowerProfile powerProfile;
     public final Path path;
-    protected Vector3 lastKnownPos;
+    protected Vector3 lastDesiredPos;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+        System.out.println("Hey hey ho ho");
+        System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
         robotConfig.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = Path.fromFile(foxtrotFile, foxtrotConfig, actionEventListeners);
-        lastKnownPos = new Vector3(0,0,0);
+        lastDesiredPos = new Vector3(path.startX,path.startY,path.startHeading);
+        System.out.println("====================DONE INITIALIZING BREAKOUT====================");
+        System.out.println("Path is null: " + (path==null));
     }
 
-    public Breakout(final InputStream anchorPointStream, final InputStream segmentPointStream, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+    public Breakout(final InputStream foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+        System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
         robotConfig.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
-        path = new Path(anchorPointStream, segmentPointStream, foxtrotConfig, actionEventListeners);
-        lastKnownPos = new Vector3(0,0,0);
+        path = new Path(foxtrotFile, foxtrotConfig, actionEventListeners);
+        lastDesiredPos = new Vector3(path.startX,path.startY,path.startHeading);
+        System.out.println("====================DONE INITIALIZING BREAKOUT====================");
     }
 
     protected double prev_s = 0;
@@ -42,8 +47,8 @@ public class Breakout {
 
         prev_s = s;
 
-        final RobotState state = toFoxtrotCoords(path.evaluate(s, s_dot, s_dot_dot));
-        lastKnownPos = state.pos;
+        final RobotState state = toBreakoutCoords(path.evaluate(s, s_dot, s_dot_dot));
+        lastDesiredPos = toFoxtrotCoords(state.pos);
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
                 Vector3.subtractVector(vel, state.vel));
@@ -64,15 +69,19 @@ public class Breakout {
         return path.isFinished();
     }
 
-    public Vector3 getLastKnownPos() {
-        return lastKnownPos;
+    public Vector3 getLastDesiredPos() {
+        return lastDesiredPos;
     }
 
-    protected RobotState toFoxtrotCoords(final RobotState state) {
+    public static RobotState toBreakoutCoords(final RobotState state) {
         return new RobotState(
                 new Vector3(state.pos.x, state.pos.y, state.pos.theta-Math.PI/2),
                 state.vel,
                 state.acc
         );
+    }
+
+    public static Vector3 toFoxtrotCoords(final Vector3 pos) {
+        return new Vector3(pos.x, pos.y, pos.theta+Math.PI/2);
     }
 }

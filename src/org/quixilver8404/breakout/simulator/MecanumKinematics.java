@@ -184,7 +184,7 @@ public class MecanumKinematics {
 
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
-        ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta, width, length);
+        ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta+Math.PI/2, width, length);
 //        ui.update();
 //        System.out.println();
     }
