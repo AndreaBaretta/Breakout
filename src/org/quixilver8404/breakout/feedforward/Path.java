@@ -506,7 +506,7 @@ public class Path {
             }
 
             final boolean first = (i == 0);
-            final boolean last = (i == anchorPoints.size() - 1);
+//            final boolean last = (i == anchorPoints.size() - 1);
 
             final double x = ((double)anchorObj.get("x"))*Config.INCHES_TO_METERS;
             final double y = ((double)anchorObj.get("y"))*Config.INCHES_TO_METERS;
@@ -543,26 +543,48 @@ public class Path {
 
             System.out.println("AnchorPoints list size: " + anchorPointsList.size());
 
+//            if (first) {
+//                curParams = new CurveParameters((JSONObject)curves.get(0));
+//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
+//                        curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
+//                        actions, first, last);
+//                anchorPointsList.add(anchorPoint);
+//                prevParams = curParams.copy();
+//            } else if (last) {
+//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+//                        prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
+//                        actions,first, last);
+//                anchorPointsList.add(anchorPoint);
+//            } else {
+//                System.out.println("Last: " + last);
+//                curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
+//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+//                        prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
+//                        actions, first, last);
+//                anchorPointsList.add(anchorPoint);
+//                prevParams = curParams.copy();
+//            }
             if (first) {
                 curParams = new CurveParameters((JSONObject)curves.get(0));
                 final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
                         curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
-                        actions, first, last);
+                        actions, first, false);
                 anchorPointsList.add(anchorPoint);
                 prevParams = curParams.copy();
-            } else if (last) {
-                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                        prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
-                        actions,first, last);
-                anchorPointsList.add(anchorPoint);
             } else {
-//                System.out.println("Last: " + last);
-                curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
-                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-                        prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
-                        actions, first, last);
-                anchorPointsList.add(anchorPoint);
-                prevParams = curParams.copy();
+                try {
+                    curParams = new CurveParameters((JSONObject) curves.get(anchorPointsList.size()));
+                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                            prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
+                            actions, first, false);
+                    anchorPointsList.add(anchorPoint);
+                    prevParams = curParams.copy();
+                } catch (final IndexOutOfBoundsException e) { //Last
+                    final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
+                            prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
+                            actions,first, true);
+                    anchorPointsList.add(anchorPoint);
+                }
             }
         }
         anchorPointsList.get(anchorPointsList.size() - 1).middlePoint.setConfigVelocity(0);
