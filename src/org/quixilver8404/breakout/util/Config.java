@@ -41,10 +41,14 @@ public class Config {
     public final double acceleration_correction;
     public final double P_static;
     public final double P_dynamic;
+    protected double voltage_scale;
+    public final double normal_voltage;
 
-    public Config(final double max_acceleration, final double max_deceleration, final double max_velocity, final double acceleration_correction_step,
-                  final double t_max, final double omega_max, final double mass, final double wheel_radius, final double J, final double r_X, final double r_Y,
-                  final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction, final double P_static, final double P_dynamic) {
+    public Config(final double normal_voltage, final double current_voltage, final double max_acceleration, final double max_deceleration, final double max_velocity,
+                  final double acceleration_correction_step, final double t_max, final double omega_max, final double mass, final double wheel_radius, final double J, final double r_X,
+                  final double r_Y, final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction, final double P_static, final double P_dynamic) {
+        this.normal_voltage = normal_voltage;
+        this.voltage_scale = current_voltage/normal_voltage;
         this.max_acceleration = max_acceleration;
         this.max_deceleration = max_deceleration;
         this.max_velocity = max_velocity;
@@ -64,21 +68,26 @@ public class Config {
     }
 
     public void set() {
-        MAX_ACCELERATION = max_acceleration;
-        MAX_DECELERATION = max_deceleration;
-        MAX_VELOCITY = max_velocity;
+        MAX_ACCELERATION = max_acceleration*voltage_scale;
+        MAX_DECELERATION = max_deceleration*voltage_scale;
+        MAX_VELOCITY = max_velocity*voltage_scale;
         ACCELERATION_CORRECTION_STEP = acceleration_correction_step;
-        T_MAX = t_max;
-        OMEGA_MAX = omega_max;
+        T_MAX = t_max*voltage_scale;
+        OMEGA_MAX = omega_max*voltage_scale;
         MASS = mass;
         WHEEL_RADIUS = wheel_radius;
         J = inertia;
         r_X = rX;
         r_Y = rY;
-        MAX_SAFE_VELOCITY = max_safe_velocity;
-        MAX_SAFE_ACCELERATION = max_safe_acceleration;
+        MAX_SAFE_VELOCITY = max_safe_velocity*voltage_scale;
+        MAX_SAFE_ACCELERATION = max_safe_acceleration*voltage_scale;
         ACCELERATION_CORRECTION = acceleration_correction;
-        P_STATIC = P_static;
-        P_DYNAMIC = P_dynamic;
+        P_STATIC = P_static/voltage_scale;
+        P_DYNAMIC = P_dynamic/voltage_scale;
+    }
+
+    public void setVoltage(final double voltage) {
+        voltage_scale = voltage/normal_voltage;
+        set();
     }
 }

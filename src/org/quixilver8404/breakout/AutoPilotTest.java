@@ -20,7 +20,7 @@ public class AutoPilotTest {
         window1.init();
 
         final AutoPilot autoPilot = new AutoPilot(
-                new Config(18.512,-18.512,5.625,0.01,2.1,
+                new Config(12,12,18.512,-18.512,5.625,0.01,2.1,
                     31.4,12.1,(75d/2d)/1000d,
                         MecanumKinematics.FindMomentOfInertia(44d/100d, 44d/100d, 12.1),44d/200d - 0.05, 44d/200d - 0.073,
                     0.95,0.95,Math.PI/2.5, 0.17, 0.09), true
