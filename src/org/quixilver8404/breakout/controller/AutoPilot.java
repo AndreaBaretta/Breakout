@@ -10,14 +10,16 @@ import java.util.TreeSet;
 
 public class AutoPilot {
 
-    public final Controller controller;
+    public Controller controller;
     public final PowerProfile powerProfile;
+    public final Config config;
     protected double prev_s = 0;
     protected boolean reachedEnd = false;
     protected LinearSegment segment;
     protected Vector3 desiredPos;
 
     public AutoPilot(final Config robotConfig, final boolean v1) {
+        config = robotConfig;
         robotConfig.set();
         if (v1) {
             controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
@@ -50,6 +52,11 @@ public class AutoPilot {
         return frictionAdjustedPowerSettings;
 //        return powerSettings;
 //        return new double[]{-1,-1,-1,-1};
+    }
+
+    public void setVoltage(final double voltage) {
+        config.setVoltage(voltage);
+        controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
     }
 
 }

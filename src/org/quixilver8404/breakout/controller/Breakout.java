@@ -11,26 +11,28 @@ import java.io.InputStream;
 import java.util.List;
 
 public class Breakout {
-    public final Controller controller;
+    public Controller controller;
     public final PowerProfile powerProfile;
     public final Path path;
     protected Vector3 lastDesiredPos;
+    protected final Config config;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
         System.out.println("Hey hey ho ho");
         System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
-        robotConfig.set();
+        config = robotConfig;
+        config.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = Path.fromFile(foxtrotFile, foxtrotConfig, actionEventListeners);
         lastDesiredPos = new Vector3(path.startX,path.startY,path.startHeading);
         System.out.println("====================DONE INITIALIZING BREAKOUT====================");
-        System.out.println("Path is null: " + (path==null));
     }
 
     public Breakout(final InputStream foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
         System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
-        robotConfig.set();
+        config = robotConfig;
+        config.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = new Path(foxtrotFile, foxtrotConfig, actionEventListeners);
@@ -83,5 +85,10 @@ public class Breakout {
 
     public static Vector3 toFoxtrotCoords(final Vector3 pos) {
         return new Vector3(pos.x, pos.y, pos.theta+Math.PI/2);
+    }
+
+    public void setVoltage(final double voltage) {
+        config.setVoltage(voltage);
+        controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
     }
 }
