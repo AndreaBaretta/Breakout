@@ -5,6 +5,7 @@ import org.lwjgl.system.CallbackI;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -103,35 +104,50 @@ public class MecanumKinematics {
 
         int threshold = 0;
 
+        final boolean[] w_static = new boolean[4];
+
         if (Math.abs(vel_1) <= 1e-3 && Math.abs(P_1_) < P_static) { //Check if P_dynamic causes change in sign of velocity of wheel
 //            System.out.println("1 did not overcome static");
             P_1 = 0;
+            w_static[0] = true;
             threshold += 1;
         } else {
 //            System.out.println("1 overcame static");
+            w_static[0] = false;
             P_1 = Math.min(Math.max(P_1_, -1),1) - Math.signum(vel_1)*P_dynamic;
         }
         if (Math.abs(vel_2) <= 1e-3 && Math.abs(P_2_) < P_static) {
 //            System.out.println("2 did not overcome static");
+            w_static[1] = true;
+
             P_2 = 0;
             threshold += 1;
         } else {
 //            System.out.println("2 overcame static");
+            w_static[1] = false;
+
             P_2 = Math.min(Math.max(P_2_, -1),1) - Math.signum(vel_2)*P_dynamic;
         }
         if (Math.abs(vel_3) <= 1e-3 && Math.abs(P_3_) < P_static) {
 //            System.out.println("3 did not overcome static");
+            w_static[2] = true;
+
             P_3 = 0;
             threshold += 1;
         } else {
+            w_static[2] = false;
+
 //            System.out.println("3 overcame static");
             P_3 = Math.min(Math.max(P_3_, -1),1) - Math.signum(vel_3)*P_dynamic;
         }
         if (Math.abs(vel_4) <= 1e-3 && Math.abs(P_4_) < P_static) {
 //            System.out.println("4 did not overcome static");
+            w_static[3] = true;
+
             P_4 = 0;
             threshold += 1;
         } else {
+            w_static[2] = false;
 //            System.out.println("4 overcame static");
             P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
         }
@@ -170,6 +186,37 @@ public class MecanumKinematics {
         final double F_x = cx_P1_3*P_1 + cx_P2_4*P_2 + cx_P1_3*P_3 + cx_P2_4*P_4 + coefficient_xdot*fieldVel.x + noise_x;
         final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
         final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
+
+//
+//        final double cos_a = Math.cos(fieldPos.theta);
+//        final double sin_a = Math.sin(fieldPos.theta);
+//        final double[] Fx_i = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[3] ? 0 : (R*P_3*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+//        };
+//
+//        final double[] Fy_i = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+//        };
+//
+//        final double[] Talpha_i = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
+//        };
+//
+//        double F_x = 0;
+//        for (double Fx : Fx_i) { F_x += Fx; }
+//        double F_y = 0;
+//        for (double Fy : Fy_i) { F_y += Fy; }
+//        double tau = 0;
+//        for (double Talpha : Talpha_i) { tau += Talpha; }
 
         if (threshold >= 3) {
             fieldAcc = new Vector3(0,0,0);

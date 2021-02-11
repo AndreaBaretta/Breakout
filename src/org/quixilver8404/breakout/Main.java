@@ -134,7 +134,8 @@ public class Main {
                 }
             }
 
-            kinematics.update(powerSettings, dt);
+//            kinematics.update(powerSettings, dt);
+            kinematics.update(new double[]{1,-1,1,-1}, dt);
 
 //            for (int i = 0; i < path.segmentPoints.size(); i++) { //Draw segmentpoints
 //                final SegmentPoint segmentPoint = path.segmentPoints.get(i);
