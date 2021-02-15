@@ -57,14 +57,15 @@ public class Breakout {
 
         final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, pos.theta);
 
-        final double[] frictionAdjustedPowerSettings;
-        if (isFinished()) {
-            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, state.pos), pos.theta, powerSettings, true);
-        } else {
-            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(0,0,0), pos.theta, powerSettings, false);
-        }
-
-        return frictionAdjustedPowerSettings;
+//        final double[] frictionAdjustedPowerSettings;
+//        if (isFinished()) {
+//            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, state.pos), pos.theta, powerSettings, true);
+//        } else {
+//            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(0,0,0), pos.theta, powerSettings, false);
+//        }
+//
+//        return frictionAdjustedPowerSettings;
+        return powerSettings;
     }
 
     public boolean isFinished() {

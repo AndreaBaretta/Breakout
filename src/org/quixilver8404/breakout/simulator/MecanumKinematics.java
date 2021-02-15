@@ -168,55 +168,60 @@ public class MecanumKinematics {
 //        noise_alpha += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*5;
 //        System.out.println("noise_alpha: " + noise_alpha + " noise_x: " + noise_x + " noise_y: " + noise_y + " random_int: " + Math.pow(-1, rand.nextInt(2)));
 
-        final double[] P = newPowerSetting;
-        final double R2_omegamax = Math.pow(R, 2)*omegamax;
-        final double Tmax4_div_R2_omegamax = -4*Tmax/R2_omegamax;
-        final double coefficient_xdot = Tmax4_div_R2_omegamax;
-        final double coefficient_ydot = coefficient_xdot;
-        final double coefficient_alphadot = -4*Tmax*Math.pow((rX+rY),2)/(Math.pow(R,2)*omegamax);
-
-        final double cx_P1_3 = (Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-        final double cx_P2_4 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-
-        final double cy_P1_3 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-        final double cy_P2_4 = (-Math.cos(fieldPos.theta) - Math.sin(fieldPos.theta))*Tmax/R;
-
-        final double c_P_alpha = ((rX+rY)*Tmax/R);
-
-        final double F_x = cx_P1_3*P_1 + cx_P2_4*P_2 + cx_P1_3*P_3 + cx_P2_4*P_4 + coefficient_xdot*fieldVel.x + noise_x;
-        final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
-        final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
-
+//        final double[] P = newPowerSetting;
+//        final double R2_omegamax = Math.pow(R, 2)*omegamax;
+//        final double Tmax4_div_R2_omegamax = -4*Tmax/R2_omegamax;
+//        final double coefficient_xdot = Tmax4_div_R2_omegamax;
+//        final double coefficient_ydot = coefficient_xdot;
+//        final double coefficient_alphadot = -4*Tmax*Math.pow((rX+rY),2)/(Math.pow(R,2)*omegamax);
 //
-//        final double cos_a = Math.cos(fieldPos.theta);
-//        final double sin_a = Math.sin(fieldPos.theta);
-//        final double[] Fx_i = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[3] ? 0 : (R*P_3*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
-//        };
+//        final double cx_P1_3 = (Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
+//        final double cx_P2_4 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
 //
-//        final double[] Fy_i = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
-//        };
+//        final double cy_P1_3 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
+//        final double cy_P2_4 = (-Math.cos(fieldPos.theta) - Math.sin(fieldPos.theta))*Tmax/R;
 //
-//        final double[] Talpha_i = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
-//        };
+//        final double c_P_alpha = ((rX+rY)*Tmax/R);
 //
-//        double F_x = 0;
-//        for (double Fx : Fx_i) { F_x += Fx; }
-//        double F_y = 0;
-//        for (double Fy : Fy_i) { F_y += Fy; }
-//        double tau = 0;
-//        for (double Talpha : Talpha_i) { tau += Talpha; }
+//        final double F_x = cx_P1_3*P_1 + cx_P2_4*P_2 + cx_P1_3*P_3 + cx_P2_4*P_4 + coefficient_xdot*fieldVel.x + noise_x;
+//        final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
+//        final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
+
+
+        final double cos_a = Math.cos(fieldPos.theta);
+        final double sin_a = Math.sin(fieldPos.theta);
+        final double[] Fx_i = new double[]{
+                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+        };
+
+        final double[] Fy_i = new double[]{
+                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+        };
+
+        final double[] Talpha_i = new double[]{
+                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
+        };
+
+        double F_x = 0;
+        for (double Fx : Fx_i) { F_x += Fx; }
+        double F_y = 0;
+        for (double Fy : Fy_i) { F_y += Fy; }
+        double tau = 0;
+        for (double Talpha : Talpha_i) { tau += Talpha; }
+
+//        System.out.println("F_x_test=" + F_x_test + ", F_x=" + F_x);
+//        System.out.println("F_y_test=" + F_y_test + ", F_y=" + F_y);
+//        System.out.println("tau_test=" + tau_test + ", tau=" + tau);
+
 
         if (threshold >= 3) {
             fieldAcc = new Vector3(0,0,0);
