@@ -156,7 +156,6 @@ public class MecanumKinematics {
 //        System.out.println("Final power 2: " + P_2 + ", velocity of wheel: " + vel_2 + ", initial power: " + P_2_);
 //        System.out.println("Final power 3: " + P_3 + ", velocity of wheel: " + vel_3 + ", initial power: " + P_3_);
 //        System.out.println("Final power 4: " + P_4 + ", velocity of wheel: " + vel_4 + ", initial power: " + P_4_);
-//        System.out.println("Net pwower: [" + P_1 + ", " + P_2 + ", " + P_3 + ", " + P_4 + "]");
 
         double noise_x = 0;
         double noise_y = 0;
@@ -190,44 +189,76 @@ public class MecanumKinematics {
 
         final double cos_a = Math.cos(fieldPos.theta);
         final double sin_a = Math.sin(fieldPos.theta);
-        final double[] Fx_i = new double[]{
-                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+
+        final double[] FX = new double[] {
+                Tmax * (R * P_1 * omegamax - (cos_a + sin_a)*getFieldVel().x + (cos_a - sin_a)*getFieldVel().y + (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                -Tmax * (R * P_2 * omegamax + (cos_a - sin_a)*getFieldVel().x + (cos_a + sin_a)*getFieldVel().y - (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                Tmax * (R * P_3 * omegamax - (cos_a + sin_a)*getFieldVel().x + (cos_a - sin_a)*getFieldVel().y - (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                -Tmax * (R * P_4 * omegamax + (cos_a - sin_a)*getFieldVel().x + (cos_a + sin_a)*getFieldVel().y + (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax)
         };
 
-        final double[] Fy_i = new double[]{
-                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+        final double[] FY = new double[] {
+                -Tmax * (R * P_1 * omegamax - (cos_a + sin_a)*getFieldVel().x + (cos_a - sin_a)*getFieldVel().y + (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                -Tmax * (R * P_2 * omegamax + (cos_a - sin_a)*getFieldVel().x + (cos_a + sin_a)*getFieldVel().y - (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                Tmax * (-R * P_3 * omegamax + (cos_a + sin_a)*getFieldVel().x + (-cos_a + sin_a)*getFieldVel().y + (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax),
+                -Tmax * (R * P_4 * omegamax + (cos_a - sin_a)*getFieldVel().x + (cos_a + sin_a)*getFieldVel().y + (rX + rY)*fieldVel.theta)/(Math.pow(R,2) * omegamax)
         };
 
-        final double[] Talpha_i = new double[]{
-                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
+        final double[] Fx = new double[4];
+        final double[] Fy = new double[4];
+        for (int i = 0; i < 4; i++) {
+            Fx[i] = cos_a*FX[i]-sin_a*FY[i];
+            Fy[i] = sin_a*FX[i]+cos_a*FY[i];
+        }
+
+        final double[] tau = new double[] {
+                rX*FY[0]-rY*FX[0],
+                -rX*FY[1]-rY*FX[1],
+                -rX*FY[2]+rY*FX[2],
+                rX*FY[3]+rY*FX[3],
         };
 
-        double F_x = 0;
-        for (double Fx : Fx_i) { F_x += Fx; }
-        double F_y = 0;
-        for (double Fy : Fy_i) { F_y += Fy; }
-        double tau = 0;
-        for (double Talpha : Talpha_i) { tau += Talpha; }
+//        System.out.println("FY: " + Arrays.toString(FY));
+//        System.out.println("Fy: " + Arrays.toString(Fy));
+//
+//        final double[] Fx = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+//        };
+//
+//        final double[] Fy = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
+//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
+//        };
+//
+//        final double[] tau = new double[]{
+//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
+//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
+//        };
+//
+        double Fx_total = 0;
+        for (double Fx_i : Fx) { Fx_total += Fx_i; }
+        double Fy_total = 0;
+        for (double Fy_i : Fy) { Fy_total += Fy_i; }
+        double tau_total = 0;
+        for (double tau_i : tau) { tau_total += tau_i; }
 
 //        System.out.println("F_x_test=" + F_x_test + ", F_x=" + F_x);
 //        System.out.println("F_y_test=" + F_y_test + ", F_y=" + F_y);
 //        System.out.println("tau_test=" + tau_test + ", tau=" + tau);
 
 
-        if (threshold >= 3) {
+        if (threshold >= 5) {
             fieldAcc = new Vector3(0,0,0);
             fieldVel = new Vector3(0,0,0);
         } else {
-            fieldAcc = new Vector3(F_x / mass, F_y / mass, tau / J);
+            fieldAcc = new Vector3(Fx_total / mass, Fy_total / mass, tau_total / J);
             fieldVel = Vector3.addVector(fieldVel, fieldAcc.scalarMultiply(delta_t));
             fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
         }

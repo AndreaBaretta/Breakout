@@ -29,7 +29,7 @@ public class AutoPilotTest {
 //                        0.95, Math.PI/2.5)
         );
 
-        final Vector3 desiredPos = new Vector3(0, 1, 90*Math.PI/180);
+        final Vector3 desiredPos = new Vector3(1, 1, 90*Math.PI/180);
 
         autoPilot.setDesiredPos(desiredPos);
 
