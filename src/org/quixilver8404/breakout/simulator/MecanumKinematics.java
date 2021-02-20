@@ -97,11 +97,6 @@ public class MecanumKinematics {
         final double vel_3 = velWheel(-rX, -rY, -Math.PI/4, R);
         final double vel_4 = velWheel(rX, -rY, Math.PI/4, R);
 
-//        P_1 = P_1_;
-//        P_2 = P_2_;
-//        P_3 = P_3_;
-//        P_4 = P_4_;
-
         int threshold = 0;
 
         final boolean[] w_static = new boolean[4];
@@ -152,11 +147,6 @@ public class MecanumKinematics {
             P_4 = Math.min(Math.max(P_4_, -1),1) - Math.signum(vel_4)*P_dynamic;
         }
 
-//        System.out.println("Final power 1: " + P_1 + ", velocity of wheel: " + vel_1 + ", initial power: " + P_1_);
-//        System.out.println("Final power 2: " + P_2 + ", velocity of wheel: " + vel_2 + ", initial power: " + P_2_);
-//        System.out.println("Final power 3: " + P_3 + ", velocity of wheel: " + vel_3 + ", initial power: " + P_3_);
-//        System.out.println("Final power 4: " + P_4 + ", velocity of wheel: " + vel_4 + ", initial power: " + P_4_);
-
         double noise_x = 0;
         double noise_y = 0;
         double noise_alpha = 0;
@@ -166,26 +156,6 @@ public class MecanumKinematics {
 //        noise_y += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*35;
 //        noise_alpha += Math.pow(-1, rand.nextInt(2))*rand.nextDouble()*5;
 //        System.out.println("noise_alpha: " + noise_alpha + " noise_x: " + noise_x + " noise_y: " + noise_y + " random_int: " + Math.pow(-1, rand.nextInt(2)));
-
-//        final double[] P = newPowerSetting;
-//        final double R2_omegamax = Math.pow(R, 2)*omegamax;
-//        final double Tmax4_div_R2_omegamax = -4*Tmax/R2_omegamax;
-//        final double coefficient_xdot = Tmax4_div_R2_omegamax;
-//        final double coefficient_ydot = coefficient_xdot;
-//        final double coefficient_alphadot = -4*Tmax*Math.pow((rX+rY),2)/(Math.pow(R,2)*omegamax);
-//
-//        final double cx_P1_3 = (Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-//        final double cx_P2_4 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-//
-//        final double cy_P1_3 = (-Math.cos(fieldPos.theta) + Math.sin(fieldPos.theta))*Tmax/R;
-//        final double cy_P2_4 = (-Math.cos(fieldPos.theta) - Math.sin(fieldPos.theta))*Tmax/R;
-//
-//        final double c_P_alpha = ((rX+rY)*Tmax/R);
-//
-//        final double F_x = cx_P1_3*P_1 + cx_P2_4*P_2 + cx_P1_3*P_3 + cx_P2_4*P_4 + coefficient_xdot*fieldVel.x + noise_x;
-//        final double F_y = cy_P1_3*P_1 + cy_P2_4*P_2 + cy_P1_3*P_3 + cy_P2_4*P_4 + coefficient_ydot*fieldVel.y + noise_y;
-//        final double tau = -c_P_alpha*P_1 + c_P_alpha*P_2 + c_P_alpha*P_3 - c_P_alpha*P_4 + coefficient_alphadot*fieldVel.theta + noise_alpha;
-
 
         final double cos_a = Math.cos(fieldPos.theta);
         final double sin_a = Math.sin(fieldPos.theta);
@@ -218,40 +188,12 @@ public class MecanumKinematics {
                 rX*FY[3]+rY*FX[3],
         };
 
-//        System.out.println("FY: " + Arrays.toString(FY));
-//        System.out.println("Fy: " + Arrays.toString(Fy));
-//
-//        final double[] Fx = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(cos_a + sin_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a + cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
-//        };
-//
-//        final double[] Fy = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax),
-//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-sin_a - cos_a)*Tmax/(Math.pow(R, 2)*omegamax)
-//        };
-//
-//        final double[] tau = new double[]{
-//                w_static[0] ? 0 : (R*P_1*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[1] ? 0 : (R*P_2*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[2] ? 0 : (R*P_3*omegamax + (-cos_a - sin_a)*fieldVel.x + (cos_a - sin_a)*fieldVel.y - (rX + rY)*fieldVel.theta)*(Tmax*(rX+rY)/(Math.pow(R,2)*omegamax)),
-//                w_static[3] ? 0 : (R*P_4*omegamax + (cos_a - sin_a)*fieldVel.x + (cos_a + sin_a)*fieldVel.y + (rX + rY)*fieldVel.theta)*(-Tmax*(rX+rY)/(Math.pow(R,2)*omegamax))
-//        };
-//
         double Fx_total = 0;
         for (double Fx_i : Fx) { Fx_total += Fx_i; }
         double Fy_total = 0;
         for (double Fy_i : Fy) { Fy_total += Fy_i; }
         double tau_total = 0;
         for (double tau_i : tau) { tau_total += tau_i; }
-
-//        System.out.println("F_x_test=" + F_x_test + ", F_x=" + F_x);
-//        System.out.println("F_y_test=" + F_y_test + ", F_y=" + F_y);
-//        System.out.println("tau_test=" + tau_test + ", tau=" + tau);
 
 
         if (threshold >= 5) {
@@ -263,7 +205,6 @@ public class MecanumKinematics {
             fieldPos = Vector3.addVector(fieldPos, fieldVel.scalarMultiply(delta_t));
         }
 
-//        System.out.println(fieldVel.toString());
 
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
