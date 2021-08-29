@@ -25,16 +25,12 @@ public class FrictionCorrection {
                 finalPowerSettings[i] = 0;
             } else if (Math.abs(vel_w[i]) <= 1e-4 && Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC) {//TODO FIGURE THIS OUT
 //                System.out.println("Can't overcome static");
-                finalPowerSettings[i] = Math.signum(powerSettings[i])*Config.P_STATIC/Config.VOLTAGE_SCALE;
+                finalPowerSettings[i] = Math.signum(powerSettings[i])*Config.P_STATIC*Config.FRICTION_SCALAR_FACTOR_WHEEL[i]/Config.VOLTAGE_SCALE;
             } else {
 //                System.out.println("Dynamic");
-                finalPowerSettings[i] = (dynamicCorrection + powerSettings[i])/Config.VOLTAGE_SCALE;
+                finalPowerSettings[i] = (dynamicCorrection*Config.FRICTION_SCALAR_FACTOR_WHEEL[i] + powerSettings[i])/Config.VOLTAGE_SCALE;
             }
         }
-        finalPowerSettings[1] *= Config.FRICTION_SCALAR_FACTOR_WHEEL_1;
-        finalPowerSettings[2] *= Config.FRICTION_SCALAR_FACTOR_WHEEL_2;
-        finalPowerSettings[3] *= Config.FRICTION_SCALAR_FACTOR_WHEEL_3;
-        finalPowerSettings[4] *= Config.FRICTION_SCALAR_FACTOR_WHEEL_4;
         return finalPowerSettings;
     }
 
