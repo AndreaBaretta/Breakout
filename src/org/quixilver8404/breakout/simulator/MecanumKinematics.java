@@ -57,7 +57,7 @@ public class MecanumKinematics {
         this.Tmax = Tmax;
         this.R = R;
         this.omegamax = omegamax;
-//        ui.init();
+        ui.init();
     }
 
     /**
@@ -66,7 +66,7 @@ public class MecanumKinematics {
      * @param l - Length of the surface in meters.
      * @param m - Mass of the object in kilograms.
      * */
-    public static double  FindMomentOfInertia(final double w, final double l, final double m) {
+    public static double FindMomentOfInertia(final double w, final double l, final double m) {
         final double sigma = m/(w*l);
         final double I = sigma*(1d/12d)*(Math.pow(w,3)*l + w*Math.pow(l,3));
         System.out.println("Inertia: " + I);
@@ -209,7 +209,7 @@ public class MecanumKinematics {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         ui.setBackground(new double[]{255,255,255});
         ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta+Math.PI/2, width, length);
-//        ui.update();
+        ui.update();
 //        System.out.println();
     }
 

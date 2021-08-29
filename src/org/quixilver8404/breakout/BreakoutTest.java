@@ -18,7 +18,7 @@ public class BreakoutTest {
         final Breakout breakout = new Breakout(new File("/home/andrea/Desktop/foxtrotFiles/power_shot_and_wobble_goals_blue_breakout2.foxtrot2"), 1, new ArrayList<>(),
                 new Config(12, 12,11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
                         37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
-                        0.95, Math.PI/2.5, 0.2, 0.1));
+                        0.95, Math.PI/2.5, 0.2, 0.1,20d/4, 20d/4, 20d/4, 20d/4));
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.5, 0.5, new Vector3(0,0,0),
                 new Vector3(breakout.path.startX, breakout.path.startY,breakout.path.startHeading - Math.PI/2), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,

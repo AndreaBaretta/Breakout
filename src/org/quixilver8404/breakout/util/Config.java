@@ -1,6 +1,7 @@
 package org.quixilver8404.breakout.util;
 
 public class Config {
+    public static double VOLTAGE_SCALE = 1;
     public static double MAX_ACCELERATION = 11.2;
     public static double MAX_DECELERATION = -11.2;
     public static double MAX_VELOCITY = 1.17749;
@@ -18,6 +19,10 @@ public class Config {
     public final static double INCHES_TO_METERS = 0.0254;
     public static double P_STATIC = 0.2;
     public static double P_DYNAMIC = 0.1;
+    public static double FRICTION_SCALAR_FACTOR_WHEEL_1 = 1;
+    public static double FRICTION_SCALAR_FACTOR_WHEEL_2 = 1;
+    public static double FRICTION_SCALAR_FACTOR_WHEEL_3 = 1;
+    public static double FRICTION_SCALAR_FACTOR_WHEEL_4 = 1;
     public final static double P_static_physics = 0.17;
     public final static double P_dynamic_physics = 0.09;
 //    public final static double P_static = 0;
@@ -41,12 +46,17 @@ public class Config {
     public final double acceleration_correction;
     public final double P_static;
     public final double P_dynamic;
+    public final double friction_scalar_factor_wheel_1;
+    public final double friction_scalar_factor_wheel_2;
+    public final double friction_scalar_factor_wheel_3;
+    public final double friction_scalar_factor_wheel_4;
     protected double voltage_scale;
     public final double normal_voltage;
 
     public Config(final double normal_voltage, final double current_voltage, final double max_acceleration, final double max_deceleration, final double max_velocity,
                   final double acceleration_correction_step, final double t_max, final double omega_max, final double mass, final double wheel_radius, final double J, final double r_X,
-                  final double r_Y, final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction, final double P_static, final double P_dynamic) {
+                  final double r_Y, final double max_safe_velocity, final double max_safe_acceleration, final double acceleration_correction, final double P_static, final double P_dynamic,
+                  final double mass_wheel_1, final double mass_wheel_2, final double mass_wheel_3, final double mass_wheel_4) {
         this.normal_voltage = normal_voltage;
         this.voltage_scale = current_voltage/normal_voltage;
         this.max_acceleration = max_acceleration;
@@ -65,9 +75,14 @@ public class Config {
         this.acceleration_correction = acceleration_correction;
         this.P_static = P_static;
         this.P_dynamic = P_dynamic;
+        this.friction_scalar_factor_wheel_1 = mass_wheel_1/(mass/4);
+        this.friction_scalar_factor_wheel_2 = mass_wheel_2/(mass/4);
+        this.friction_scalar_factor_wheel_3 = mass_wheel_3/(mass/4);
+        this.friction_scalar_factor_wheel_4 = mass_wheel_4/(mass/4);
     }
 
     public void set() {
+        VOLTAGE_SCALE = voltage_scale;
         MAX_ACCELERATION = max_acceleration*voltage_scale;
         MAX_DECELERATION = max_deceleration*voltage_scale;
         MAX_VELOCITY = max_velocity*voltage_scale;
@@ -84,10 +99,15 @@ public class Config {
         ACCELERATION_CORRECTION = acceleration_correction;
         P_STATIC = P_static/voltage_scale;
         P_DYNAMIC = P_dynamic/voltage_scale;
+        FRICTION_SCALAR_FACTOR_WHEEL_1 = friction_scalar_factor_wheel_1;
+        FRICTION_SCALAR_FACTOR_WHEEL_2 = friction_scalar_factor_wheel_2;
+        FRICTION_SCALAR_FACTOR_WHEEL_3 = friction_scalar_factor_wheel_3;
+        FRICTION_SCALAR_FACTOR_WHEEL_4 = friction_scalar_factor_wheel_4;
     }
 
     public void setVoltage(final double voltage) {
         voltage_scale = voltage/normal_voltage;
+        VOLTAGE_SCALE = voltage_scale;
         set();
     }
 }

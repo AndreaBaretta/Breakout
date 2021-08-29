@@ -353,7 +353,7 @@ public class Path {
                     currentHeadingSegment.calcAlpha(s, currentSegment.getPosition(s)),
                     currentHeadingSegment.calcAlphaDot(s_dot, currentSegment.getVelocity(s, s_dot)),
                     currentHeadingSegment.calcAlphaDotDot(s_dot_dot, currentSegment.getAcceleration(s, s_dot, s_dot_dot))
-                );
+            );
         }
     }
 

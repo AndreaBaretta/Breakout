@@ -2,7 +2,7 @@
   <artifact type="jar" name="ControlSystem:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/ControlSystem_jar</output-path>
     <root id="archive" name="ControlSystem.jar">
-      <element id="module-output" name="ControlSystem" />
+      <element id="module-output" name="Breakout" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.opengl/3.2.1.2/org.lwjgl.opengl-3.2.1.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/lwjgl/osgi/org.lwjgl.lwjgl/3.2.1.2/org.lwjgl.lwjgl-3.2.1.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/lwjgl/lwjgl-glfw/3.2.1/lwjgl-glfw-3.2.1.jar" path-in-jar="/" />

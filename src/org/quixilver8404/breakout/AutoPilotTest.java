@@ -23,7 +23,7 @@ public class AutoPilotTest {
                 new Config(12,12,18.512,-18.512,5.625,0.01,2.1,
                     31.4,12.1,(75d/2d)/1000d,
                         MecanumKinematics.FindMomentOfInertia(44d/100d, 44d/100d, 12.1),44d/200d - 0.05, 44d/200d - 0.073,
-                    0.95,0.95,Math.PI/2.5, 0.17, 0.09), true
+                    0.95,0.95,Math.PI/2.5, 0.17, 0.09, 12.1/4, 12.1/4, 12.1/4, 12.1/4), true
 //                new Config(11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                        37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
 //                        0.95, Math.PI/2.5)
