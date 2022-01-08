@@ -15,7 +15,6 @@ public class AutoPilot {
     public final Config config;
     protected double prev_s = 0;
     protected boolean reachedEnd = false;
-    protected LinearSegment segment;
     protected Vector3 desiredPos;
 
     public AutoPilot(final Config robotConfig, final boolean v1) {

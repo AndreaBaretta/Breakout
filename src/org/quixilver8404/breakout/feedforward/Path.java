@@ -252,6 +252,7 @@ public class Path {
                 final VelocityPoint velocityPoint = velocityPoints.get(i);
                 final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint, velocityPoint, i - 1);
                 velocitySegments.add(velocitySegment);
+                prevVelocityPoint = velocityPoint;
             }
         }
 
@@ -296,6 +297,9 @@ public class Path {
 //        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
         headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
         headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
+
+        System.out.println("Velocity segments");
+        velocitySegments.forEach(s -> System.out.println(s.toString()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {

@@ -2,7 +2,7 @@ package org.quixilver8404.breakout.controller;
 
 import org.quixilver8404.breakout.util.Config;
 import org.apache.commons.math3.linear.ArrayRealVector;
-import org.quixilver8404.breakout.simulator.CoordinateTransformations;
+import org.quixilver8404.simulator.CoordinateTransformations;
 import org.quixilver8404.breakout.util.Vector3;
 
 public class PowerProfile {

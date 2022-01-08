@@ -2,8 +2,8 @@ package org.quixilver8404.breakout;
 
 import org.quixilver8404.breakout.controller.Controller;
 import org.quixilver8404.breakout.feedforward.*;
-import org.quixilver8404.breakout.simulator.Display;
-import org.quixilver8404.breakout.simulator.MecanumKinematics;
+import org.quixilver8404.simulator.Display;
+import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.controller.PowerProfile;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
@@ -74,7 +74,7 @@ public class Main {
                     }
                 })
         });
-        final Path path = Path.fromFile(new File("/home/andrea/Desktop/foxtrotFiles/five_stone_auton_blue.foxtrot2"), 1, actionEventListeners); //three_stone_close_auton_blue
+        final Path path = Path.fromFile(new File("/home/andrea/Desktop/test.foxtrot2"), 0, actionEventListeners); //three_stone_close_auton_blue
 
         double prev_s = 0;
         double prev_s_dot = 0;
@@ -134,8 +134,8 @@ public class Main {
                 }
             }
 
-//            kinematics.update(powerSettings, dt);
-            kinematics.update(new double[]{1,-1,1,-1}, dt);
+            kinematics.update(powerSettings, dt);
+//            kinematics.update(new double[]{1,-1,1,-1}, dt);
 
 //            for (int i = 0; i < path.segmentPoints.size(); i++) { //Draw segmentpoints
 //                final SegmentPoint segmentPoint = path.segmentPoints.get(i);

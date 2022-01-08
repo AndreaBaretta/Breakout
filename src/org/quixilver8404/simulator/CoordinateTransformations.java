@@ -1,4 +1,4 @@
-package org.quixilver8404.breakout.simulator;
+package org.quixilver8404.simulator;
 
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.RealVector;

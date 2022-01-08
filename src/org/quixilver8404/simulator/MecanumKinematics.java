@@ -1,12 +1,10 @@
-package org.quixilver8404.breakout.simulator;
+package org.quixilver8404.simulator;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.CallbackI;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
+import org.quixilver8404.simulator.Display;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 
 public class MecanumKinematics {

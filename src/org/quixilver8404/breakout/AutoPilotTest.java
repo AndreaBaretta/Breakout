@@ -1,17 +1,10 @@
 package org.quixilver8404.breakout;
 
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
 import org.quixilver8404.breakout.controller.AutoPilot;
-import org.quixilver8404.breakout.controller.Breakout;
-import org.quixilver8404.breakout.simulator.Display;
-import org.quixilver8404.breakout.simulator.MecanumKinematics;
+import org.quixilver8404.simulator.Display;
+import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AutoPilotTest {
 

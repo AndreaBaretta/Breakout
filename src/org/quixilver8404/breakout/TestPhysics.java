@@ -1,7 +1,7 @@
 package org.quixilver8404.breakout;
 
-import org.quixilver8404.breakout.simulator.Display;
-import org.quixilver8404.breakout.simulator.MecanumKinematics;
+import org.quixilver8404.simulator.Display;
+import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 

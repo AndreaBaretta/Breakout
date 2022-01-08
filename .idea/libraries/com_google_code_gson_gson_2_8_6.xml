@@ -2,10 +2,10 @@
   <library name="com.google.code.gson:gson:2.8.6" type="repository">
     <properties maven-id="com.google.code.gson:gson:2.8.6" />
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar!/" />
+      <root url="jar://$USER_HOME$/home/andrea/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.6/gson-2.8.6-javadoc.jar!/" />
+      <root url="jar://$USER_HOME$/home/andrea/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES />
   </library>

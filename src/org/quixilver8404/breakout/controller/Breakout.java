@@ -43,29 +43,29 @@ public class Breakout {
     protected double prev_s = 0;
 
     public double[] iterate(final Vector3 pos, final Vector3 vel, final double dt) {
-        final double s = path.calcS(pos.x, pos.y);
-        final double s_dot = (s - prev_s)/dt;
-        final double s_dot_dot = path.calcAccelerationCorrection(s, s_dot);
+        final double s = path.calcS(pos.x, pos.y); //Get length along the path
+        final double s_dot = (s - prev_s)/dt; //Get velocity at which we are going along the path
+        final double s_dot_dot = path.calcAccelerationCorrection(s, s_dot); //Get acceleration along the path
 
         prev_s = s;
 
-        final RobotState state = toBreakoutCoords(path.evaluate(s, s_dot, s_dot_dot));
-        lastDesiredPos = toFoxtrotCoords(state.pos);
+        final RobotState state = toBreakoutCoords(path.evaluate(s, s_dot, s_dot_dot)); //Pathing code generates headings based on Foxtrot's understanding of them. This flips them 90 degrees to the right thing.
+        lastDesiredPos = toFoxtrotCoords(state.pos); //Track the last known desired position of the robot.
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
-                Vector3.subtractVector(vel, state.vel));
+                Vector3.subtractVector(vel, state.vel)); //Calculate the correction
 
-        final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, pos.theta);
+        final double[] powerSettings = powerProfile.powerSetting(state.acc, state.vel, correction, pos.theta); //Calculate feedforward power setting
 
-//        final double[] frictionAdjustedPowerSettings;
-//        if (isFinished()) {
-//            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, state.pos), pos.theta, powerSettings, true);
-//        } else {
-//            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(0,0,0), pos.theta, powerSettings, false);
-//        }
-//
-//        return frictionAdjustedPowerSettings;
-        return powerSettings;
+        final double[] frictionAdjustedPowerSettings; //Add friction adjustments to it
+        if (isFinished()) {
+            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, state.pos), pos.theta, powerSettings, true);
+        } else {
+            frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(0,0,0), pos.theta, powerSettings, false);
+        }
+
+        return frictionAdjustedPowerSettings;
+//        return powerSettings;
     }
 
     public boolean isFinished() {
