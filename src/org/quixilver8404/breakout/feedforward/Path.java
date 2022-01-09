@@ -220,12 +220,40 @@ public class Path {
         for (int i = 0; i < velocityPoints_.size(); i++) {
             if (i != 0) {
                 final VelocityPoint velocityPoint = velocityPoints_.get(i);
-                if (Double.isNaN(velocityPoint.getMaxVelocity())) {
-                    velocityPoint.setMaxVelocity(velocityPoints_.get(i - 1).getMaxVelocity());
+                if (Double.isNaN(velocityPoint.getMaxVelocity())) { // Segment points
+                    final double prevMaxVelocity = velocityPoints_.get(i - 1).getMaxVelocity();
+                    if (prevMaxVelocity == 0.0) {
+                        velocityPoint.setMaxVelocity(velocityPoint.getConfigVelocity());
+                    } else {
+                        velocityPoint.setMaxVelocity(prevMaxVelocity);
+                    }
                 }
-                if (Double.isNaN(velocityPoint.getConfigVelocity())) {
+                if (Double.isNaN(velocityPoint.getConfigVelocity())) {// Non-anchor connection points
                     System.out.println("Reset config velocity at i=" + i);
-                    velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
+                    if (velocityPoints_.get(i-1).getS() == velocityPoint.getS()) {
+                        velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
+                    } else if (velocityPoints_.get(i - 1).getConfigVelocity() != 0) {
+                        velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
+                    } else {
+                        double nextVelocity = -1;
+                        if (i == velocityPoints_.size() - 1) { // Either this doesn't happen or someone fucked up BIG TIME
+                            nextVelocity = 0;
+                        } else {
+                            for (int j = 1; j + i < velocityPoints_.size(); j++) {
+                                nextVelocity = velocityPoints_.get(i + j).getConfigVelocity();
+                                System.out.println("Next velocity for i= " + i + ": " + nextVelocity);
+                                if (!Double.isNaN(nextVelocity)) { // If it's 0, then fuck it. Not my problem
+                                    break;
+                                }
+                            }
+                            if (Double.isNaN(nextVelocity)) { // Same as before. Either this doesn't happen or someone is bound to face the wrath of God
+                                nextVelocity = 0;
+                            }
+                        }
+                        System.out.println("Set next velocity for i= " + i + ": " + nextVelocity);
+                        velocityPoint.setConfigVelocity(nextVelocity);
+//                    velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
+                    }
                 }
             }
         }
@@ -399,6 +427,7 @@ public class Path {
             ;
         } else {
             currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
+            System.out.println("New vel segment: " + currentVelocitySegment.toString());
         }
     }
 
@@ -419,11 +448,15 @@ public class Path {
             nextVelocitySegment();
         }
 
+//        System.out.println("Current velocity segment (at s=" + s + ")");
+//        System.out.println(currentVelocitySegment.toString());
+
         final VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
 
-        if (nextVCurVDistS.nextV <= 1e-12 && currentVelocitySegment.index != velocitySegments.size() - 1 && currentVelocitySegment.s1 - s <= 1e-12) {
+        if (nextVCurVDistS.distS <= 1e-2 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
             currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
             currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
         }
 
         final double d_s = nextVCurVDistS.distS;

@@ -30,7 +30,7 @@ public class BreakoutTest {
         final double dt = 0.0005;
         while (true) {
             final double[] powerSettings = breakout.iterate(kinematics.getFieldPos(), kinematics.getFieldVel(), dt);
-            System.out.println("power settings: " + Arrays.toString(powerSettings));
+//            System.out.println("power settings: " + Arrays.toString(powerSettings));
             kinematics.update(powerSettings, dt);
             kinematics.ui.drawCircle(breakout.getLastDesiredPos().x, breakout.getLastDesiredPos().y, 0.03, 100, new double[]{0,255,0});
             kinematics.ui.drawCircle(0, 0, 0.03, 100, new double[]{255,0,0});
