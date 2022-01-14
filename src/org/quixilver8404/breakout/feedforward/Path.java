@@ -367,7 +367,7 @@ public class Path {
                     currentHeadingSegment.calcAlphaDotDot(0, currentSegment.getAcceleration(endS, 0, 0))
             );
         }
-        if (currentSegment.index == segments.size() - 1 && s >= endS - 0.001) { //Condition to finish
+        if (s >= endS - 0.001) { //Condition to finish
             finish();
             System.out.println("<---------------------------------------- Finished ---------------------------------------->");
             return new RobotState(

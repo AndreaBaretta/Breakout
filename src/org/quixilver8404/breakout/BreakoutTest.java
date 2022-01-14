@@ -32,7 +32,7 @@ public class BreakoutTest {
             final double[] powerSettings = breakout.iterate(kinematics.getFieldPos(), kinematics.getFieldVel(), dt);
 //            System.out.println("power settings: " + Arrays.toString(powerSettings));
             kinematics.update(powerSettings, dt);
-            System.out.println("Actual acceleration: " + kinematics.getFieldAcc().toString());
+//            System.out.println("Actual acceleration: " + kinematics.getFieldAcc().toString());
             kinematics.ui.drawCircle(breakout.getLastDesiredPos().x, breakout.getLastDesiredPos().y, 0.03, 100, new double[]{0,255,0});
             kinematics.ui.drawCircle(0, 0, 0.03, 100, new double[]{255,0,0});
             kinematics.ui.drawCompassPixel(breakout.getLastDesiredPos().theta, 0, 0, 50);

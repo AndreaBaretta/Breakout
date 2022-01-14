@@ -50,7 +50,7 @@ public class Breakout {
         final double s_tilde_dot = velCorrection[0];
         final double s_tilde_dot_dot = velCorrection[1];
 
-        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot);
+//        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot + "  s: " + s);
 
         prev_s = s;
 
@@ -65,6 +65,7 @@ public class Breakout {
         final double[] frictionAdjustedPowerSettings; //Add friction adjustments to it
         if (isFinished()) {
             frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, Vector3.subtractVector2(pos, state.pos), pos.theta, powerSettings, true);
+//            throw new Error("Whasssup");
         } else {
             frictionAdjustedPowerSettings = FrictionCorrection.correction(vel, new Vector3(0,0,0), pos.theta, powerSettings, false);
         }
