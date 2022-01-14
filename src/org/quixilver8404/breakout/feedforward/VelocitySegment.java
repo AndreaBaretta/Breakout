@@ -7,6 +7,7 @@ public class VelocitySegment {
     public final VelocityPoint p0;
     public final VelocityPoint p1;
     public final int index;
+    protected boolean startedAcceleration;
 
     VelocitySegment(final VelocityPoint p0, final VelocityPoint p1, final int index) {
         s0 = p0.getS();
@@ -19,6 +20,7 @@ public class VelocitySegment {
         this.p0 = p0;
         this.p1 = p1;
         this.index = index;
+        startedAcceleration = false;
     }
 
     public String toString() {
@@ -31,6 +33,14 @@ public class VelocitySegment {
         } else {
             return false;
         }
+    }
+
+    public boolean hasStartedAcceleration() {
+        return startedAcceleration;
+    }
+
+    public void startAcceleration() {
+        startedAcceleration = true;
     }
 
     public NextVCurVDistS getNextVelocity(final double s) {

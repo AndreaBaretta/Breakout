@@ -99,7 +99,7 @@ public class Main {
             } else {
                 s = path.calcS(kinematics.getFieldPos().x, kinematics.getFieldPos().y);
                 s_dot = (s - prev_s)/dt;
-                s_dot_dot = path.calcAccelerationCorrection(s, s_dot);
+                s_dot_dot = path.calcAccelerationCorrection(s, s_dot)[1];
 //                System.out.println("Not 0");
             }
 

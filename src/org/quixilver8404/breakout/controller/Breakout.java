@@ -45,13 +45,16 @@ public class Breakout {
     public double[] iterate(final Vector3 pos, final Vector3 vel, final double dt) {
         final double s = path.calcS(pos.x, pos.y); //Get length along the path
         final double s_dot = (s - prev_s)/dt; //Get velocity at which we are going along the path
-        final double s_dot_dot = path.calcAccelerationCorrection(s, s_dot); //Get acceleration along the path
+        final double[] velCorrection = path.calcAccelerationCorrection(s, s_dot); //Get acceleration along the path
 
-        System.out.println("s_dot: " + s_dot + "  s_dot_dot: " + s_dot_dot);
+        final double s_tilde_dot = velCorrection[0];
+        final double s_tilde_dot_dot = velCorrection[1];
+
+        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot);
 
         prev_s = s;
 
-        final RobotState state = toBreakoutCoords(path.evaluate(s, s_dot, s_dot_dot)); //Pathing code generates headings based on Foxtrot's understanding of them. This flips them 90 degrees to the right thing.
+        final RobotState state = toBreakoutCoords(path.evaluate(s, s_tilde_dot, s_tilde_dot_dot)); //Pathing code generates headings based on Foxtrot's understanding of them. This flips them 90 degrees to the right thing.
         lastDesiredPos = toFoxtrotCoords(state.pos); //Track the last known desired position of the robot.
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, state.pos),
