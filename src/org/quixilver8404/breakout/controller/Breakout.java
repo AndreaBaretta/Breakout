@@ -47,6 +47,8 @@ public class Breakout {
         final double s_dot = (s - prev_s)/dt; //Get velocity at which we are going along the path
         final double s_dot_dot = path.calcAccelerationCorrection(s, s_dot); //Get acceleration along the path
 
+        System.out.println("s_dot: " + s_dot + "  s_dot_dot: " + s_dot_dot);
+
         prev_s = s;
 
         final RobotState state = toBreakoutCoords(path.evaluate(s, s_dot, s_dot_dot)); //Pathing code generates headings based on Foxtrot's understanding of them. This flips them 90 degrees to the right thing.

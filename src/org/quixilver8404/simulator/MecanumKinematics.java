@@ -208,6 +208,7 @@ public class MecanumKinematics {
         ui.setBackground(new double[]{255,255,255});
         ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta+Math.PI/2, width, length);
         ui.update();
+
 //        System.out.println();
     }
 

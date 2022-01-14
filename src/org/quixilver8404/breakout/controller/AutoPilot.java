@@ -28,10 +28,10 @@ public class AutoPilot {
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, false);
     }
 
-    public void setDesiredPos(final Vector3 desiredPos/*, final Vector3 curPos*/) {
+    public void setDesiredPos(final Vector3 desiredPos) {
         prev_s = 0;
         reachedEnd = false;
-        this.desiredPos = desiredPos;
+        this.desiredPos = toBreakoutCoords(desiredPos);
     }
 
     public double[] last_correction_power = new double[]{0,0,0};
@@ -64,6 +64,10 @@ public class AutoPilot {
     public void setVoltage(final double voltage) {
         config.setVoltage(voltage);
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
+    }
+
+    public static Vector3 toBreakoutCoords(final Vector3 pos) {
+        return new Vector3(pos.x, pos.y, pos.theta - Math.PI/2);
     }
 
 }

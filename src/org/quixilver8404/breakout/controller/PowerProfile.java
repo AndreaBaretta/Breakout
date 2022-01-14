@@ -95,9 +95,18 @@ public class PowerProfile {
         final double P_y = P_y_uncorrected + correction[1];
         final double P_alpha = P_alpha_uncorrected + correction[2];
 
+//        System.out.println("P_x: " + P_x);
+//        System.out.println("P_y: " + P_y);
+//        System.out.println("P_alpha: " + P_alpha);
+
         final double[] P_rel = CoordinateTransformations.toRelativeCoordinates(new ArrayRealVector(new double[]{P_x, P_y}), alpha).toArray();
         final double P_X = P_rel[0];
         final double P_Y = P_rel[1];
+
+//        System.out.println("alpha: " + alpha);
+//        System.out.println("P_X: " + P_X);
+//        System.out.println("P_Y: " + P_Y);
+//        System.out.println("P_alpha: " + P_alpha);
 
         final double P_1_ = P_Y - P_X + P_alpha;
         final double P_2_ = P_Y + P_X - P_alpha;

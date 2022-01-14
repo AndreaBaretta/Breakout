@@ -360,6 +360,7 @@ public class Path {
         final double endS = segments.get(segments.size() - 1).getEndS();
 
         if (finished) { //If at end, stay there
+//            throw new Error("Yo");
             return new RobotState(
                     currentHeadingSegment.calcAlpha(endS, currentSegment.getPosition(endS)),
                     currentHeadingSegment.calcAlphaDot(0, currentSegment.getVelocity(endS, 0)),
@@ -459,15 +460,19 @@ public class Path {
             System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
         }
 
-        final double d_s = nextVCurVDistS.distS;
-        final double v_f = nextVCurVDistS.nextV;
-        final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
+        final double maxAcc = findMaxPossibleAcc(s, s_dot);
 
-        if (accToVel <= Config.MAX_SAFE_ACCELERATION*Config.MAX_DECELERATION) {
+//        final double d_s = nextVCurVDistS.distS;
+//        final double v_f = nextVCurVDistS.nextV;
+//        final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
+        final double accToVel = (Math.pow(nextVCurVDistS.nextV, 2) - Math.pow(s_dot, 2))/(2 * nextVCurVDistS.distS);
+
+        if (accToVel < Config.MAX_DECELERATION*0.85) {
+            return accToVel;
+        } else if (accToVel > maxAcc*0.85) {
             return accToVel;
         }
 
-        final double maxAcc = findMaxPossibleAcc(s, s_dot);
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
         if (acc > maxAcc) {
             return maxAcc;
@@ -579,28 +584,6 @@ public class Path {
             }
 
             System.out.println("AnchorPoints list size: " + anchorPointsList.size());
-
-//            if (first) {
-//                curParams = new CurveParameters((JSONObject)curves.get(0));
-//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
-//                        curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, null, curParams.p1, configVelocity, actionEventListeners,
-//                        actions, first, last);
-//                anchorPointsList.add(anchorPoint);
-//                prevParams = curParams.copy();
-//            } else if (last) {
-//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-//                        prevParams.endTheta2, Double.NaN, null, Double.NaN, prevParams.p2, null, configVelocity, actionEventListeners,
-//                        actions,first, last);
-//                anchorPointsList.add(anchorPoint);
-//            } else {
-//                System.out.println("Last: " + last);
-//                curParams = new CurveParameters((JSONObject)curves.get(anchorPointsList.size()));
-//                final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, prevParams.circle2Radius, prevParams.circle2Center,
-//                        prevParams.endTheta2, curParams.circle1Radius, curParams.circle1Center, curParams.endTheta1, prevParams.p2, curParams.p1, configVelocity, actionEventListeners,
-//                        actions, first, last);
-//                anchorPointsList.add(anchorPoint);
-//                prevParams = curParams.copy();
-//            }
             if (first) {
                 curParams = new CurveParameters((JSONObject)curves.get(0));
                 final AnchorPoint anchorPoint = new AnchorPoint(x, y, tan, heading, customHeading, Double.NaN, null, Double.NaN,
