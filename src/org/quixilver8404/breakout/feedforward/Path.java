@@ -467,23 +467,29 @@ public class Path {
 //        final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
         final double accToVel = (Math.pow(nextVCurVDistS.nextV, 2) - Math.pow(s_dot, 2))/(2 * nextVCurVDistS.distS);
 
-        if (accToVel < Config.MAX_DECELERATION*0.9) {
-            currentVelocitySegment.startAcceleration();
-            return new double[]{nextVCurVDistS.nextV, accToVel};
+        final double targetVelocity;
+        if (currentVelocitySegment.hasStartedAcceleration()) {
+            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
+//            return new double[]{nextVCurVDistS.nextV, accToVel};
+        } else if (accToVel < Config.MAX_DECELERATION*0.9) {
+            currentVelocitySegment.startAcceleration(s);
+            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
+//            return new double[]{nextVCurVDistS.nextV, accToVel};
         } else if (accToVel > maxAcc*0.9) {
-            currentVelocitySegment.startAcceleration();
-            return new double[]{nextVCurVDistS.nextV, accToVel};
-        } else if (currentVelocitySegment.hasStartedAcceleration()) {
-            return new double[]{nextVCurVDistS.nextV, accToVel};
+            currentVelocitySegment.startAcceleration(s);
+            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
+//            return new double[]{nextVCurVDistS.nextV, accToVel};
+        } else {
+            targetVelocity = nextVCurVDistS.curV;
         }
 
-        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(nextVCurVDistS.curV - s_dot);
+        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot);
         if (acc > maxAcc) {
-            return new double[]{nextVCurVDistS.curV, maxAcc};
+            return new double[]{targetVelocity, maxAcc};
         } else if (acc < Config.MAX_DECELERATION) {
-            return new double[]{nextVCurVDistS.curV, Config.MAX_DECELERATION};
+            return new double[]{targetVelocity, Config.MAX_DECELERATION};
         } else {
-            return new double[]{nextVCurVDistS.curV, acc};
+            return new double[]{targetVelocity, acc};
         }
     }
 
