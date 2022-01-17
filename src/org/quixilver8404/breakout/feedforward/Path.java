@@ -367,7 +367,7 @@ public class Path {
                     currentHeadingSegment.calcAlphaDotDot(0, currentSegment.getAcceleration(endS, 0, 0))
             );
         }
-        if (s >= endS - 0.001) { //Condition to finish
+        if (s >= endS) { //Condition to finish
             finish();
             System.out.println("<---------------------------------------- Finished ---------------------------------------->");
             return new RobotState(
@@ -445,6 +445,15 @@ public class Path {
     }
 
     public double[] calcAccelerationCorrection(final double s, final double s_dot) {
+
+        VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
+
+        if (nextVCurVDistS.distS <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
+            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
+        }
+
         if (s > currentVelocitySegment.s1) {
             nextVelocitySegment();
         }
@@ -452,13 +461,13 @@ public class Path {
 //        System.out.println("Current velocity segment (at s=" + s + ")");
 //        System.out.println(currentVelocitySegment.toString());
 
-        final VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
+        nextVCurVDistS = getNextVelocity(s);
 
-        if (nextVCurVDistS.distS <= 1e-2 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
-            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
-        }
+//        if (nextVCurVDistS.distS <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
+//            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+//            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+//            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
+//        }
 
         final double maxAcc = findMaxPossibleAcc(s, s_dot);
 
@@ -483,7 +492,10 @@ public class Path {
             targetVelocity = nextVCurVDistS.curV;
         }
 
-        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot);
+        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot) + ((currentVelocitySegment.hasStartedAcceleration()) ? accToVel : 0);
+
+        System.out.println("targetVel: " + targetVelocity + "  accToVel: " + accToVel + "  overall acc: " + acc + "  distS: " + nextVCurVDistS.distS);
+
         if (acc > maxAcc) {
             return new double[]{targetVelocity, maxAcc};
         } else if (acc < Config.MAX_DECELERATION) {
