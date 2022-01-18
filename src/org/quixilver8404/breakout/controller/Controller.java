@@ -51,7 +51,7 @@ public class Controller {
 //            System.exit(0);
 //        }
 
-            return du.toArray();
+        return du.toArray();
     }
 
     public static RealMatrix computeK(final double m, final double R, final double J, final double omegamax,
@@ -89,14 +89,14 @@ public class Controller {
 //        final double k_y = k_x;
 //        final double k_iy = k_ix;
 
-        System.out.println("k_dalpha: " + kdalpha);
-        System.out.println("k_alpha: " + kalpha);
+//        System.out.println("k_dalpha: " + kdalpha);
+//        System.out.println("k_alpha: " + kalpha);
 //        System.out.println("k_ialpha: " + k_ialpha);
-        System.out.println("k_dx: " + kdx);
-        System.out.println("k_x: " + kx);
+//        System.out.println("k_dx: " + kdx);
+//        System.out.println("k_x: " + kx);
 //        System.out.println("k_ix: " + k_ix);
-        System.out.println("k_dy: " + kdy);
-        System.out.println("k_y: " + ky);
+//        System.out.println("k_dy: " + kdy);
+//        System.out.println("k_y: " + ky);
 //        System.out.println("k_iy: " + k_iy);
 
 //        final double[][] KArray = new double[][] {
@@ -123,15 +123,15 @@ public class Controller {
         final double k_y = k_x;
         final double k_iy = k_ix;
 
-        System.out.println("k_dalpha: " + k_dalpha);
-        System.out.println("k_alpha: " + k_alpha);
-        System.out.println("k_ialpha: " + k_ialpha);
-        System.out.println("k_dx: " + k_dx);
-        System.out.println("k_x: " + k_x);
-        System.out.println("k_ix: " + k_ix);
-        System.out.println("k_dy: " + k_dy);
-        System.out.println("k_y: " + k_y);
-        System.out.println("k_iy: " + k_iy);
+//        System.out.println("k_dalpha: " + k_dalpha);
+//        System.out.println("k_alpha: " + k_alpha);
+//        System.out.println("k_ialpha: " + k_ialpha);
+//        System.out.println("k_dx: " + k_dx);
+//        System.out.println("k_x: " + k_x);
+//        System.out.println("k_ix: " + k_ix);
+//        System.out.println("k_dy: " + k_dy);
+//        System.out.println("k_y: " + k_y);
+//        System.out.println("k_iy: " + k_iy);
 
         final double[][] KArray = new double[][] {
                 {k_dx,     0,        0,        k_x,      0,        0,        k_ix,     0,        0},

@@ -44,13 +44,13 @@ public class Breakout {
 
     public double[] iterate(final Vector3 pos, final Vector3 vel, final double dt) {
         final double s = path.calcS(pos.x, pos.y); //Get length along the path
-        final double s_dot = (s - prev_s)/dt; //Get velocity at which we are going along the path
+        final double s_dot = Math.max((s - prev_s)/dt, 0); //Get velocity at which we are going along the path
         final double[] velCorrection = path.calcAccelerationCorrection(s, s_dot); //Get acceleration along the path
 
         final double s_tilde_dot = velCorrection[0];
         final double s_tilde_dot_dot = velCorrection[1];
 
-        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot + "  s: " + s);
+        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot + "  s: " + s + "  dt: " + dt*1000 + "ms");
 
         prev_s = s;
 

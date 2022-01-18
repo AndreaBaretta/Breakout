@@ -444,14 +444,16 @@ public class Path {
         return lastKnownS;
     }
 
-    public double[] calcAccelerationCorrection(final double s, final double s_dot) {
+    public double[] calcAccelerationCorrection(final double s_, final double s_dot) {
+
+        final double s = Math.max(s_, currentSegment.s0);
 
         VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
 
         if (nextVCurVDistS.distS <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
             currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
             currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
+//            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
         }
 
         if (s > currentVelocitySegment.s1) {
@@ -480,11 +482,12 @@ public class Path {
         if (currentVelocitySegment.hasStartedAcceleration()) {
             targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
 //            return new double[]{nextVCurVDistS.nextV, accToVel};
-        } else if (accToVel < Config.MAX_DECELERATION*0.9) {
+        } else if (accToVel < Config.MAX_DECELERATION*0.7) {
             currentVelocitySegment.startAcceleration(s);
             targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
+//            System.out.println("Start decelerating");
 //            return new double[]{nextVCurVDistS.nextV, accToVel};
-        } else if (accToVel > maxAcc*0.9) {
+        } else if (accToVel > maxAcc*0.7) {
             currentVelocitySegment.startAcceleration(s);
             targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
 //            return new double[]{nextVCurVDistS.nextV, accToVel};

@@ -40,14 +40,21 @@ public class AutoPilot {
 
     public double[] correction(final Vector3 pos, final Vector3 vel) {
 
-//        System.out.println("Robot Position: " + pos.toString());
+        System.out.println("Pos: " + pos.toString());
+        System.out.println("Pos error: " + Vector3.subtractVector2(pos, desiredPos));
+        System.out.println("Vel: " + vel.toString());
+        System.out.println("Vel error: " + Vector3.subtractVector(vel, new Vector3(0,0,0)));
 
         final double[] correction = controller.correction(Vector3.subtractVector2(pos, desiredPos),
                 Vector3.subtractVector(vel, new Vector3(0,0,0)));
 
         last_correction_power = correction;
 
+        System.out.println("Feedback correction: p_alphaa=" + correction[2]);
+
         final double[] powerSettings = powerProfile.powerSetting(new Vector3(0,0,0), new Vector3(0,0,0), correction, pos.theta);
+
+        System.out.println("Motor power before frictiom adjustment: " + Arrays.toString(powerSettings));
 
         last_motor_power = powerSettings;
 

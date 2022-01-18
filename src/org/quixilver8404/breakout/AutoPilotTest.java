@@ -12,17 +12,20 @@ public class AutoPilotTest {
         Display window1 = new Display(1000, 1000, 100);
         window1.init();
 
+        final Config config = new Config(
+                12, 12, 20.9345794393-10, -12,
+                1.1775,0.05, 2.1, 31.4, 10.7, 0.075/2, MecanumKinematics.FindMomentOfInertia(0.323, 0.445, 10.7),
+                ((0.323/2) - 0.0375), ((0.445/2) - 0.05031), 0.95, 0.95, Math.PI/2.5, 0.17, 0.09, 10.7/4, 10.7/4, 10.7/4, 10.7/4
+        );
+
         final AutoPilot autoPilot = new AutoPilot(
-                new Config(12,12,18.512,-18.512,5.625,0.01,2.1,
-                    31.4,12.1,(75d/2d)/1000d,
-                        MecanumKinematics.FindMomentOfInertia(44d/100d, 44d/100d, 12.1),44d/200d - 0.05, 44d/200d - 0.073,
-                    0.95,0.95,Math.PI/2.5, 0.17, 0.09, 12.1/4, 12.1/4, 12.1/4, 12.1/4), true
+                config, true
 //                new Config(11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                        37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
 //                        0.95, Math.PI/2.5)
         );
 
-        final Vector3 desiredPos = new Vector3(1, 1, 90*Math.PI/180);
+        final Vector3 desiredPos = new Vector3(1, 1, 180*Math.PI/180);
 
         autoPilot.setDesiredPos(desiredPos);
 
