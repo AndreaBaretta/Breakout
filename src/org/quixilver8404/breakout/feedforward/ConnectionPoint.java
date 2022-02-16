@@ -14,9 +14,10 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
     public final double heading;
     public final List<ActionEventListener> actionEventListeners;
     public final Set<Integer> actions;
+    public final boolean isOnAnchor;
 
     public ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
-                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
+                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions, final boolean isOnAnchor) {
         super(x, y);
         this.heading = heading;
         this.headingState = headingState;
@@ -24,10 +25,11 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.configVelocity = configVelocity;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
+        this.isOnAnchor = isOnAnchor;
     }
 
     public ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
-                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions) {
+                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions, final boolean isOnAnchor) {
         super(point.x, point.y);
         this.heading = heading;
         this.headingState = headingState;
@@ -36,6 +38,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.configVelocity = configVelocity;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
+        this.isOnAnchor = isOnAnchor;
     }
 
 
@@ -92,7 +95,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         } else {
             actionArray = actions.toArray();
         }
-        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", headingState=" + getHeadingState() + ", heading=" + getHeading() + ", actions=" + Arrays.toString(actionArray) + ")";
+        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", headingState=" + getHeadingState() + ", heading=" + getHeading() + ", actions=" + Arrays.toString(actionArray) + (isOnAnchor ? ", isOnAnchor" : ", isConnection") + ")";
     }
 
 }

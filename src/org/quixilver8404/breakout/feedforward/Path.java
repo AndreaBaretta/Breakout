@@ -460,37 +460,25 @@ public class Path {
             nextVelocitySegment();
         }
 
-//        System.out.println("Current velocity segment (at s=" + s + ")");
-//        System.out.println(currentVelocitySegment.toString());
-
         nextVCurVDistS = getNextVelocity(s);
-
-//        if (nextVCurVDistS.distS <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
-//            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-//            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-//            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
-//        }
 
         final double maxAcc = findMaxPossibleAcc(s, s_dot);
 
-//        final double d_s = nextVCurVDistS.distS;
-//        final double v_f = nextVCurVDistS.nextV;
-//        final double accToVel = (1/d_s)*(0.5 * Math.pow(v_f - s_dot, 2) + s_dot * (v_f - s_dot));
         final double accToVel = (Math.pow(nextVCurVDistS.nextV, 2) - Math.pow(s_dot, 2))/(2 * nextVCurVDistS.distS);
 
         final double targetVelocity;
         if (currentVelocitySegment.hasStartedAcceleration()) {
-            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
-//            return new double[]{nextVCurVDistS.nextV, accToVel};
+            if (s == currentVelocitySegment.getAccPoint()) {
+                targetVelocity = nextVCurVDistS.nextV;
+            } else {
+                targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV - nextVCurVDistS.curV) / (currentVelocitySegment.s1 - currentVelocitySegment.getAccPoint())) * (s - currentVelocitySegment.getAccPoint());
+            }
         } else if (accToVel < Config.MAX_DECELERATION*0.7) {
             currentVelocitySegment.startAcceleration(s);
             targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
-//            System.out.println("Start decelerating");
-//            return new double[]{nextVCurVDistS.nextV, accToVel};
         } else if (accToVel > maxAcc*0.7) {
             currentVelocitySegment.startAcceleration(s);
             targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
-//            return new double[]{nextVCurVDistS.nextV, accToVel};
         } else {
             targetVelocity = nextVCurVDistS.curV;
         }

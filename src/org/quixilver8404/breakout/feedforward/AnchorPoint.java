@@ -98,7 +98,7 @@ public class AnchorPoint extends Point {
             tanPoint1_ = tanPoint1;
         }
 
-        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, Double.NaN, null, null);
+        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, Double.NaN, null, null, false);
         final double pointHeading;
         if (heading == Heading.CUSTOM) {
             pointHeading = customHeading;
@@ -107,8 +107,8 @@ public class AnchorPoint extends Point {
         } else {
             pointHeading = Vector3.normalizeAlpha(tan + Math.PI);
         }
-        middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions);
-        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, Double.NaN, null, null);
+        middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions, true);
+        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, Double.NaN, null, null, false);
 
         counterClockwise0 = CheckDirection(center0);
         counterClockwise1 = CheckDirection(center1);

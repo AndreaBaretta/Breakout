@@ -106,6 +106,6 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
     }
 
     public String toString() {
-        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", maxV=" + maxVelocity + ", headingState=" + headingStateString + ", heading=" + heading + ", actions=" + Arrays.toString(actions.toArray()) + ")";
+        return "(s=" + s + ", t=" + tFromAnchor + ", i=" + anchorIndex + ", velP=" + velP + ", maxV=" + maxVelocity + ", headingState=" + headingStateString + ", heading=" + heading + ", actions=" + Arrays.toString(actions.toArray()) + ", isSegmentPoint" + ")";
     }
 }
