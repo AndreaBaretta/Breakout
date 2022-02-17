@@ -53,8 +53,13 @@ public abstract class Segment {
     public abstract double getMaxVelocity();
 
     public void configurePoints() {
-        firstPoint.setMaxVelocity(getMaxVelocity());
+        if (Double.isNaN(firstPoint.getMaxVelocity())) {
+            firstPoint.setMaxVelocity(getMaxVelocity());
+        }
         firstPoint.setS(s0);
         lastPoint.setS(getEndS());
+        if (getMaxVelocity() == 0) {
+            lastPoint.setMaxVelocity(0);
+        }
     }
 }

@@ -21,16 +21,16 @@ public class FrictionCorrection {
         for (int i = 0; i < 4; i++) {
             final double dynamicCorrection = (Math.signum(vel_w[i]) == Math.signum(powerSettings[i])) ? Math.signum(vel_w[i])*Config.P_DYNAMIC : 0;
 
-            System.out.println("Wheel: " + i + "  vel: " + vel_w[i] + "  p: " + powerSettings[i]);
+//            System.out.println("Wheel: " + i + "  vel: " + vel_w[i] + "  p: " + powerSettings[i]);
 
             if (Math.abs(deltaPos.x) <= 0.07 && Math.abs(deltaPos.y) <= 0.07 && Math.abs(deltaPos.theta)*180/Math.PI <= 2 && stopAtZero) {
                 finalPowerSettings[i] = 0;
-                System.out.println("Ya done now");
+//                System.out.println("Ya done now");
             } else if (Math.abs(vel_w[i]) <= 1e-4 && Math.abs(powerSettings[i] + dynamicCorrection) <= Config.P_STATIC) {//TODO FIGURE THIS OUT
-                System.out.println("Static");
+//                System.out.println("Static");
                 finalPowerSettings[i] = Math.signum(powerSettings[i])*Config.P_STATIC*Config.FRICTION_SCALAR_FACTOR_WHEEL[i];
             } else {
-                System.out.println("Dynamic");
+//                System.out.println("Dynamic");
                 finalPowerSettings[i] = (dynamicCorrection*Config.FRICTION_SCALAR_FACTOR_WHEEL[i] + powerSettings[i]);
             }
         }

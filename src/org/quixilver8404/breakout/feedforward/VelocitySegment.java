@@ -7,8 +7,9 @@ public class VelocitySegment {
     public final VelocityPoint p0;
     public final VelocityPoint p1;
     public final int index;
-    protected boolean startedAcceleration;
-    protected double accPoint;
+    public final double v0;
+    public final double v1;
+    public final double acceleration;
 
     VelocitySegment(final VelocityPoint p0, final VelocityPoint p1, final int index) {
         s0 = p0.getS();
@@ -21,8 +22,9 @@ public class VelocitySegment {
         this.p0 = p0;
         this.p1 = p1;
         this.index = index;
-        startedAcceleration = false;
-        accPoint = 0;
+        v0 = Math.min(p0.getConfigVelocity(), p0.getMaxVelocity());
+        v1 = Math.min(p0.getConfigVelocity(), p0.getMaxVelocity());
+        acceleration = (Math.pow(v1, 2) - Math.pow(v0, 2))/(2*(s1-s0));
     }
 
     public String toString() {
@@ -37,35 +39,11 @@ public class VelocitySegment {
         }
     }
 
-    public boolean hasStartedAcceleration() {
-        return startedAcceleration;
+    public double getVelocity(final double s) {
+        return Math.sqrt(2*acceleration*(s-s0) + Math.pow(v0, 2));
     }
 
-    public void startAcceleration(final double s) {
-        startedAcceleration = true;
-        accPoint = s;
-    }
-
-    public double getAccPoint() {
-        return accPoint;
-    }
-
-    public NextVCurVDistS getNextVelocity(final double s) {
-        return new NextVCurVDistS(Math.min(p1.getMaxVelocity(), p1.getConfigVelocity()), Math.min(p0.getMaxVelocity(), p0.getConfigVelocity()), s1 - s);
-    }
-
-    public double getNextV() {
-        return Math.min(p1.getMaxVelocity(), p1.getConfigVelocity());
-    }
-
-    public class NextVCurVDistS {
-        final double nextV;
-        final double curV;
-        final double distS;
-        public NextVCurVDistS(final double nextV, final double curV, final double distS) {
-            this.curV = curV;
-            this.nextV = nextV;
-            this.distS = distS;
-        }
+    public double distS(final double s) {
+        return s1 - s;
     }
 }

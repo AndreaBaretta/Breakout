@@ -318,13 +318,17 @@ public class Path {
 
         System.out.println("End S: " + segments.get(segments.size() - 1).getEndS());
 
-//        segments.forEach(p -> System.out.println("Segment: " + p.toString()));
+        System.out.println("Segments");
+        segments.forEach(p -> System.out.println(p.toString()));
 //        velocitySegments.forEach(p -> System.out.println("Velocity segment: " + p.toString()));
 
 //        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
 //        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
         headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
         headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
+
+//        System.out.println("Segments");
+//        segments.forEach(p -> System.out.println(p.toString()));
 
         System.out.println("Velocity segments");
         velocitySegments.forEach(s -> System.out.println(s.toString()));
@@ -448,9 +452,7 @@ public class Path {
 
         final double s = Math.max(s_, currentSegment.s0);
 
-        VelocitySegment.NextVCurVDistS nextVCurVDistS = getNextVelocity(s);
-
-        if (nextVCurVDistS.distS <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && nextVCurVDistS.nextV == 0) {
+        if (currentVelocitySegment.distS(s) <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && currentVelocitySegment.v1 == 0) {
             currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
             currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
 //            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
@@ -460,32 +462,15 @@ public class Path {
             nextVelocitySegment();
         }
 
-        nextVCurVDistS = getNextVelocity(s);
+        final double targetVelocity = currentVelocitySegment.getVelocity(s);
+
+        final double targetAcc = currentVelocitySegment.acceleration;
+
+        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot) + targetAcc;
 
         final double maxAcc = findMaxPossibleAcc(s, s_dot);
 
-        final double accToVel = (Math.pow(nextVCurVDistS.nextV, 2) - Math.pow(s_dot, 2))/(2 * nextVCurVDistS.distS);
-
-        final double targetVelocity;
-        if (currentVelocitySegment.hasStartedAcceleration()) {
-            if (s == currentVelocitySegment.getAccPoint()) {
-                targetVelocity = nextVCurVDistS.nextV;
-            } else {
-                targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV - nextVCurVDistS.curV) / (currentVelocitySegment.s1 - currentVelocitySegment.getAccPoint())) * (s - currentVelocitySegment.getAccPoint());
-            }
-        } else if (accToVel < Config.MAX_DECELERATION*0.7) {
-            currentVelocitySegment.startAcceleration(s);
-            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
-        } else if (accToVel > maxAcc*0.7) {
-            currentVelocitySegment.startAcceleration(s);
-            targetVelocity = nextVCurVDistS.curV + ((nextVCurVDistS.nextV-nextVCurVDistS.curV)/(currentVelocitySegment.s1-currentVelocitySegment.getAccPoint()))*(s - currentVelocitySegment.getAccPoint());
-        } else {
-            targetVelocity = nextVCurVDistS.curV;
-        }
-
-        final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot) + ((currentVelocitySegment.hasStartedAcceleration()) ? accToVel : 0);
-
-        System.out.println("targetVel: " + targetVelocity + "  accToVel: " + accToVel + "  overall acc: " + acc + "  distS: " + nextVCurVDistS.distS);
+//        System.out.println("targetVel: " + targetVelocity + "  accToVel: " + accToVel + "  overall acc: " + acc + "  distS: " + nextVCurVDistS.distS);
 
         if (acc > maxAcc) {
             return new double[]{targetVelocity, maxAcc};
@@ -517,10 +502,6 @@ public class Path {
             }
             s_dot_dot -= Config.ACCELERATION_CORRECTION_STEP;
         }
-    }
-
-    public VelocitySegment.NextVCurVDistS getNextVelocity(final double s) {
-        return currentVelocitySegment.getNextVelocity(s);
     }
 
     public JSONObject parseJSON(final InputStream stream) {

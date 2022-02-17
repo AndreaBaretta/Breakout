@@ -9,7 +9,5 @@ public interface VelocityPoint {
 
     public double getMaxVelocity();
 
-    public boolean isZeroVelocityPoint();
-
     public double getS();
 }

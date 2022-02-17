@@ -50,7 +50,7 @@ public class Breakout {
         final double s_tilde_dot = velCorrection[0];
         final double s_tilde_dot_dot = velCorrection[1];
 
-        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot + "  s: " + s + "  dt: " + dt*1000 + "ms");
+//        System.out.println("s_dot: " + s_dot + "  s_tilde_dot: " + s_tilde_dot +  "  s_tilde_dot_dot: " + s_tilde_dot_dot + "  s: " + s + "  dt: " + dt*1000 + "ms");
 
         prev_s = s;
 
