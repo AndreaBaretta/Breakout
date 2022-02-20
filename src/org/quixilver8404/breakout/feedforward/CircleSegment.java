@@ -14,9 +14,9 @@ public class CircleSegment extends Segment {
     public final double theta0_;
     public final double theta1_;
 
-    CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index,
-                  final Point2D center, final double r, final double theta0, final double theta1, final boolean counterClockwise) {
-        super(firstPoint, lastPoint, s0, index);
+    CircleSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final Point2D center,
+                  final double r, final double theta0, final double theta1, final boolean counterClockwise) {
+        super(firstPoint, lastPoint, s0);
 //        System.out.println("Theta0 in circle: " + theta0);
 //        System.out.println("Theta1 in circle: " + theta1);
         this.center = center;
@@ -40,7 +40,6 @@ public class CircleSegment extends Segment {
             }
             theta1_ = theta1;
         }
-        configurePoints();
     }
 
     public Vector3 getPosition(final double s) {
@@ -137,6 +136,6 @@ public class CircleSegment extends Segment {
     }
 
     public String toString() {
-        return "(type=circle, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ", theta0=" + theta0 + ", theta1=" + theta1 + ", r=" + r + ", maxV=" + getMaxVelocity() + ")";
+        return "(type=circle, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ", theta0=" + theta0 + ", theta1=" + theta1 + ", r=" + r + ", maxV=" + getMaxVelocity() + ", isZero=" + zeroSegment + ")";
     }
 }

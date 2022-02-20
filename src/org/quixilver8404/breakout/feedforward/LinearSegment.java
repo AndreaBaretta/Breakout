@@ -6,17 +6,24 @@ import org.quixilver8404.breakout.util.Vector3;
 public class LinearSegment extends Segment {
 
     public final double theta;
+    public final double x0;
+    public final double y0;
+    public final double x1;
+    public final double y1;
 
-    public LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0, final int index) {
-        super(firstPoint, lastPoint, s0, index);
+    public LinearSegment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0) {
+        super(firstPoint, lastPoint, s0);
         theta = Math.atan2(lastPoint.y-firstPoint.y, lastPoint.x-firstPoint.x);
-        configurePoints();
+        x0 = firstPoint.x;
+        y0 = firstPoint.y;
+        x1 = lastPoint.x;
+        y1 = lastPoint.y;
     }
 
     public Vector3 getPosition(final double s) {
         return new Vector3(
-                firstPoint.x + (s - s0)*Math.cos(theta),
-                firstPoint.y + (s - s0)*Math.sin(theta),
+                x0 + (s - s0)*Math.cos(theta),
+                y0 + (s - s0)*Math.sin(theta),
                 theta
         );
     }
@@ -38,7 +45,7 @@ public class LinearSegment extends Segment {
     }
 
     public double getTotalS() {
-        return Math.hypot(lastPoint.x-firstPoint.x, lastPoint.y-firstPoint.y);
+        return Math.hypot(x1-x0, y1-y0);
     }
 
     public double getMaxVelocity() {
@@ -46,8 +53,8 @@ public class LinearSegment extends Segment {
     }
 
     public double calcS(final double x, final double y) {
-        final double[] pos = new double[]{x - firstPoint.x, y - firstPoint.y};
-        final double[] u_s = new double[]{(lastPoint.x - firstPoint.x)/getTotalS(), (lastPoint.y - firstPoint.y)/getTotalS()};
+        final double[] pos = new double[]{x - x0, y - y0};
+        final double[] u_s = new double[]{(x1 - x0)/getTotalS(), (y1 - y0)/getTotalS()};
         return pos[0]*u_s[0] + pos[1]*u_s[1] + s0;
     }
 
@@ -56,6 +63,6 @@ public class LinearSegment extends Segment {
     }
 
     public String toString() {
-        return "(type=line, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ")";
+        return "(type=line, s0=" + s0 + ", s1=" + getEndS() + ", i=" + index + ", isZero=" + zeroSegment + ")";
     }
 }

@@ -23,6 +23,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.headingState = headingState;
         complete = false;
         this.configVelocity = configVelocity;
+        maxVelocity = Double.NaN;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
         this.isOnAnchor = isOnAnchor;
@@ -34,8 +35,8 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.heading = heading;
         this.headingState = headingState;
         complete = false;
-        maxVelocity = configVelocity;
         this.configVelocity = configVelocity;
+        maxVelocity = Double.NaN;
         this.actionEventListeners = actionEventListeners;
         this.actions = actions;
         this.isOnAnchor = isOnAnchor;
@@ -54,8 +55,12 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         configVelocity = newConfigVelocity;
     }
 
-    public void setMaxVelocity(final double newMinVelocity) {
-        maxVelocity = newMinVelocity;
+    public void setMaxVelocity(final double newMaxVelocity) {
+        if (Double.isNaN(maxVelocity)) {
+            maxVelocity = newMaxVelocity;
+        } else {
+            maxVelocity = Math.min(newMaxVelocity, maxVelocity);
+        }
     }
 
     public double getS() {
