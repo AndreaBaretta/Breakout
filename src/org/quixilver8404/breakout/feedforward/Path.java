@@ -63,6 +63,7 @@ public class Path {
         double s0 = 0;
         int connectionPointCounter = 0;
         int segmentCounter = 0;
+        int velocitySegmentCounter = 0;
         for (int i = 0; i < anchorPoints.size(); i++) {
             curPoint = anchorPoints.get(i);
             if (curPoint.first) {
@@ -74,32 +75,6 @@ public class Path {
                 final ConnectionPoint connection1 = prevPoint.nextPoint;
                 final ConnectionPoint connection2 = curPoint.prevPoint;
                 final ConnectionPoint connection3 = curPoint.middlePoint;
-
-//                connectionPoints.add(prevPoint.nextPoint);
-//                connectionPoints.add(curPoint.prevPoint);
-//                connectionPoints.add(curPoint.middlePoint);
-
-//                connection0.index = connectionPointCounter;
-//                connectionPointCounter++;
-//                connection1.index = connectionPointCounter;
-//                connectionPointCounter++;
-//                connection2.index = connectionPointCounter;
-//                connectionPointCounter++;
-//                connection3.index = connectionPointCounter;
-//                connectionPointCounter++;
-
-//                connection1.index = connectionPointCounter;
-//                connectionPointCounter++;
-//                connectionPoints.add(connection1);
-//
-//                segment0.configurePoints(connection0, connection1);
-//                segmentCounter++;
-
-//                System.out.println("Connection Point: " + connection0.toString());
-//                System.out.println("Connection Point: " + connection1.toString());
-//                System.out.println("Connection Point: " + connection2.toString());
-//                System.out.println("Connection Point: " + connection3.toString());
-
 
                 final double prevAnchorTheta = Vector3.normalizeAlpha(Math.atan2(prevPoint.middlePoint.y-prevPoint.center1.y, prevPoint.middlePoint.x-prevPoint.center1.x));
                 final double curAnchorTheta = Vector3.normalizeAlpha(Math.atan2(curPoint.middlePoint.y-curPoint.center0.y, curPoint.middlePoint.x-curPoint.center0.x));
@@ -206,8 +181,47 @@ public class Path {
                     }
                 });
 
+                currentSegPoints.sort(new Comparator<SegmentPoint>() {
+                    @Override
+                    public int compare(final SegmentPoint t0, final SegmentPoint t1) {
+                        if (t0.getS() - t1.getS() < 0) {
+                            return -1;
+                        } else if (t0.getS() - t1.getS() > 0) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                });
+
+                for (final SegmentPoint segPoint : currentSegPoints) {
+                    if (segment0.inRange(segPoint.getS())) {
+                        segPoint.setMaxVelocity(segment0.getMaxVelocity());
+                    } else if (segment1.inRange(segPoint.getS())) {
+                        segPoint.setMaxVelocity(segment1.getMaxVelocity());
+                    } else {
+                        segPoint.setMaxVelocity(segment2.getMaxVelocity());
+                    }
+                }
+
                 System.out.println("Current segmentPoints");
                 currentSegPoints.forEach(p -> System.out.println(p.toString()));
+                System.out.println();
+
+//                System.out.println("VelocitySegments:");
+                VelocityPoint lastPoint = connection0;
+                VelocitySegment curVSegment = null;
+                for (final VelocityPoint velocityPoint : currentSegPoints) {
+                    curVSegment = new VelocitySegment(lastPoint, velocityPoint, connection1, connection2, velocitySegmentCounter);
+                    velocitySegments.add(curVSegment);
+                    velocitySegmentCounter++;
+//                    System.out.println(curVSegment.toString());
+                    lastPoint = velocityPoint;
+                }
+                curVSegment = new VelocitySegment(lastPoint, connection3, connection1, connection2, velocitySegmentCounter);
+                velocitySegments.add(curVSegment);
+                velocitySegmentCounter++;
+//                System.out.println(curVSegment.toString());
 
                 prevPoint = curPoint;
 
@@ -215,13 +229,11 @@ public class Path {
             }
         }
 
-//        System.out.println("ConnectionPoints: " + Arrays.toString(connectionPoints.toArray()));
-
+        velocitySegments.forEach(s -> s.set());
         currentSegment = segments.get(0);
         finished = false;
 
         final List<HeadingPoint> headingPoints = new ArrayList<HeadingPoint>();
-        final List<VelocityPoint> velocityPoints_ = new ArrayList<VelocityPoint>();
 
         segmentPoints.forEach((final SegmentPoint p) -> {
             if (p.getActionEventListeners() != null) {
@@ -232,9 +244,7 @@ public class Path {
             if (p.getHeadingState() != AnchorPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
-//            velocityPoints_.add(p);
         });
-
 
         connectionPoints.forEach((final ConnectionPoint p) -> {
             if (p.getActionEventListeners() != null) {
@@ -245,28 +255,11 @@ public class Path {
             if (p.headingState != AnchorPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
-            velocityPoints_.add(p);
         });
-
-//        System.out.println("velocityPoints_: " + Arrays.toString(velocityPoints_.toArray()));
-
 
         headingPoints.sort(new Comparator<HeadingPoint>() {
             @Override
             public int compare(final HeadingPoint t0, final HeadingPoint t1) {
-                if (t0.getS() - t1.getS() < 0) {
-                    return -1;
-                } else if (t0.getS() - t1.getS() > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-            }
-        });
-
-        velocityPoints_.sort(new Comparator<VelocityPoint>() {
-            @Override
-            public int compare(final VelocityPoint t0, final VelocityPoint t1) {
                 if (t0.getS() - t1.getS() < 0) {
                     return -1;
                 } else if (t0.getS() - t1.getS() > 0) {
@@ -292,79 +285,6 @@ public class Path {
                 }
             }
         });
-
-//        System.out.println("---------------------------");
-//        System.out.println("VelocityPoint i=1: " + velocityPoints_.get(1).toString());
-
-        for (int i = 0; i < velocityPoints_.size(); i++) {
-            if (i != 0) {
-                final VelocityPoint velocityPoint = velocityPoints_.get(i);
-                if (Double.isNaN(velocityPoint.getMaxVelocity())) { // Segment points
-                    final double prevMaxVelocity = velocityPoints_.get(i - 1).getMaxVelocity();
-                    if (prevMaxVelocity == 0.0) {
-                        velocityPoint.setMaxVelocity(velocityPoint.getConfigVelocity());
-                    } else {
-                        velocityPoint.setMaxVelocity(prevMaxVelocity);
-                    }
-                }
-                if (Double.isNaN(velocityPoint.getConfigVelocity())) {// Non-anchor connection points
-//                    System.out.println("Reset config velocity at i=" + i);
-                    if (velocityPoints_.get(i-1).getS() == velocityPoint.getS()) {
-                        velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
-                    } else if (velocityPoints_.get(i - 1).getConfigVelocity() != 0) {
-                        velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
-                    } else {
-                        double nextVelocity = -1;
-                        if (i == velocityPoints_.size() - 1) { // Either this doesn't happen or someone fucked up BIG TIME
-                            nextVelocity = 0;
-                        } else {
-                            for (int j = 1; j + i < velocityPoints_.size(); j++) {
-                                nextVelocity = velocityPoints_.get(i + j).getConfigVelocity();
-//                                System.out.println("Next velocity for i= " + i + ": " + nextVelocity);
-                                if (!Double.isNaN(nextVelocity)) { // If it's 0, then fuck it. Not my problem
-                                    break;
-                                }
-                            }
-                            if (Double.isNaN(nextVelocity)) { // Same as before. Either this doesn't happen or someone is bound to face the wrath of God
-                                nextVelocity = 0;
-                            }
-                        }
-//                        System.out.println("Set next velocity for i= " + i + ": " + nextVelocity);
-                        velocityPoint.setConfigVelocity(nextVelocity);
-//                    velocityPoint.setConfigVelocity(velocityPoints_.get(i - 1).getConfigVelocity());
-                    }
-                }
-            }
-        }
-
-//        System.out.println("velocityPoints_ after setting velocities: ");
-//        velocityPoints_.forEach(p -> System.out.println(p.toString()));
-
-        final List<VelocityPoint> velocityPoints = new ArrayList<>();
-        for (int i = 0; i < velocityPoints_.size(); i++) {
-            if (i != velocityPoints_.size() - 1) {
-                if (velocityPoints_.get(i + 1).getS() - velocityPoints_.get(i).getS() >= 1e-12) {
-                    velocityPoints.add(velocityPoints_.get(i));
-                }
-            } else {
-                velocityPoints.add(velocityPoints_.get(i));
-            }
-        }
-
-        VelocityPoint prevVelocityPoint = null;
-        for (int i = 0; i < velocityPoints.size(); i++) {
-            if (i == 0) {
-                prevVelocityPoint = velocityPoints.get(i);
-            } else {
-                final VelocityPoint velocityPoint = velocityPoints.get(i);
-                final VelocitySegment velocitySegment = new VelocitySegment(prevVelocityPoint, velocityPoint, i - 1);
-                velocitySegments.add(velocitySegment);
-                prevVelocityPoint = velocityPoint;
-            }
-        }
-
-        System.out.println("velocityPoints: ");
-        velocityPoints.forEach(p -> System.out.println(p.toString()));
 
         currentVelocitySegment = velocitySegments.get(0);
 
@@ -543,7 +463,7 @@ public class Path {
 
         final double targetVelocity = currentVelocitySegment.getVelocity(s);
 
-        final double targetAcc = currentVelocitySegment.acceleration;
+        final double targetAcc = currentVelocitySegment.getAcceleration(s);
 
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot) + targetAcc;
 
