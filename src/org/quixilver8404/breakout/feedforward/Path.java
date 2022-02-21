@@ -23,10 +23,11 @@ public class Path {
     public final List<ActionPoint> actionPoints;
     public final List<Segment> segments;
     public final List<VelocitySegment> velocitySegments;
+    public final List<VelocityCurve> velocityCurves;
 
     protected Segment currentSegment;
     protected HeadingSegment currentHeadingSegment;
-    protected VelocitySegment currentVelocitySegment;
+    protected VelocityCurve currentVelocityCurve;
     protected boolean finished;
     protected double lastKnownS;
 
@@ -55,6 +56,7 @@ public class Path {
         actionPoints = new ArrayList<ActionPoint>();
         segments = new ArrayList<Segment>();
         velocitySegments = new ArrayList<VelocitySegment>();
+        velocityCurves = new ArrayList<VelocityCurve>();
         lastKnownS = 0;
 
         AnchorPoint curPoint = null;
@@ -108,7 +110,6 @@ public class Path {
                     segmentCounter++;
                     p0 = connection1;
                 } else if (segment0.getMaxVelocity() <= 1e-10) { // Zero velocity, zero segment --> Skip, but make sure velocity is configured
-//                    System.out.println("Setting vel to 0");
                     segment0.configurePoints(p0, p1);
 
                     System.out.println("connection point 0: " + connection0.toString()); //Only print after configuring it
@@ -208,20 +209,17 @@ public class Path {
                 currentSegPoints.forEach(p -> System.out.println(p.toString()));
                 System.out.println();
 
-//                System.out.println("VelocitySegments:");
                 VelocityPoint lastPoint = connection0;
                 VelocitySegment curVSegment = null;
                 for (final VelocityPoint velocityPoint : currentSegPoints) {
                     curVSegment = new VelocitySegment(lastPoint, velocityPoint, connection1, connection2, velocitySegmentCounter);
                     velocitySegments.add(curVSegment);
                     velocitySegmentCounter++;
-//                    System.out.println(curVSegment.toString());
                     lastPoint = velocityPoint;
                 }
                 curVSegment = new VelocitySegment(lastPoint, connection3, connection1, connection2, velocitySegmentCounter);
                 velocitySegments.add(curVSegment);
                 velocitySegmentCounter++;
-//                System.out.println(curVSegment.toString());
 
                 prevPoint = curPoint;
 
@@ -230,6 +228,13 @@ public class Path {
         }
 
         velocitySegments.forEach(s -> s.set());
+        int[] velocityCurveCounter = new int[]{0};
+        velocitySegments.forEach(s -> s.velocityCurves.forEach(c -> {
+            c.setIndex(velocityCurveCounter[0]);
+            velocityCurves.add(c);
+            velocityCurveCounter[0]++;
+        }));
+
         currentSegment = segments.get(0);
         finished = false;
 
@@ -270,11 +275,6 @@ public class Path {
             }
         });
 
-//        System.out.println("velocityPoints_ after sort: ");
-//        velocityPoints_.forEach(p -> System.out.println(p.toString()));
-
-//        System.out.println("headingPoints: " + Arrays.toString(headingPoints.toArray()));
-
         actionPoints.sort(new Comparator<ActionPoint>() {
             @Override
             public int compare(final ActionPoint t0, final ActionPoint t1) {
@@ -286,7 +286,7 @@ public class Path {
             }
         });
 
-        currentVelocitySegment = velocitySegments.get(0);
+        currentVelocityCurve = velocityCurves.get(0);
 
         headingSegments = new ArrayList<HeadingSegment>();
         HeadingPoint prevHeadingPoint = null;
@@ -329,8 +329,8 @@ public class Path {
 //        System.out.println("Segments");
 //        segments.forEach(p -> System.out.println(p.toString()));
 
-        System.out.println("Velocity segments");
-        velocitySegments.forEach(s -> System.out.println(s.toString()));
+        System.out.println("Velocity curves");
+        velocityCurves.forEach(s -> System.out.println(s.toString()));
     }
 
     public RobotState evaluate(final double s, final double s_dot, final  double s_dot_dot) {
@@ -427,11 +427,11 @@ public class Path {
     }
 
     protected void nextVelocitySegment() {
-        if (currentVelocitySegment.index == velocitySegments.size() - 1) {
+        if (currentVelocityCurve.getIndex() == velocityCurves.size() - 1) {
             ;
         } else {
-            currentVelocitySegment = velocitySegments.get(currentVelocitySegment.index + 1);
-            System.out.println("New vel segment: " + currentVelocitySegment.toString());
+            currentVelocityCurve = velocityCurves.get(currentVelocityCurve.getIndex() + 1);
+            System.out.println("New vel curve: " + currentVelocityCurve.toString());
         }
     }
 
@@ -449,21 +449,29 @@ public class Path {
 
     public double[] calcAccelerationCorrection(final double s_, final double s_dot) {
 
-        final double s = Math.max(s_, currentSegment.s0);
+        final double s = Math.max(s_, currentVelocityCurve.s0);
 
-        if (currentVelocitySegment.distS(s) <= 0 && currentVelocitySegment.index != velocitySegments.size() - 1 && currentVelocitySegment.v1 == 0) {
-            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
-//            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
-        }
+//        if (currentVelocitySegment.distS(s) <= 0.01 && currentVelocitySegment.index != velocitySegments.size() - 1 && currentVelocitySegment.v1 == 0) {
+//            currentVelocitySegment.p1.setConfigVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+//            currentVelocitySegment.p1.setMaxVelocity(Config.MAX_VELOCITY*Config.MAX_SAFE_VELOCITY);
+////            System.out.println("Crazy bullshit: " + currentVelocitySegment.toString());
+//        }
 
-        if (s > currentVelocitySegment.s1) {
+//        System.out.println("s=" + s);
+
+        if (Math.abs(currentVelocityCurve.distS(s)) <= 0.01 && currentVelocityCurve.v1 <= 1e-10) {
+//            System.out.println("New velocity segment");
             nextVelocitySegment();
         }
 
-        final double targetVelocity = currentVelocitySegment.getVelocity(s);
+        if (currentVelocityCurve.s1 < s) {
+//            System.out.println("New velocity segment");
+            nextVelocitySegment();
+        }
 
-        final double targetAcc = currentVelocitySegment.getAcceleration(s);
+        final double targetVelocity = currentVelocityCurve.getVelocity(s);
+
+        final double targetAcc = currentVelocityCurve.acceleration;
 
         final double acc = Math.tan(Config.ACCELERATION_CORRECTION)*(targetVelocity - s_dot) + targetAcc;
 

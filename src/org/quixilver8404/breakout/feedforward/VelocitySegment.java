@@ -78,23 +78,23 @@ public class VelocitySegment {
         }
     }
 
-    public double getVelocity(final double s) { // Inefficient, but shouldn't make a huge difference. Right?
-        for (final VelocityCurve vc : velocityCurves) {
-            if (vc.inRange(s)) {
-                return vc.getVelocity(s);
-            }
-        }
-        return Double.NaN; // SOMEBODY GONNA GET HURT REAL BAD
-    }
-
-    public double getAcceleration(final double s) { // Inefficient, but shouldn't make a huge difference. Right?
-        for (final VelocityCurve vc : velocityCurves) {
-            if (vc.inRange(s)) {
-                return vc.acceleration;
-            }
-        }
-        return Double.NaN; // SOMEBODY GONNA GET HURT REAL BAD
-    }
+//    public double getVelocity(final double s) { // Inefficient, but shouldn't make a huge difference. Right?
+//        for (final VelocityCurve vc : velocityCurves) {
+//            if (vc.inRange(s)) {
+//                return vc.getVelocity(s);
+//            }
+//        }
+//        return Double.NaN; // SOMEBODY GONNA GET HURT REAL BAD
+//    }
+//
+//    public double getAcceleration(final double s) { // Inefficient, but shouldn't make a huge difference. Right?
+//        for (final VelocityCurve vc : velocityCurves) {
+//            if (vc.inRange(s)) {
+//                return vc.acceleration;
+//            }
+//        }
+//        return Double.NaN; // SOMEBODY GONNA GET HURT REAL BAD
+//    }
 
     public double distS(final double s) {
         return s1 - s;

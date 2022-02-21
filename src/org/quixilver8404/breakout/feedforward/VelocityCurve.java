@@ -7,6 +7,7 @@ public class VelocityCurve {
     public final double v0;
     public final double v1;
     public final double acceleration;
+    protected int index;
 
     VelocityCurve(final double s0, final double s1, final double v0, final double v1) {
         this.s0 = s0;
@@ -22,7 +23,7 @@ public class VelocityCurve {
     }
 
     public String toString() {
-        return "(s0=" + s0 + ", s1=" + s1 + ", v=" + v0 + ", nextV=" + v1 + ")";
+        return "(s0=" + s0 + ", s1=" + s1 + ", v=" + v0 + ", nextV=" + v1 + ", index=" + index + ")";
     }
 
     public boolean inRange(final double s) {
@@ -34,10 +35,18 @@ public class VelocityCurve {
     }
 
     public double getVelocity(final double s) {
-        return Math.sqrt(2*acceleration*(s-s0) + Math.pow(v0, 2));
+        return Math.sqrt(2*acceleration*(Math.max(s,s0)-s0) + Math.pow(v0, 2));
     }
 
     public double distS(final double s) {
         return s1 - s;
+    }
+
+    public void setIndex(final int index) {
+        this.index = index;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }
