@@ -322,7 +322,9 @@ public class Path {
 //        velocitySegments.forEach(p -> System.out.println("Velocity segment: " + p.toString()));
 
 //        connectionPoints.forEach(p -> System.out.println("Connection point: " + p.toString()));
-//        segmentPoints.forEach(p -> System.out.println("Segment point: " + p.toString()));
+        System.out.println("Segment points");
+        segmentPoints.forEach(p -> System.out.println(p.toString()));
+        System.out.println();
         headingPoints.forEach(p -> System.out.println("Heading point: " + p.toString()));
         headingSegments.forEach(s -> System.out.println("Heading segment: " + s.toString()));
 
@@ -612,15 +614,15 @@ public class Path {
         return anchorPointsList;
     }
 
-
     public List<SegmentPoint> parseSegmentPoints(final JSONObject obj, final int config) {
         final List<SegmentPoint> segmentPoints = new ArrayList<SegmentPoint>();
-        final JSONArray segments = (JSONArray) obj.get("segments");
+        final JSONObject output = (JSONObject) obj.get("output");
+        final JSONObject curveConfig = (JSONObject) output.get(Integer.toString(config));
+        final JSONArray segments = (JSONArray) curveConfig.get("segments");
+
         for (int i = 0; i < segments.size(); i++) {
             final SegmentPoint segment = new SegmentPoint((JSONObject)segments.get(i), configActionEventListeners);
-            if (segment.config == config || segment.config == 0) {
-                segmentPoints.add(segment);
-            }
+            segmentPoints.add(segment);
         }
 
         return segmentPoints;

@@ -17,7 +17,8 @@ public class BreakoutTest {
         window1.init();
 
 //        final File file = new File("/home/andrea/Desktop/test.foxtrot2");
-        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
+//        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
+        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_no_carousel.foxtrot2");
 
 //        final Config config = new Config(12, 12,11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
@@ -28,7 +29,7 @@ public class BreakoutTest {
                 ((0.323/2) - 0.0375), ((0.445/2) - 0.05031), 0.95, 0.95, Math.PI/2.5, 0.17, 0.09, 10.7/4, 10.7/4, 10.7/4, 10.7/4
         );
 
-        final Breakout breakout = new Breakout(file, 0, new ArrayList<>(), config);
+        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.445, 0.323, new Vector3(0,0,0),
                 new Vector3(breakout.path.startX, breakout.path.startY,breakout.path.startHeading - Math.PI/2), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,
