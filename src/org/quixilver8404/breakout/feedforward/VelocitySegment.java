@@ -16,7 +16,7 @@ public class VelocitySegment {
     protected boolean zeroSegment;
     protected double v0;
     protected double v1;
-    protected List<VelocityCurve> velocityCurves;
+    protected final List<VelocityCurve> velocityCurves;
 
     VelocitySegment(final VelocityPoint p0, final VelocityPoint p1, final VelocityPoint constraintPt1, final VelocityPoint constraintPt2, final int index) {
         assert(constraintPt2.getS() >= constraintPt1.getS());
@@ -25,6 +25,7 @@ public class VelocitySegment {
         this.constraintPt1 = constraintPt1;
         this.constraintPt2 = constraintPt2;
         this.index = index;
+        velocityCurves = new ArrayList<>(3);
     }
 
     public void set() {
@@ -56,7 +57,6 @@ public class VelocitySegment {
             curve3 = new VelocityCurve(constraintPt1.getS(), s1, constraintPt1.getMaxVelocity(), v1);
         }
 
-        velocityCurves = new ArrayList<>();
         if (curve1 != null) { velocityCurves.add(curve1); }
         velocityCurves.add(curve2);
         if (curve3 != null) { velocityCurves.add(curve3); }
