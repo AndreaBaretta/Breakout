@@ -47,9 +47,9 @@ public class Path {
         }
     }
 
-    public Path(final InputStream foxtrotFile, final int config, final List<ActionEventListener> configActionEventListeners) {
+    public Path(final InputStream foxtrotFileReader, final int config, final List<ActionEventListener> configActionEventListeners) {
         this.configActionEventListeners = configActionEventListeners;
-        final JSONObject obj = parseJSON(foxtrotFile);
+        final JSONObject obj = parseJSON(foxtrotFileReader);
         anchorPoints = parseAnchorPoints(obj, config);
         connectionPoints = new ArrayList<ConnectionPoint>();
         segmentPoints = parseSegmentPoints(obj, config);
@@ -516,6 +516,7 @@ public class Path {
     public JSONObject parseJSON(final InputStream stream) {
         final JSONParser jsonParser = new JSONParser();
         try {
+//            System.out.println("Is stream ready to rumble: " + streamReader.ready());
             final JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(stream));
             return obj;
         } catch (final Exception e) {

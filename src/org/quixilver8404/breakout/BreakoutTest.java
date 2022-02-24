@@ -5,8 +5,11 @@ import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
+import sun.misc.IOUtils;
+import sun.nio.ch.IOUtil;
 
-import java.io.File;
+import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -29,7 +32,21 @@ public class BreakoutTest {
                 ((0.323/2) - 0.0375), ((0.445/2) - 0.05031), 0.95, 0.95, Math.PI/2.5, 0.17, 0.09, 10.7/4, 10.7/4, 10.7/4, 10.7/4
         );
 
-        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
+        InputStream inputStream = null;
+        byte[] byteArray = null;
+
+        try {
+            inputStream = new FileInputStream(file);
+            byteArray = IOUtils.readAllBytes(inputStream);
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+
+//        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
+        final Breakout breakout = new Breakout(byteArray, 3, new ArrayList<>(), config);
+        final Breakout breakout2 = new Breakout(byteArray, 2, new ArrayList<>(), config);
+        final Breakout breakout3 = new Breakout(byteArray, 1, new ArrayList<>(), config);
+
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.445, 0.323, new Vector3(0,0,0),
                 new Vector3(breakout.path.startX, breakout.path.startY,breakout.path.startHeading - Math.PI/2), window1, Config.J, Config.r_X, Config.r_Y, Config.T_MAX,

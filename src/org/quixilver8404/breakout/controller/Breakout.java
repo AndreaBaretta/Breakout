@@ -6,8 +6,7 @@ import org.quixilver8404.breakout.feedforward.RobotState;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 
 public class Breakout {
@@ -18,26 +17,25 @@ public class Breakout {
     protected final Config config;
 
     public Breakout(final File foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
-        System.out.println("Hey hey ho ho");
-        System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
+        System.out.println("====================BEGIN INITIALIZING BREAKOUT: VARIANT " + foxtrotConfig + "====================");
         config = robotConfig;
         config.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
         path = Path.fromFile(foxtrotFile, foxtrotConfig, actionEventListeners);
         lastDesiredPos = new Vector3(path.startX,path.startY,path.startHeading);
-        System.out.println("====================DONE INITIALIZING BREAKOUT====================");
+        System.out.println("====================DONE INITIALIZING BREAKOUT: VARIANT " + foxtrotConfig + "====================");
     }
 
-    public Breakout(final InputStream foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
-        System.out.println("====================BEGIN INITIALIZING BREAKOUT====================");
+    public Breakout(final byte[] foxtrotFile, final int foxtrotConfig, final List<ActionEventListener> actionEventListeners, final Config robotConfig) {
+        System.out.println("====================BEGIN INITIALIZING BREAKOUT: VARIANT " + foxtrotConfig + "====================");
         config = robotConfig;
         config.set();
         controller = new Controller(Controller.computeK(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y));
         powerProfile = new PowerProfile(Config.MASS, Config.WHEEL_RADIUS, Config.J, Config.OMEGA_MAX, Config.T_MAX, Config.r_X, Config.r_Y, true);
-        path = new Path(foxtrotFile, foxtrotConfig, actionEventListeners);
+        path = new Path(new ByteArrayInputStream(foxtrotFile), foxtrotConfig, actionEventListeners);
         lastDesiredPos = new Vector3(path.startX,path.startY,path.startHeading);
-        System.out.println("====================DONE INITIALIZING BREAKOUT====================");
+        System.out.println("====================DONE INITIALIZING BREAKOUT: VARIANT " + foxtrotConfig + "====================");
     }
 
     protected double prev_s = 0;
