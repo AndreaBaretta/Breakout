@@ -461,7 +461,7 @@ public class Path {
 
 //        System.out.println("s=" + s);
 
-        if (Math.abs(currentVelocityCurve.distS(s)) <= 0.01 && currentVelocityCurve.v1 <= 1e-10) {
+        if (currentVelocityCurve.v1 <= 1e-3 && s_dot <= 1e-3) {
 //            System.out.println("New velocity segment");
             nextVelocitySegment();
         }

@@ -1,6 +1,8 @@
 package org.quixilver8404.breakout;
 
 import org.quixilver8404.breakout.controller.Breakout;
+import org.quixilver8404.breakout.feedforward.ActionEventListener;
+import org.quixilver8404.breakout.feedforward.ActionFunction;
 import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.util.Config;
@@ -12,10 +14,13 @@ import java.io.*;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class BreakoutTest {
 
     public static void main(final String[] args) {
+
+//        assert(false);
         Display window1 = new Display(1000, 1000, 100);
         window1.init();
 
@@ -42,10 +47,12 @@ public class BreakoutTest {
             e.printStackTrace();
         }
 
+        final List<ActionEventListener> actions = new ArrayList<ActionEventListener>();
+
 //        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
         final Breakout breakout = new Breakout(byteArray, 3, new ArrayList<>(), config);
         final Breakout breakout2 = new Breakout(byteArray, 2, new ArrayList<>(), config);
-        final Breakout breakout3 = new Breakout(byteArray, 1, new ArrayList<>(), config);
+        final Breakout breakout3 = new Breakout(byteArray, 3, new ArrayList<>(), config);
 
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.445, 0.323, new Vector3(0,0,0),

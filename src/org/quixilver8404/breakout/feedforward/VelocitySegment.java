@@ -19,7 +19,10 @@ public class VelocitySegment {
     protected final List<VelocityCurve> velocityCurves;
 
     VelocitySegment(final VelocityPoint p0, final VelocityPoint p1, final VelocityPoint constraintPt1, final VelocityPoint constraintPt2, final int index) {
-        assert(constraintPt2.getS() >= constraintPt1.getS());
+//        System.out.println("constraint 1: " + constraintPt1);
+//        System.out.println("constraint 2: " + constraintPt2);
+//
+//        assert(constraintPt2.getS() >= constraintPt1.getS());
         this.p0 = p0;
         this.p1 = p1;
         this.constraintPt1 = constraintPt1;
@@ -48,11 +51,11 @@ public class VelocitySegment {
         VelocityCurve curve3 = null;
 
         // Check: not the same point, constraint point is in range, constraint point's max velocity is less than desired vel
-        if (Math.abs(constraintPt1.getS() - p0.getConfigVelocity()) < 1e-10 && !Double.isNaN(constraintPt1.getMaxVelocity()) && curve2.inRange(constraintPt1.getS()) && curve2.getVelocity(constraintPt1.getS()) > constraintPt1.getMaxVelocity()) {
+        if (Math.abs(constraintPt1.getS() - constraintPt2.getS()) < 1e-10 && !Double.isNaN(constraintPt1.getMaxVelocity()) && curve2.inRange(constraintPt1.getS()) && curve2.getVelocity(constraintPt1.getS()) > constraintPt1.getMaxVelocity()) {
             curve1 = new VelocityCurve(s0, constraintPt1.getS(), v0, constraintPt1.getMaxVelocity());
             curve2 = new VelocityCurve(constraintPt1.getS(), s1, constraintPt1.getMaxVelocity(), v1);
         }
-        if (Math.abs(constraintPt2.getS() - p1.getConfigVelocity()) < 1e-10 && !Double.isNaN(constraintPt1.getMaxVelocity()) && curve2.inRange(constraintPt2.getS()) && curve2.getVelocity(constraintPt1.getS()) > constraintPt1.getMaxVelocity()) {
+        if (Math.abs(constraintPt1.getS() - constraintPt2.getS()) < 1e-10 && !Double.isNaN(constraintPt1.getMaxVelocity()) && curve2.inRange(constraintPt2.getS()) && curve2.getVelocity(constraintPt1.getS()) > constraintPt1.getMaxVelocity()) {
             curve2 = new VelocityCurve(curve2.s0, constraintPt1.getS(), curve2.v0, constraintPt1.getMaxVelocity());
             curve3 = new VelocityCurve(constraintPt1.getS(), s1, constraintPt1.getMaxVelocity(), v1);
         }
