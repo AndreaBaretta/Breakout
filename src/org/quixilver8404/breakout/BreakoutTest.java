@@ -26,7 +26,7 @@ public class BreakoutTest {
 
 //        final File file = new File("/home/andrea/Desktop/test.foxtrot2");
 //        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
-        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_no_carousel.foxtrot2");
+        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
 
 //        final Config config = new Config(12, 12,11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
@@ -50,7 +50,7 @@ public class BreakoutTest {
         final List<ActionEventListener> actions = new ArrayList<ActionEventListener>();
 
 //        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
-        final Breakout breakout = new Breakout(byteArray, 3, new ArrayList<>(), config);
+        final Breakout breakout = new Breakout(byteArray, 1, new ArrayList<>(), config);
         final Breakout breakout2 = new Breakout(byteArray, 2, new ArrayList<>(), config);
         final Breakout breakout3 = new Breakout(byteArray, 3, new ArrayList<>(), config);
 

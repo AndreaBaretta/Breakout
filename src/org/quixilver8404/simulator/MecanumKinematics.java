@@ -245,4 +245,12 @@ public class MecanumKinematics {
      * Level 2 of "Figuring it Out: Revenge of the Getters".
      * */
     public Vector3 getFieldPos() { return fieldPos; }
+
+    public void setFieldPos(final Vector3 pos) {
+        fieldPos = pos;
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        ui.setBackground(new double[]{255,255,255});
+        ui.drawRobot(fieldPos.x, fieldPos.y, fieldPos.theta+Math.PI/2, width, length);
+//        ui.update();
+    }
 }

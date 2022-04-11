@@ -481,6 +481,8 @@ public class Path {
 
 //        System.out.println("targetVel: " + targetVelocity + "  accToVel: " + accToVel + "  overall acc: " + acc + "  distS: " + nextVCurVDistS.distS);
 
+        System.out.println("targetVel: " + targetVelocity);
+
         if (acc > maxAcc) {
             return new double[]{targetVelocity, maxAcc};
         } else if (acc < Config.MAX_DECELERATION) {

@@ -4,9 +4,13 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 
 public class Vector3 {
 
-    public final double x;
-    public final double y;
-    public final double theta;
+    public double x;
+    public double y;
+    public double theta;
+
+    public Vector3() {
+        x = y = theta = 0;
+    }
 
     public Vector3(final double x, final double y, final double theta) {
         this.x = x;
@@ -55,4 +59,24 @@ public class Vector3 {
     public Vector3 scalarMultiply(final double s) { return new Vector3(x*s, y*s, theta*s); }
 
     public ArrayRealVector toRealVector() { return new ArrayRealVector(toArray()); }
+
+    public void setX(final double x) {
+        this.x = x;
+    }
+
+    public void setY(final double y) {
+        this.y = y;
+    }
+
+    public void setTheta(final double theta) {
+        this.theta = theta;
+    }
+
+    public static Vector3 AddVector(final Vector3 v1, final Vector3 v2) {
+        return new Vector3(v1.x+v2.x, v1.y+v2.y, v1.theta+v2.theta);
+    }
+
+    public static Vector3 ScalarMultiply(final Vector3 v1, final double a) {
+        return new Vector3(v1.x * a, v1.y*a, v1.theta*a);
+    }
 }
