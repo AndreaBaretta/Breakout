@@ -120,6 +120,25 @@ public class Display {
         drawCirclePixels(x, y, 5, 100, new double[]{255,0,0});
     }
 
+    public void drawCompassPixel(final double theta, final double x, final double y, final double length, final double[] color) {
+        final double[] transform = CoordinateTransformations.toFieldCoordinates(new ArrayRealVector(new double[]{length*pixel_to_percentage_x,0}), theta).toArray();
+        glBegin(GL_LINE_LOOP);
+        glColor3d(color[0], color[1], color[2]);
+        glLineWidth(2000);
+        glVertex2d(x*pixel_to_percentage_x, y*pixel_to_percentage_y);
+        glVertex2d(x*pixel_to_percentage_x+transform[0], y*pixel_to_percentage_y+transform[1]);
+        glEnd();
+        drawCirclePixels(x, y, 5, 100, color);
+    }
+
+    public void drawCompass(final double theta, final double x, final double y, final double length) {
+        drawCompassPixel(theta, x*pxPerM, y*pxPerM, length);
+    }
+
+    public void drawCompass(final double theta, final double x, final double y, final double length, final double[] color) {
+        drawCompassPixel(theta, x*pxPerM, y*pxPerM, length, color);
+    }
+
     public void drawRobot(final double x, final double y, final double theta, final double width, final double height) {
         final double x_px = x*pxPerM;
         final double y_px = y*pxPerM;

@@ -109,4 +109,8 @@ public class Odometry {
     public Vector3 getRawPosition() {
         return pos;
     }
+
+    public void setPosition(final Vector3 pos) {
+        this.pos = pos;
+    }
 }
