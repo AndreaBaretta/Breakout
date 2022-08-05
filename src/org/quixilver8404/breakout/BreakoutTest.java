@@ -7,11 +7,12 @@ import org.quixilver8404.simulator.Display;
 import org.quixilver8404.simulator.MecanumKinematics;
 import org.quixilver8404.breakout.util.Config;
 import org.quixilver8404.breakout.util.Vector3;
-import sun.misc.IOUtils;
-import sun.nio.ch.IOUtil;
+import org.apache.commons.io.IOUtils;
+//import sun.misc.IOUtils;
 
 import java.io.*;
 import java.nio.Buffer;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,9 +25,9 @@ public class BreakoutTest {
         Display window1 = new Display(1000, 1000, 100);
         window1.init();
 
-//        final File file = new File("/home/andrea/Desktop/test.foxtrot2");
+        final File file = new File("/home/andrea/Desktop/test.foxtrot2");
 //        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
-        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
+//        final File file = new File("/home/andrea/git/ftc8404/freight-frenzy/TeamCode/src/main/res/raw/auton_blue_carousel_first.foxtrot2");
 
 //        final Config config = new Config(12, 12,11.2, -11.2, 1.17749, 0.01, 2.1, 31.4, 20,
 //                37.5/1000, MecanumKinematics.FindMomentOfInertia(0.5, 0.5, 20), 0.4572/2, 0.4572/2, 0.95,
@@ -42,7 +43,7 @@ public class BreakoutTest {
 
         try {
             inputStream = new FileInputStream(file);
-            byteArray = IOUtils.readAllBytes(inputStream);
+            byteArray = IOUtils.readFully(inputStream, (int)file.length());
         } catch (final Exception e) {
             e.printStackTrace();
         }
@@ -50,9 +51,9 @@ public class BreakoutTest {
         final List<ActionEventListener> actions = new ArrayList<ActionEventListener>();
 
 //        final Breakout breakout = new Breakout(file, 1, new ArrayList<>(), config);
-        final Breakout breakout = new Breakout(byteArray, 1, new ArrayList<>(), config);
-        final Breakout breakout2 = new Breakout(byteArray, 2, new ArrayList<>(), config);
-        final Breakout breakout3 = new Breakout(byteArray, 3, new ArrayList<>(), config);
+        final Breakout breakout = new Breakout(byteArray, 0, new ArrayList<>(), config);
+//        final Breakout breakout2 = new Breakout(byteArray, 2, new ArrayList<>(), config);
+//        final Breakout breakout3 = new Breakout(byteArray, 3, new ArrayList<>(), config);
 
 
         final MecanumKinematics kinematics = new MecanumKinematics(50, Config.MASS, 0.445, 0.323, new Vector3(0,0,0),
