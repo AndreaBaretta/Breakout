@@ -7,9 +7,11 @@ public abstract class Segment {
     public final boolean zeroSegment;
     protected int index;
 
-    Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint, final double s0) {
+    Segment(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint,
+            final double s0) {
         this.s0 = s0;
-        if (Math.abs(firstPoint.x - lastPoint.x) < 1e-12 && Math.abs(firstPoint.y - lastPoint.y) < 1e-12) { //TODO: Potential bug here for circles that go all the way around
+        if (Math.abs(firstPoint.x - lastPoint.x) < 1e-12 &&
+                Math.abs(firstPoint.y - lastPoint.y) < 1e-12) {
             zeroSegment = true;
         } else {
             zeroSegment = false;
@@ -21,7 +23,8 @@ public abstract class Segment {
 
     public abstract Vector3 getVelocity(final double s, final double s_dot);
 
-    public abstract Vector3 getAcceleration(final double s, final double s_dot, final double s_dot_dot);
+    public abstract Vector3 getAcceleration(final double s, final double s_dot,
+                                            final double s_dot_dot);
 
     public abstract double getTotalS();
 
@@ -44,23 +47,17 @@ public abstract class Segment {
         return calcS(pos.x, pos.y);
     }
 
-    public abstract boolean isPointSegment();
-
     public abstract double getMaxVelocity();
 
-    public void configurePoints(final ConnectionPoint firstPoint, final ConnectionPoint lastPoint) {
+    public void configurePoints(final ConnectionPoint firstPoint,
+                                final ConnectionPoint lastPoint) {
         firstPoint.setMaxVelocity(getMaxVelocity());
         firstPoint.setS(s0);
         lastPoint.setMaxVelocity(getMaxVelocity());
         lastPoint.setS(getEndS());
-
     }
 
     public void setIndex(final int index) {
         this.index = index;
-    }
-
-    public int getIndex() {
-        return index;
     }
 }

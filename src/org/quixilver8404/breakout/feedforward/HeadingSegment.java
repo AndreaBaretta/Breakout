@@ -7,7 +7,7 @@ public class HeadingSegment {
     public final HeadingPoint headingPoint1;
     public final double s0;
     public final double s1;
-    public final AnchorPoint.Heading segmentHeading;
+    public final HeadingPoint.Heading segmentHeading;
     public final int index;
     public final double alpha0;
     public final double alpha1;
@@ -22,20 +22,20 @@ public class HeadingSegment {
         if (headingPoint0.getHeadingState() == headingPoint1.getHeadingState()) {
             segmentHeading = headingPoint0.getHeadingState();
         } else {
-            segmentHeading = AnchorPoint.Heading.CUSTOM;
+            segmentHeading = HeadingPoint.Heading.CUSTOM;
         }
         this.index = index;
 
-        if (headingPoint0.getHeadingState() == AnchorPoint.Heading.FRONT) {
+        if (headingPoint0.getHeadingState() == HeadingPoint.Heading.FRONT) {
             alpha0 = headingPoint0.getHeading();
-        } else if (headingPoint0.getHeadingState() == AnchorPoint.Heading.BACK) {
+        } else if (headingPoint0.getHeadingState() == HeadingPoint.Heading.BACK) {
             alpha0 = Vector3.normalizeAlpha(/*Math.PI + */headingPoint0.getHeading());
         } else {
             alpha0 = headingPoint0.getHeading();
         }
-        if (headingPoint1.getHeadingState() == AnchorPoint.Heading.FRONT) {
+        if (headingPoint1.getHeadingState() == HeadingPoint.Heading.FRONT) {
             alpha1 = headingPoint1.getHeading();
-        } else if (headingPoint1.getHeadingState() == AnchorPoint.Heading.BACK) {
+        } else if (headingPoint1.getHeadingState() == HeadingPoint.Heading.BACK) {
             alpha1 = Vector3.normalizeAlpha(/*Math.PI + */headingPoint1.getHeading());
         } else {
             alpha1 = headingPoint1.getHeading();
@@ -72,9 +72,9 @@ public class HeadingSegment {
 
     public Vector3 calcAlpha(final double s, final Vector3 pos) {
         final double alpha;
-        if (segmentHeading == AnchorPoint.Heading.FRONT) {
+        if (segmentHeading == HeadingPoint.Heading.FRONT) {
             alpha = pos.theta;
-        } else if (segmentHeading == AnchorPoint.Heading.BACK) {
+        } else if (segmentHeading == HeadingPoint.Heading.BACK) {
             alpha = pos.theta + Math.PI;
         } else {
             alpha = alpha0 + (alpha1 - alpha0_)*(s - s0)/(s1 - s0);
@@ -84,7 +84,7 @@ public class HeadingSegment {
 
     public Vector3 calcAlphaDot(final double s_dot, final Vector3 vel) {
         final double alpha_dot;
-        if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
+        if (segmentHeading == HeadingPoint.Heading.CUSTOM) {
             alpha_dot = s_dot*(alpha1 - alpha0_)/(s1 - s0);
         } else {
             alpha_dot = vel.theta;
@@ -94,7 +94,7 @@ public class HeadingSegment {
 
     public Vector3 calcAlphaDotDot(final double s_dot_dot, final Vector3 acc) {
         final double alpha_dot_dot;
-        if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
+        if (segmentHeading == HeadingPoint.Heading.CUSTOM) {
             alpha_dot_dot = s_dot_dot*(alpha1 - alpha0_)/(s1 - s0);
         } else {
             alpha_dot_dot = acc.theta;
@@ -104,11 +104,11 @@ public class HeadingSegment {
 
     public String toString() {
         final String segmentHeadingString;
-        if (segmentHeading == AnchorPoint.Heading.FRONT) {
+        if (segmentHeading == HeadingPoint.Heading.FRONT) {
             segmentHeadingString = "FRONT";
-        } else if (segmentHeading == AnchorPoint.Heading.BACK) {
+        } else if (segmentHeading == HeadingPoint.Heading.BACK) {
             segmentHeadingString = "BACK";
-        } else if (segmentHeading == AnchorPoint.Heading.CUSTOM) {
+        } else if (segmentHeading == HeadingPoint.Heading.CUSTOM) {
             segmentHeadingString = "CUSTOM";
         } else {
             segmentHeadingString = "NONE";

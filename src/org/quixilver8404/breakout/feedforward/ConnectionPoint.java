@@ -4,24 +4,27 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPoint, ActionPoint {
-    public boolean complete;
+public class ConnectionPoint extends Point2D
+        implements VelocityPoint, HeadingPoint, ActionPoint {
     protected double configVelocity;
     protected double maxVelocity;
     protected double s;
     public int index;
-    public final AnchorPoint.Heading headingState;
+    public final Heading headingState;
     public final double heading;
     public final List<ActionEventListener> actionEventListeners;
     public final Set<Integer> actions;
     public final boolean isOnAnchor;
 
-    public ConnectionPoint(final double x, final double y, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
-                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions, final boolean isOnAnchor) {
+    public ConnectionPoint(final double x, final double y,
+                           final Heading headingState, final double heading,
+                           final double configVelocity,
+                           final List<ActionEventListener> actionEventListeners,
+                           final Set<Integer> actions,
+                           final boolean isOnAnchor) {
         super(x, y);
         this.heading = heading;
         this.headingState = headingState;
-        complete = false;
         this.configVelocity = configVelocity;
         maxVelocity = Double.NaN;
         this.actionEventListeners = actionEventListeners;
@@ -29,12 +32,14 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         this.isOnAnchor = isOnAnchor;
     }
 
-    public ConnectionPoint(final Point2D point, final AnchorPoint.Heading headingState, final double heading, final double configVelocity,
-                    final List<ActionEventListener> actionEventListeners, final Set<Integer> actions, final boolean isOnAnchor) {
+    public ConnectionPoint(final Point2D point, final Heading headingState,
+                           final double heading, final double configVelocity,
+                           final List<ActionEventListener> actionEventListeners,
+                           final Set<Integer> actions,
+                           final boolean isOnAnchor) {
         super(point.x, point.y);
         this.heading = heading;
         this.headingState = headingState;
-        complete = false;
         this.configVelocity = configVelocity;
         maxVelocity = Double.NaN;
         this.actionEventListeners = actionEventListeners;
@@ -75,7 +80,7 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         return heading;
     }
 
-    public AnchorPoint.Heading getHeadingState() {
+    public Heading getHeadingState() {
         return headingState;
     }
 
@@ -100,6 +105,10 @@ public class ConnectionPoint extends Point2D implements VelocityPoint, HeadingPo
         } else {
             actionArray = actions.toArray();
         }
-        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" + configVelocity + ", minVelocity=" + maxVelocity + ", headingState=" + getHeadingState() + ", heading=" + getHeading() + ", actions=" + Arrays.toString(actionArray) + (isOnAnchor ? ", isOnAnchor" : ", isConnection") + ")";
+        return "(" + x + ", " + y + ", s=" + s + ", configVelocity=" +
+                configVelocity + ", minVelocity=" + maxVelocity +
+                ", headingState=" + getHeadingState() + ", heading=" +
+                getHeading() + ", actions=" + Arrays.toString(actionArray) +
+                (isOnAnchor ? ", isOnAnchor" : ", isConnection") + ")";
     }
 }

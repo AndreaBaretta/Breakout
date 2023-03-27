@@ -162,7 +162,7 @@ public class Path {
                 segmentPoints.forEach(p -> {
                     if (p.anchorIndex == anchorIndex - 1) {
                         p.setS(segment0.s0, segment2.getEndS() - segment0.s0);
-                        if (p.getHeadingState() != AnchorPoint.Heading.CUSTOM && p.getHeadingState() != AnchorPoint.Heading.NONE) {
+                        if (p.getHeadingState() != HeadingPoint.Heading.CUSTOM && p.getHeadingState() != HeadingPoint.Heading.NONE) {
                             final double heading;
                             if (segment0.inRange(p.getS())) {
                                 heading = segment0.getPosition(p.getS()).theta;
@@ -171,7 +171,7 @@ public class Path {
                             } else if (segment2.inRange(p.getS())) {
                                 heading = segment2.getPosition(p.getS()).theta;
                             } else { throw new Error("Out of bounds error that REALLY REALLY shouldn't be happening"); }
-                            if (p.getHeadingState() == AnchorPoint.Heading.FRONT) {
+                            if (p.getHeadingState() == HeadingPoint.Heading.FRONT) {
                                 p.setHeading(heading);
                             } else {
                                 p.setHeading(Vector3.normalizeAlpha(heading + Math.PI));
@@ -246,7 +246,7 @@ public class Path {
                     actionPoints.add(p);
                 }
             }
-            if (p.getHeadingState() != AnchorPoint.Heading.NONE) {
+            if (p.getHeadingState() != HeadingPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
         });
@@ -257,7 +257,7 @@ public class Path {
                     actionPoints.add(p);
                 }
             }
-            if (p.headingState != AnchorPoint.Heading.NONE) {
+            if (p.headingState != HeadingPoint.Heading.NONE) {
                 headingPoints.add(p);
             }
         });
@@ -559,16 +559,16 @@ public class Path {
             final double x = ((double)anchorObj.get("x"))*Config.INCHES_TO_METERS;
             final double y = ((double)anchorObj.get("y"))*Config.INCHES_TO_METERS;
             final double tan = (double)anchorObj.get("tangent");
-            final AnchorPoint.Heading heading;
+            final HeadingPoint.Heading heading;
             final double customHeading;
             if (((String) anchorObj.get("headingState")).equals("FRONT")) {
-                heading = AnchorPoint.Heading.FRONT;
+                heading = HeadingPoint.Heading.FRONT;
                 customHeading = 0d;
-            } else if (((String) anchorObj.get("headingState")).equals("BACK")) {
-                heading = AnchorPoint.Heading.BACK;
+            } else if (((String) anchorObj.get("headingstate")).equals("BACK")) {
+                heading = HeadingPoint.Heading.BACK;
                 customHeading = 0d;
             } else {
-                heading = AnchorPoint.Heading.CUSTOM;
+                heading = HeadingPoint.Heading.CUSTOM;
                 customHeading = (double)anchorObj.get("heading");
             }
             final double configVelocity = Math.min((double)anchorObj.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;

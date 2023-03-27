@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 public class AnchorPoint extends Point {
-    public enum Heading {
-        FRONT, BACK, CUSTOM, NONE
-    }
 
-    final Heading heading;
+    final HeadingPoint.Heading heading;
     final double customHeading;
     final double r0;
     final Point2D center0;
@@ -49,7 +46,7 @@ public class AnchorPoint extends Point {
         }
     }
 
-    public AnchorPoint(final double x, final double y, final double tangent, final Heading heading, final double customHeading,
+    public AnchorPoint(final double x, final double y, final double tangent, final HeadingPoint.Heading heading, final double customHeading,
                        final double r0, final Point2D center0, final double theta0, final double r1, final Point2D center1, final double theta1,
                        final Point2D tanPoint0, final Point2D tanPoint1, final double configVelocity, final List<ActionEventListener> actionEventListeners,
                        final Set<Integer> actions, final boolean first, final boolean last) {
@@ -58,9 +55,9 @@ public class AnchorPoint extends Point {
         this.tanPoint0 = tanPoint0;
         this.tanPoint1 = tanPoint1;
         this.heading = heading;
-        if (heading == Heading.CUSTOM) {
+        if (heading == HeadingPoint.Heading.CUSTOM) {
             this.customHeading = customHeading;
-        } else if (heading == Heading.FRONT) {
+        } else if (heading == HeadingPoint.Heading.FRONT) {
             this.customHeading = tan;
         } else {
             this.customHeading = -tan;
@@ -98,17 +95,17 @@ public class AnchorPoint extends Point {
             tanPoint1_ = tanPoint1;
         }
 
-        prevPoint = new ConnectionPoint(tanPoint0_, Heading.NONE, Double.NaN, Double.NaN, null, null, false);
+        prevPoint = new ConnectionPoint(tanPoint0_, HeadingPoint.Heading.NONE, Double.NaN, Double.NaN, null, null, false);
         final double pointHeading;
-        if (heading == Heading.CUSTOM) {
+        if (heading == HeadingPoint.Heading.CUSTOM) {
             pointHeading = customHeading;
-        } else if (heading == Heading.FRONT) {
+        } else if (heading == HeadingPoint.Heading.FRONT) {
             pointHeading = tan;
         } else {
             pointHeading = Vector3.normalizeAlpha(tan + Math.PI);
         }
         middlePoint = new ConnectionPoint(x, y, heading, pointHeading, configVelocity, actionEventListeners, actions, true);
-        nextPoint = new ConnectionPoint(tanPoint1_, Heading.NONE, Double.NaN, Double.NaN, null, null, false);
+        nextPoint = new ConnectionPoint(tanPoint1_, HeadingPoint.Heading.NONE, Double.NaN, Double.NaN, null, null, false);
 
         counterClockwise0 = CheckDirection(center0);
         counterClockwise1 = CheckDirection(center1);

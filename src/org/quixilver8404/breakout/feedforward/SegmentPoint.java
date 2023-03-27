@@ -11,7 +11,7 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
     public final int anchorIndex;
     protected double velP;
     public final String headingStateString;
-    public final AnchorPoint.Heading headingState;
+    public final Heading headingState;
     protected double heading;
     public final int config;
     public final double tFromAnchor;
@@ -26,13 +26,13 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
         velP = Math.min((double)segmentPoint.get("velP"), Config.MAX_SAFE_VELOCITY)*Config.MAX_VELOCITY;
         headingStateString = (String)segmentPoint.get("headingState");
         if (headingStateString.equals("FRONT")) {
-            headingState = AnchorPoint.Heading.FRONT;
+            headingState = Heading.FRONT;
         } else if (headingStateString.equals("BACK")) {
-            headingState = AnchorPoint.Heading.BACK;
+            headingState = Heading.BACK;
         } else if (headingStateString.equals("CUSTOM")) {
-            headingState = AnchorPoint.Heading.CUSTOM;
+            headingState = Heading.CUSTOM;
         } else {
-            headingState = AnchorPoint.Heading.NONE;
+            headingState = Heading.NONE;
         }
         heading = (double)segmentPoint.get("heading");
         config = ((Long)segmentPoint.get("config")).intValue();
@@ -79,7 +79,7 @@ public class SegmentPoint implements VelocityPoint, HeadingPoint, ActionPoint {
         return s;
     }
 
-    public AnchorPoint.Heading getHeadingState() {
+    public Heading getHeadingState() {
         return headingState;
     }
 
